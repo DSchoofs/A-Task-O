@@ -1,0 +1,30 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2>A-Task-O</h2>
+            <nav>
+                <a asp-page="/Index">Dashboard</a>
+                <a asp-page="/Login">Login</a>
+                <a asp-page="/Impressum">Impressum</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            @RenderBody()
+        </main>
+        
+    </div>
+    <footer>
+        <p>&copy; 2026 Razor Layout</p>
+    </footer>
+</body>
+</html>
