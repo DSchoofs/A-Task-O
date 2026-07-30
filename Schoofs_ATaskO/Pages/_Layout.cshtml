@@ -8,20 +8,31 @@
     <link rel="stylesheet" href="~/css/style.css" />
 </head>
 <body>
+    <header class="topbar">
+        <div class="topbar-left">
+            <img src="~/image/AtaskoLogo.jpg" alt="A-Task-O Logo" class="logo" />
+        </div>
+        <div class="topbar-center">
+            <div class="app-title">A-Task-O</div>
+            <div class="app-subtitle">All Tasks Organized</div>
+        </div>
+
+        <div class="topbar-right">
+            <a asp-page="/Logout" class="logout-button">Logout</a>
+        </div>
+    </header>
+
     <div class="layout">
         <aside class="sidebar">
-            <h2>A-Task-O</h2>
             <nav>
                 <a asp-page="/Index">Dashboard</a>
                 <a asp-page="/Login">Login</a>
-                <a asp-page="/Impressum">Impressum</a>
             </nav>
         </aside>
 
         <main class="content">
             @RenderBody()
         </main>
-        
     </div>
     <footer>
         <p>&copy; 2026 Razor Layout</p>

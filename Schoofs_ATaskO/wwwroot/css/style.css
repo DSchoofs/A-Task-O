@@ -1,50 +1,77 @@
 ﻿body {
-    font-family: Arial, Arial, Helvetica, sans-serif;
     margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
     color: #222;
 }
 
-/* Seitenkopf */
-header {
+.topbar {
+    height: 80px;
     background-color: #2c3e50;
-    padding: 1rem 2rem;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 0 1.5rem;
+}
+.topbar-left {
+    position: absolute;
+    left: 1.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
-    header h2 {
-        margin: 0 0 0.5rem 0;
+.logo {
+    max-height: 90%;
+    width: auto;
+    max-width: 180px;
+    height: auto;
+    object-fit: contain;
+}
+.topbar-center {
+    text-align: center;
+    line-height: 1.1;
+}
+
+.app-title {
+    font-size: 3em;
+    font-weight: 700;
+}
+
+.app-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.topbar-right {
+    position: absolute;
+    right: 1.5rem;
+}
+
+.logout-button {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    background-color: #e74c3c;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+    .logout-button:hover {
+        background-color: #ff6b5d;
     }
 
-/* Inhaltsbereich mit begrenzter Breite, zentriert */
-main {
-    max-width: auto;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-
-/* Seitenfuß */
-footer {
-    text-align: center;
-    padding: 1rem;
-    color: #666;
-    font-size: 0.9rem;
-}
 .layout {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
 }
 
 .sidebar {
-    max-width: 220px;
-    background-color: #2c3e50;
-    color: white;
+    width: 240px;
+    background-color: #1f2d3a;
     padding: 1.5rem 1rem;
 }
-
-    .sidebar h2 {
-        margin-top: 0;
-    }
 
     .sidebar nav {
         display: flex;
@@ -52,14 +79,23 @@ footer {
         gap: 0.75rem;
     }
 
-    .sidebar a {
-        color: white;
-        text-decoration: none;
-    }
-
-        .sidebar a:hover {
-            text-decoration: underline;
+        .sidebar nav a {
+            display: block;
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background-color: #34495e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
+
+            .sidebar nav a:hover {
+                background-color: #3f5974;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+            }
 
 .content {
     flex: 1;
