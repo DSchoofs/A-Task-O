@@ -1,7 +1,12 @@
-﻿body {
+﻿html, body {
+    min-height: 100%;
+}
+
+body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
     color: #222;
+    background: #f7f7f7;
 }
 
 .topbar {
@@ -64,7 +69,7 @@
 
 .layout {
     display: flex;
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - 80px - 52px);
 }
 
 .sidebar {
@@ -182,3 +187,53 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
+
+.footer {
+    background: #ecf0f1;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    color: #555;
+    border-top: 1px solid #d9d9d9;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: auto;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
+    .topbar {
+        height: auto;
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .topbar-left,
+    .topbar-right {
+        position: static;
+    }
+}
+.form-container {
+    max-width: 760px;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+    .form-container .form-control {
+        border-radius: 10px;
+    }
+
+    .form-container .btn {
+        border-radius: 10px;
+        padding: 0.55rem 1rem;
+    }

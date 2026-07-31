@@ -2,6 +2,10 @@
 @model Schoofs_ATaskO.Pages.Admin.Users.CreateModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
+@{
+    ViewData["Title"] = "Neuen Benutzer anlegen";
+}
+
 <h1>Neuen Benutzer anlegen</h1>
 
 @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
@@ -44,11 +48,9 @@
             <label asp-for="InputUser.IsAdmin" class="form-check-label">Admin</label>
         </div>
 
-        <div class="mb-3">
-            <label asp-for="InputUser.CompletedTasks" class="form-label">Abgeschlossene Aufgaben</label>
-            <input asp-for="InputUser.CompletedTasks" class="form-control" />
-            <span asp-validation-for="InputUser.CompletedTasks" class="text-danger"></span>
-        </div>
+        
+            <input asp-for="InputUser.CompletedTasks" value="0" hidden/>
+            
 
         <button type="submit" class="btn btn-success">Speichern</button>
         <a asp-page="./UserManagement" class="btn btn-secondary">Abbrechen</a>

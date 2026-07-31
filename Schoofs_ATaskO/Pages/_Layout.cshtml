@@ -1,10 +1,10 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <!doctype html>
-<html>
+<html lang="de">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"]</title>
+    <title>@ViewData["Title"] - A-Task-O</title>
     <link rel="stylesheet" href="~/css/style.css" />
 </head>
 <body>
@@ -12,6 +12,7 @@
         <div class="topbar-left">
             <img src="~/image/AtaskoLogo.jpg" alt="A-Task-O Logo" class="logo" />
         </div>
+
         <div class="topbar-center">
             <div class="app-title">A-Task-O</div>
             <div class="app-subtitle">All Tasks Organized</div>
@@ -24,7 +25,7 @@
 
     <div class="layout">
         <aside class="sidebar">
-            <nav>
+            <nav class="sidebar-nav">
                 <a asp-page="/Index">Dashboard</a>
                 <a asp-page="/Login">Login</a>
                 <a asp-page="/Admin/Users/UserManagement">Benutzerverwaltung</a>
@@ -35,8 +36,8 @@
             @RenderBody()
         </main>
     </div>
-    <footer>
-        <p>&copy; 2026 Razor Layout</p>
+    <footer class="footer">
+        <p>&copy; 2026 A-Task-O</p>
     </footer>
 </body>
 </html>
