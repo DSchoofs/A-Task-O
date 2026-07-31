@@ -9,6 +9,6 @@ namespace Schoofs_ATaskO.Repositories
         int AddEntry(Entry entry);
         bool UpdateEntry(Entry entry);
         bool DeleteEntryById(int id);
-        string Fehlermeldung { get; set; }
+        string ErrorMessage { get; set; }
     }
 }

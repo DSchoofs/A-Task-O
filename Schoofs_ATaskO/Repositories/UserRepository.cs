@@ -8,7 +8,7 @@ namespace Schoofs_ATaskO.Repositories
     {
         private readonly string _connectionString;
         public string sqlcmd;
-        public string Fehlermeldung { get; set; }
+        public string ErrorMessage { get; set; }
         public UserRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetConnectionString("Atasko")!;
@@ -29,11 +29,11 @@ namespace Schoofs_ATaskO.Repositories
             }
             catch (SqlException sqlex)
             {
-                Fehlermeldung = $"SQL Error: {sqlex.Message}";
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
             }
             catch (Exception ex)
             {
-                Fehlermeldung = $"Unexpected Error: {ex.Message}";
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
             return new List<User>();
         }
@@ -53,11 +53,11 @@ namespace Schoofs_ATaskO.Repositories
             }
             catch (SqlException sqlex)
             {
-                Fehlermeldung = $"SQL Error: {sqlex.Message}";
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
             }
             catch (Exception ex)
             {
-                Fehlermeldung = $"Unexpected Error: {ex.Message}";
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
             return null;
         }
@@ -76,11 +76,11 @@ namespace Schoofs_ATaskO.Repositories
             }
             catch (SqlException sqlex)
             {
-                Fehlermeldung = $"SQL Error: {sqlex.Message}";
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
             }
             catch (Exception ex)
             {
-                Fehlermeldung = $"Unexpected Error: {ex.Message}";
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
             return 0;
         }
@@ -99,11 +99,11 @@ namespace Schoofs_ATaskO.Repositories
             }
             catch (SqlException sqlex)
             {
-                Fehlermeldung = $"SQL Error: {sqlex.Message}";
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
             }
             catch (Exception ex)
             {
-                Fehlermeldung = $"Unexpected Error: {ex.Message}";
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
             return false;
         }
@@ -122,11 +122,11 @@ namespace Schoofs_ATaskO.Repositories
             }
             catch (SqlException sqlex)
             {
-                Fehlermeldung = $"SQL Error: {sqlex.Message}";
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
             }
             catch (Exception ex)
             {
-                Fehlermeldung = $"Unexpected Error: {ex.Message}";
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
             return false;
         }

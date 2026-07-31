@@ -9,6 +9,6 @@ namespace Schoofs_ATaskO.Repositories
         int AddUser(User user);
         bool UpdateUser(User user);
         bool DeleteUserById(int id);
-        string Fehlermeldung { get; set; }
+        string ErrorMessage { get; set; }
     }
 }

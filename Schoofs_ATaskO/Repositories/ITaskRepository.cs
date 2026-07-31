@@ -9,6 +9,6 @@ namespace Schoofs_ATaskO.Repositories
         int AddTask(TaskItem task);
         bool UpdateTask(TaskItem task);
         bool DeleteTaskById(int id);
-        string Fehlermeldung { get; set; }
+        string ErrorMessage { get; set; }
     }
 }

@@ -1,3 +1,5 @@
+using Schoofs_ATaskO.Repositories;
+
 namespace Schoofs_ATaskO
 {
     public class Program
@@ -8,6 +10,11 @@ namespace Schoofs_ATaskO
 
             //Razor Pages registrieren (macht es erst zu einem Razor Projekt)
             builder.Services.AddRazorPages();
+
+            // Repos registrieren, damit sie in den Razor Pages verwendet werden können
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped<IEntryRepository, EntryRepository>();
 
             var app = builder.Build();
 
