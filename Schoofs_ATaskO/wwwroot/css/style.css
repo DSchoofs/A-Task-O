@@ -237,3 +237,40 @@ body {
         border-radius: 10px;
         padding: 0.55rem 1rem;
     }
+
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .form-table tr {
+        vertical-align: top;
+    }
+
+.form-label-cell {
+    width: 180px;
+    padding: 0.65rem 1rem 0.65rem 0;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.form-input-cell {
+    padding: 0.65rem 0;
+}
+
+    .form-input-cell .form-control {
+        width: 100%;
+    }
+
+    .form-input-cell .text-danger {
+        display: block;
+        margin-top: 0.35rem;
+    }
+
+.form-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
