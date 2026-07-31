@@ -4,7 +4,7 @@
 
 <h1>Benutzerverwaltung</h1>
 
-<p>
+<p class="mb-3">
     <a asp-page="./Create" class="btn btn-success">Neuen Benutzer anlegen</a>
 </p>
 
@@ -21,34 +21,38 @@
 }
 else
 {
-    <table class="table table-striped table-bordered align-middle">
-        <thead>
-            <tr>
-                <th>Vorname</th>
-                <th>Nachname</th>
-                <th>E-Mail</th>
-                <th>Admin</th>
-                <th>Letzter Login</th>
-                <th>Abgeschlossene Aufgaben</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model.Users)
-            {
+    <div class="table-responsive">
+        <table class="table table-striped table-hover table-bordered align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <td>@user.FirstName</td>
-                    <td>@user.LastName</td>
-                    <td>@user.Email</td>
-                    <td>@(user.IsAdmin ? "Ja" : "Nein")</td>
-                    <td>@(user.LastLogin.HasValue ? user.LastLogin.Value.ToString("dd.MM.yyyy HH:mm") : "Nie")</td>
-                    <td>@(user.CompletedTasks.HasValue ? user.CompletedTasks.Value.ToString() : "0")</td>
-                    <td>
-                        <a asp-page="./Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Bearbeiten</a>
-                        <a asp-page="./Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm">Löschen</a>
-                    </td>
+                    <th>Vorname</th>
+                    <th>Nachname</th>
+                    <th>E-Mail</th>
+                    <th>Admin</th>
+                    <th>Letzter Login</th>
+                    <th>Abgeschlossene Aufgaben</th>
+                    <th>Aktionen</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>@user.Email</td>
+                        <td>@(user.IsAdmin ? "Ja" : "Nein")</td>
+                        <td>@(user.LastLogin.HasValue ? user.LastLogin.Value.ToString("dd.MM.yyyy HH:mm") : "Nie")</td>
+                        <td>@(user.CompletedTasks.HasValue ? user.CompletedTasks.Value.ToString() : "0")</td>
+                        <td>
+                            <div class="table-actions">
+                                <a asp-page="./Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Bearbeiten</a>
+                                <a asp-page="./Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm">Löschen</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
