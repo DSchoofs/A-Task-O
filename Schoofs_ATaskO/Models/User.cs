@@ -9,6 +9,6 @@
         public string PasswordHash { get; set; } = "";
         public bool IsAdmin { get; set; }
         public DateTime? LastLogin { get; set; }
-        public int CompletedTasks { get; set; }
+        public int? CompletedTasks { get; set; }
     }
 }
