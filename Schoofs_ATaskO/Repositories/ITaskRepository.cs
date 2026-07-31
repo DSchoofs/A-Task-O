@@ -6,7 +6,7 @@ namespace Schoofs_ATaskO.Repositories
     {
         List<TaskItem> GetAllTasks();
         TaskItem? GetTaskById(int id);
-        int AddTask(TaskItem task);
+        bool AddTask(TaskItem task);
         bool UpdateTask(TaskItem task);
         bool DeleteTaskById(int id);
         string ErrorMessage { get; set; }

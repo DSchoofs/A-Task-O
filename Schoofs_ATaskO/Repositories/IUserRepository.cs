@@ -6,7 +6,7 @@ namespace Schoofs_ATaskO.Repositories
     {
         List<User> GetAllUsers();
         User? GetUserById(int id);
-        int AddUser(User user);
+        bool AddUser(User user);
         bool UpdateUser(User user);
         bool DeleteUserById(int id);
         string ErrorMessage { get; set; }

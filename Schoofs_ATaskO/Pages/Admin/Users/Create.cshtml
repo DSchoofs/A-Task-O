@@ -1,0 +1,56 @@
+﻿@page
+@model Schoofs_ATaskO.Pages.Admin.Users.CreateModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<h1>Neuen Benutzer anlegen</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model.ErrorMessage
+    </div>
+}
+
+<div class="form-container">
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="mb-3">
+            <label asp-for="InputUser.FirstName" class="form-label">Vorname</label>
+            <input asp-for="InputUser.FirstName" class="form-control" />
+            <span asp-validation-for="InputUser.FirstName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="InputUser.LastName" class="form-label">Nachname</label>
+            <input asp-for="InputUser.LastName" class="form-control" />
+            <span asp-validation-for="InputUser.LastName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="InputUser.Email" class="form-label">E-Mail</label>
+            <input asp-for="InputUser.Email" class="form-control" />
+            <span asp-validation-for="InputUser.Email" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PlainPassword" class="form-label">Passwort</label>
+            <input asp-for="PlainPassword" type="password" class="form-control" />
+            <span asp-validation-for="PlainPassword" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input asp-for="InputUser.IsAdmin" class="form-check-input" />
+            <label asp-for="InputUser.IsAdmin" class="form-check-label">Admin</label>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="InputUser.CompletedTasks" class="form-label">Abgeschlossene Aufgaben</label>
+            <input asp-for="InputUser.CompletedTasks" class="form-control" />
+            <span asp-validation-for="InputUser.CompletedTasks" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-success">Speichern</button>
+        <a asp-page="./UserManagement" class="btn btn-secondary">Abbrechen</a>
+    </form>
+</div>

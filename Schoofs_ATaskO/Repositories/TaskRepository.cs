@@ -63,7 +63,7 @@ namespace Schoofs_ATaskO.Repositories
             return null;
         }
 
-        public int AddTask(TaskItem task)
+        public bool AddTask(TaskItem task)
         {
             try
             {
@@ -71,8 +71,8 @@ namespace Schoofs_ATaskO.Repositories
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var taskId = conn.QuerySingle<int>(sqlcmd, new { task.Name, Interval = (int)task.Interval });
-                    return taskId;
+                    var rowsAffected = conn.Execute(sqlcmd, new { task.Name, Interval = (int)task.Interval });
+                    return rowsAffected > 0;
                 }
             }
             catch (SqlException sqlex)
@@ -83,7 +83,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
-            return 0;
+            return false;
         }
 
         public bool UpdateTask(TaskItem task)

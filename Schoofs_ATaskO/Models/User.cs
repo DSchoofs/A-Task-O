@@ -1,10 +1,21 @@
-﻿namespace Schoofs_ATaskO.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Schoofs_ATaskO.Models
 {
     public class User
     {
         public int UserId { get; set; }
+        [Required(ErrorMessage = "Der Vorname ist ein Pflichtfeld.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Der Vorname muss zwischen 2 und 100 Zeichen lang sein.")]
         public string FirstName { get; set; } = "";
+
+        [Required(ErrorMessage = "Der Nachname ist ein Pflichtfeld.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Der Nachname muss zwischen 2 und 100 Zeichen lang sein.")]
         public string LastName { get; set; } = "";
+
+        [Required(ErrorMessage = "Die E-Mail ist ein Pflichtfeld.")]
+        [EmailAddress(ErrorMessage = "Bitte eine gültige E-Mail-Adresse eingeben.")]
+        [StringLength(256, ErrorMessage = "Die E-Mail darf maximal 256 Zeichen lang sein.")]
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
         public bool IsAdmin { get; set; }

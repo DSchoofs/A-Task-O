@@ -6,7 +6,7 @@ namespace Schoofs_ATaskO.Repositories
     {
         List<Entry> GetAllEntries();
         Entry? GetEntryById(int id);
-        int AddEntry(Entry entry);
+        bool AddEntry(Entry entry);
         bool UpdateEntry(Entry entry);
         bool DeleteEntryById(int id);
         string ErrorMessage { get; set; }

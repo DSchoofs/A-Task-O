@@ -63,7 +63,7 @@ namespace Schoofs_ATaskO.Repositories
             return null;
         }
 
-        public int AddEntry(Entry entry)
+        public bool AddEntry(Entry entry)
         {
             try
             {
@@ -71,8 +71,8 @@ namespace Schoofs_ATaskO.Repositories
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var entryId = conn.QuerySingle<int>(sqlcmd, entry);
-                    return entryId;
+                    var rowsAffected = conn.Execute(sqlcmd, entry);
+                    return rowsAffected > 0;
                 }
             }
             catch (SqlException sqlex)
@@ -83,7 +83,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
-            return 0;
+            return false;
         }
 
         public bool UpdateEntry(Entry entry)
