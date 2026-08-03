@@ -78,7 +78,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = @"INSERT INTO Users (FirstName, LastName, Email, PasswordHash, PasswordSalt, IsAdmin, LastLogin, CompletedTasks) VALUES (@FirstName, @LastName, @Email, @PasswordHash, @PasswordSalt, @IsAdmin, @LastLogin, @CompletedTasks)";
+                sqlcmd = @"INSERT INTO Users (FirstName, LastName, Email, PasswordHash, PasswordSalt, IsAdmin) VALUES (@FirstName, @LastName, @Email, @PasswordHash, @PasswordSalt, @IsAdmin)";
 
                 using (var conn = new SqlConnection(_connectionString))
                 {
@@ -168,7 +168,23 @@ namespace Schoofs_ATaskO.Repositories
 
             return null;
         }
+        public bool HasAdminUser()
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
 
+                var sql = "SELECT COUNT(1) FROM Users WHERE IsAdmin = 1";
+                var adminCount = connection.ExecuteScalar<int>(sql);
+
+                return adminCount > 0;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return false;
+            }
+        }
     }
 
 }

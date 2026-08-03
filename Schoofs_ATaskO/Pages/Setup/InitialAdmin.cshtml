@@ -1,0 +1,60 @@
+﻿@page
+@model Schoofs_ATaskO.Pages.Setup.InitialAdminModel
+
+@{
+    ViewData["Title"] = "Ersten Administrator anlegen";
+}
+
+<div class="form-container">
+    <h1>Ersten Administrator anlegen</h1>
+    <p>Für die erste Einrichtung muss zunächst ein Administratorkonto erstellt werden.</p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    <form method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <table class="form-table">
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="Input.Email" class="form-label">E-Mail</label>
+                </td>
+                <td>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="Input.Password" class="form-label">Passwort</label>
+                </td>
+                <td>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="Input.ConfirmPassword" class="form-label">Passwort wiederholen</label>
+                </td>
+                <td>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </td>
+            </tr>
+        </table>
+
+        <div class="form-actions mt-3">
+            <button type="submit" class="btn btn-success">Administrator anlegen</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

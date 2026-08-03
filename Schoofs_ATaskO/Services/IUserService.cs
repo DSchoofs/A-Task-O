@@ -12,5 +12,6 @@ namespace Schoofs_ATaskO.Services
         bool UpdateUser(User user);
         bool DeleteUserById(int id);
         string ErrorMessage { get; }
+        bool HasAdminUser();
     }
 }

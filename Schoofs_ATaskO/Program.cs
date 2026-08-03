@@ -31,6 +31,7 @@ namespace Schoofs_ATaskO
             builder.Services.AddAuthorization();
 
             // Repos registrieren, damit sie in den Razor Pages verwendet werden können
+            builder.Services.AddScoped<ISetupService, SetupService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IEntryRepository, EntryRepository>();
@@ -47,6 +48,35 @@ namespace Schoofs_ATaskO
             // Authentifizierung und Autorisierung aktivieren
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Path.Value?.ToLowerInvariant();
+
+                var allowedPaths = new[]
+                {
+                    "/setup/initialadmin",
+                    "/css",
+                    "/js",
+                    "/lib",
+                    "/favicon.ico"
+                };
+
+                var isAllowedPath = allowedPaths.Any(p => path != null && path.StartsWith(p));
+
+                if (!isAllowedPath)
+                {
+                    var setupService = context.RequestServices.GetRequiredService<ISetupService>();
+
+                    if (setupService.IsInitialSetupRequired())
+                    {
+                        context.Response.Redirect("/Setup/InitialAdmin");
+                        return;
+                    }
+                }
+
+                await next();
+            });
 
             // Razor Pages aktivieren
             app.MapRazorPages();

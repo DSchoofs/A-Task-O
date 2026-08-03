@@ -1,0 +1,93 @@
+﻿@page "{id:int}"
+@model Schoofs_ATaskO.Pages.Admin.Users.EditModel
+
+@{
+    ViewData["Title"] = "Benutzer bearbeiten";
+}
+
+<div class="form-container">
+    <h1>Benutzer bearbeiten</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    <form method="post">
+        <input type="hidden" asp-for="InputUser.UserId" />
+
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <table class="form-table">
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="InputUser.FirstName" class="form-label">Vorname</label>
+                </td>
+                <td>
+                    <input asp-for="InputUser.FirstName" class="form-control" />
+                    <span asp-validation-for="InputUser.FirstName" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="InputUser.LastName" class="form-label">Nachname</label>
+                </td>
+                <td>
+                    <input asp-for="InputUser.LastName" class="form-control" />
+                    <span asp-validation-for="InputUser.LastName" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="InputUser.Email" class="form-label">E-Mail</label>
+                </td>
+                <td>
+                    <input asp-for="InputUser.Email" class="form-control" />
+                    <span asp-validation-for="InputUser.Email" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="InputUser.CompletedTasks" class="form-label">Erledigte Tasks</label>
+                </td>
+                <td>
+                    <input asp-for="InputUser.CompletedTasks" class="form-control" />
+                    <span asp-validation-for="InputUser.CompletedTasks" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="InputUser.LastLogin" class="form-label">Letzter Login</label>
+                </td>
+                <td>
+                    <input asp-for="InputUser.LastLogin" class="form-control" />
+                    <span asp-validation-for="InputUser.LastLogin" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="InputUser.IsAdmin" class="form-label">Administrator</label>
+                </td>
+                <td>
+                    <div class="form-check">
+                        <input asp-for="InputUser.IsAdmin" class="form-check-input" />
+                        <label asp-for="InputUser.IsAdmin" class="form-check-label">
+                            Benutzer hat Administratorrechte
+                        </label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <div class="form-actions mt-3">
+            <button type="submit" class="btn btn-success">Speichern</button>
+            <a asp-page="./UserManagement" class="btn btn-secondary">Abbrechen</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

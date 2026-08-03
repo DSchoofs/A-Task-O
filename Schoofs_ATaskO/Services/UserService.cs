@@ -18,6 +18,7 @@ namespace Schoofs_ATaskO.Services
 
         public bool CreateUser(User user, string plainPassword)
         {
+            ErrorMessage = string.Empty;
             try
             {
                 var existingUser = _userRepository.GetUserByEmail(user.Email);
@@ -51,6 +52,7 @@ namespace Schoofs_ATaskO.Services
 
         public User? AuthenticateUser(string email, string plainPassword)
         {
+            ErrorMessage = string.Empty;
             try
             {
                 var user = _userRepository.GetUserByEmail(email);
@@ -83,57 +85,115 @@ namespace Schoofs_ATaskO.Services
 
         public User? GetUserById(int id)
         {
-            var user = _userRepository.GetUserById(id);
-
-            if (user == null && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+            ErrorMessage = string.Empty;
+            try
             {
-                ErrorMessage = _userRepository.ErrorMessage;
-            }
+                var user = _userRepository.GetUserById(id);
 
-            return user;
+                if (user == null && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+                {
+                    ErrorMessage = _userRepository.ErrorMessage;
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return null;
+            }
         }
 
         public User? GetUserByEmail(string email)
         {
-            var user = _userRepository.GetUserByEmail(email);
-
-            if (user == null && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+            ErrorMessage = string.Empty;
+            try
             {
-                ErrorMessage = _userRepository.ErrorMessage;
-            }
+                var user = _userRepository.GetUserByEmail(email);
 
-            return user;
+                if (user == null && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+                {
+                    ErrorMessage = _userRepository.ErrorMessage;
+                }
+
+                return user;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return null;
+            }
         }
 
         public List<User> GetAllUsers()
         {
-            var users = _userRepository.GetAllUsers();
-
-            if (users.Count == 0 && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+            ErrorMessage = string.Empty;
+            try
             {
-                ErrorMessage = _userRepository.ErrorMessage;
-            }
+                var users = _userRepository.GetAllUsers();
 
-            return users;
+                if (users.Count == 0 && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+                {
+                    ErrorMessage = _userRepository.ErrorMessage;
+                }
+
+                return users;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return new List<User>();
+            }
         }
 
         public bool UpdateUser(User user)
         {
-            var result = _userRepository.UpdateUser(user);
-
-            if (!result)
+            ErrorMessage = string.Empty;
+            try
             {
-                ErrorMessage = _userRepository.ErrorMessage;
-            }
+                var result = _userRepository.UpdateUser(user);
 
-            return result;
+                if (!result)
+                {
+                    ErrorMessage = _userRepository.ErrorMessage;
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return false;
+            }
         }
 
         public bool DeleteUserById(int id)
         {
-            var result = _userRepository.DeleteUserById(id);
+            ErrorMessage = string.Empty;
+            try
+            {
+                var result = _userRepository.DeleteUserById(id);
 
-            if (!result)
+                if (!result)
+                {
+                    ErrorMessage = _userRepository.ErrorMessage;
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return false;
+            }
+        }
+        public bool HasAdminUser()
+        {
+            ErrorMessage = string.Empty;
+
+            var result = _userRepository.HasAdminUser();
+
+            if (!result && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
             {
                 ErrorMessage = _userRepository.ErrorMessage;
             }

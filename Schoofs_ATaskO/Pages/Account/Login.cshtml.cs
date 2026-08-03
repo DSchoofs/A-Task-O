@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.Services;
-using Schoofs_ATaskO.Viewmodels;
+using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Pages.Account
 {

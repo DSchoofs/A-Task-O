@@ -11,5 +11,6 @@ namespace Schoofs_ATaskO.Repositories
         bool DeleteUserById(int id);
         string ErrorMessage { get; set; }
         User? GetUserByEmail(string email);
+        bool HasAdminUser();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Schoofs_ATaskO.Viewmodels
+namespace Schoofs_ATaskO.ViewModels
 {
     public class LoginViewModel
     {
@@ -9,6 +9,7 @@ namespace Schoofs_ATaskO.Viewmodels
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Bitte ein Passwort eingeben.")]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
     }
 }

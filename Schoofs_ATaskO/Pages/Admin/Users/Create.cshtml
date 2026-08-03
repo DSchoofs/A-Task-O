@@ -1,21 +1,20 @@
 ﻿@page
 @model Schoofs_ATaskO.Pages.Admin.Users.CreateModel
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    ViewData["Title"] = "Neuen Benutzer anlegen";
-}
-
-<h1>Neuen Benutzer anlegen</h1>
-
-@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
-{
-    <div class="alert alert-danger">
-        @Model.ErrorMessage
-    </div>
+    ViewData["Title"] = "Benutzer anlegen";
 }
 
 <div class="form-container">
+    <h1>Neuen Benutzer anlegen</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+
     <form method="post">
         <div asp-validation-summary="All" class="text-danger"></div>
 
@@ -24,57 +23,60 @@
                 <td class="form-label-cell">
                     <label asp-for="InputUser.FirstName" class="form-label">Vorname</label>
                 </td>
-                <td class="form-input-cell">
+                <td>
                     <input asp-for="InputUser.FirstName" class="form-control" />
                     <span asp-validation-for="InputUser.FirstName" class="text-danger"></span>
                 </td>
             </tr>
-
             <tr>
                 <td class="form-label-cell">
                     <label asp-for="InputUser.LastName" class="form-label">Nachname</label>
                 </td>
-                <td class="form-input-cell">
+                <td>
                     <input asp-for="InputUser.LastName" class="form-control" />
                     <span asp-validation-for="InputUser.LastName" class="text-danger"></span>
                 </td>
             </tr>
-
             <tr>
                 <td class="form-label-cell">
                     <label asp-for="InputUser.Email" class="form-label">E-Mail</label>
                 </td>
-                <td class="form-input-cell">
+                <td>
                     <input asp-for="InputUser.Email" class="form-control" />
                     <span asp-validation-for="InputUser.Email" class="text-danger"></span>
                 </td>
             </tr>
-
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="PlainPassword" class="form-label">Passwort</label>
+                    <label asp-for="InputUser.PlainPassword" class="form-label">Passwort</label>
                 </td>
-                <td class="form-input-cell">
-                    <input asp-for="PlainPassword" type="password" class="form-control" />
-                    <span asp-validation-for="PlainPassword" class="text-danger"></span>
+                <td>
+                    <input asp-for="InputUser.PlainPassword" class="form-control" />
+                    <span asp-validation-for="InputUser.PlainPassword" class="text-danger"></span>
                 </td>
             </tr>
-
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="InputUser.IsAdmin" class="form-label">Admin</label>
+                    <label asp-for="InputUser.IsAdmin" class="form-label">Administrator</label>
                 </td>
-                <td class="form-input-cell">
-                    <input asp-for="InputUser.IsAdmin" class="form-check-input" />
+                <td>
+                    <div class="form-check">
+                        <input asp-for="InputUser.IsAdmin" class="form-check-input" />
+                        <label asp-for="InputUser.IsAdmin" class="form-check-label">
+                            Benutzer hat Administratorrechte
+                        </label>
+                    </div>
                 </td>
             </tr>
         </table>
 
-        <input asp-for="InputUser.CompletedTasks" value="0" type="hidden" />
-
-        <div class="form-actions">
+        <div class="form-actions mt-3">
             <button type="submit" class="btn btn-success">Speichern</button>
             <a asp-page="./UserManagement" class="btn btn-secondary">Abbrechen</a>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

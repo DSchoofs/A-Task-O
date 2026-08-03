@@ -1,0 +1,50 @@
+﻿@page "{id:int}"
+@model Schoofs_ATaskO.Pages.Admin.Users.DeleteModel
+
+@{
+    ViewData["Title"] = "Benutzer löschen";
+}
+
+<div class="form-container">
+    <h1>Benutzer löschen</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    <div class="alert alert-warning">
+        Möchtest du diesen Benutzer wirklich löschen?
+    </div>
+
+    <table class="form-table">
+        <tr>
+            <td class="form-label-cell"><strong>Vorname</strong></td>
+            <td>@Model.UserToDelete.FirstName</td>
+        </tr>
+        <tr>
+            <td class="form-label-cell"><strong>Nachname</strong></td>
+            <td>@Model.UserToDelete.LastName</td>
+        </tr>
+        <tr>
+            <td class="form-label-cell"><strong>E-Mail</strong></td>
+            <td>@Model.UserToDelete.Email</td>
+        </tr>
+        <tr>
+            <td class="form-label-cell"><strong>Administrator</strong></td>
+            <td>@(Model.UserToDelete.IsAdmin ? "Ja" : "Nein")</td>
+        </tr>
+        <tr>
+            <td class="form-label-cell"><strong>Erledigte Tasks</strong></td>
+            <td>@Model.UserToDelete.CompletedTasks</td>
+        </tr>
+    </table>
+
+    <form method="post" class="mt-3">
+        <input type="hidden" asp-for="UserToDelete.UserId" />
+        <button type="submit" class="btn btn-danger">Löschen</button>
+        <a asp-page="./UserManagement" class="btn btn-secondary">Abbrechen</a>
+    </form>
+</div>
