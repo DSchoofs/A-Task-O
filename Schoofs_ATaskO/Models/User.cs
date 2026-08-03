@@ -18,6 +18,7 @@ namespace Schoofs_ATaskO.Models
         [StringLength(256, ErrorMessage = "Die E-Mail darf maximal 256 Zeichen lang sein.")]
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
+        public string PasswordSalt { get; set; } = "";
         public bool IsAdmin { get; set; }
         public DateTime? LastLogin { get; set; }
         public int? CompletedTasks { get; set; }

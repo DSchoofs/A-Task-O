@@ -1,4 +1,5 @@
 using Schoofs_ATaskO.Repositories;
+using Schoofs_ATaskO.Settings;
 
 namespace Schoofs_ATaskO
 {
@@ -11,6 +12,12 @@ namespace Schoofs_ATaskO
             //Razor Pages registrieren (macht es erst zu einem Razor Projekt)
             builder.Services.AddRazorPages();
 
+            builder.Services
+                .AddOptions<SecuritySettings>()
+                .Bind(builder.Configuration.GetSection(SecuritySettings.SectionName))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
             // Repos registrieren, damit sie in den Razor Pages verwendet werden können
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
@@ -22,7 +29,6 @@ namespace Schoofs_ATaskO
 
             // nutzt den Ordner wwwroot in dem z.B. das css liegt oder images etc
             app.UseStaticFiles();
-
 
             // Razor Pages aktivieren
             app.MapRazorPages();
