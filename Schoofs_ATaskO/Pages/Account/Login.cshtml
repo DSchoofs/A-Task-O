@@ -1,0 +1,51 @@
+﻿@page
+@model Schoofs_ATaskO.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<h1>Anmelden</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model.ErrorMessage
+    </div>
+}
+
+<div class="form-container">
+    <form method="post">
+        <input type="hidden" asp-for="ReturnUrl" />
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <table class="form-table">
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="Input.Email" class="form-label">E-Mail</label>
+                </td>
+                <td class="form-input-cell">
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="form-label-cell">
+                    <label asp-for="Input.Password" class="form-label">Passwort</label>
+                </td>
+                <td class="form-input-cell">
+                    <input asp-for="Input.Password" type="password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </td>
+            </tr>
+        </table>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">Login</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

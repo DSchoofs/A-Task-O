@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.Settings;
 
@@ -18,6 +19,16 @@ namespace Schoofs_ATaskO
                 .ValidateDataAnnotations()
                 .ValidateOnStart();
 
+            // Basis für die Authentifizierung und Autorisierung registrieren, damit man sich einloggen kann
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+            builder.Services.AddAuthorization();
+
             // Repos registrieren, damit sie in den Razor Pages verwendet werden können
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
@@ -29,6 +40,10 @@ namespace Schoofs_ATaskO
 
             // nutzt den Ordner wwwroot in dem z.B. das css liegt oder images etc
             app.UseStaticFiles();
+
+            // Authentifizierung und Autorisierung aktivieren
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             // Razor Pages aktivieren
             app.MapRazorPages();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Repositories;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 
 namespace Schoofs_ATaskO.Pages.Admin.Users
 {
+    [Authorize(Roles = "Admin")]
     public class UserManagementModel : PageModel
     {
         private readonly IUserRepository _userRepository;

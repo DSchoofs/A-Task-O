@@ -80,7 +80,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 var pepper = _configuration["PasswordPepper"];
                 var salt = GenerateSalt();
-                var hash = HashPassword(user.PasswordHash, salt, pepper);
+                var hash = HashPassword(user.PasswordHash, salt);
 
                 user.PasswordSalt = salt;
                 user.PasswordHash = hash;
@@ -151,6 +151,29 @@ namespace Schoofs_ATaskO.Repositories
             }
             return false;
         }
+
+        public User? GetUserByEmail(string email)
+        {
+            try
+            {
+                sqlcmd = @"SELECT UserId, FirstName, LastName, Email, PasswordHash, PasswordSalt, IsAdmin, LastLogin, CompletedTasks FROM Users WHERE Email = @Email";
+                using var conn = new SqlConnection(_connectionString);
+                conn.Open();
+
+                return conn.QuerySingleOrDefault<User>(sqlcmd, new { Email = email });
+            }
+            catch (SqlException sqlex)
+            {
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+            }
+
+            return null;
+        }
+
         private string HashPassword(string password, string saltBase64)
         {
             var saltBytes = Convert.FromBase64String(saltBase64);
