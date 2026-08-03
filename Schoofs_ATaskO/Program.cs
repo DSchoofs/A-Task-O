@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Schoofs_ATaskO.Repositories;
+using Schoofs_ATaskO.Services;
 using Schoofs_ATaskO.Settings;
 
 namespace Schoofs_ATaskO
@@ -33,6 +34,8 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
             builder.Services.AddScoped<IEntryRepository, EntryRepository>();
+            builder.Services.AddScoped<IPasswordService, PasswordService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             var app = builder.Build();
 

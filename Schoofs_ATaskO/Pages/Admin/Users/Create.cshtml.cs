@@ -1,50 +1,52 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Schoofs_ATaskO.Models;
-using Schoofs_ATaskO.Repositories;
+using Schoofs_ATaskO.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace Schoofs_ATaskO.Pages.Admin.Users
 {
     public class CreateModel : PageModel
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
         [BindProperty]
         public User InputUser { get; set; } = new();
 
         [BindProperty]
+        [Required(ErrorMessage = "Bitte ein Passwort eingeben.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Das Passwort muss mindestens 6 Zeichen lang sein.")]
         public string PlainPassword { get; set; } = string.Empty;
 
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public CreateModel(IUserRepository userRepository)
+        public CreateModel(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
 
         public void OnGet()
         {
+            InputUser = new User
+            {
+                IsAdmin = false,
+                CompletedTasks = 0,
+                LastLogin = null
+            };
         }
 
         public IActionResult OnPost()
         {
-            if (string.IsNullOrWhiteSpace(PlainPassword))
-            {
-                ModelState.AddModelError(string.Empty, "Bitte ein Passwort eingeben.");
-            }
-
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            InputUser.PasswordHash = PlainPassword;
-
-            var result = _userRepository.AddUser(InputUser);
+            var result = _userService.CreateUser(InputUser, PlainPassword);
 
             if (!result)
             {
-                ErrorMessage = _userRepository.ErrorMessage;
+                ErrorMessage = _userService.ErrorMessage;
                 return Page();
             }
 

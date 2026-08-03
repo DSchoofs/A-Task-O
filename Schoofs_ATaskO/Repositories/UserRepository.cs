@@ -78,13 +78,6 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                var pepper = _configuration["PasswordPepper"];
-                var salt = GenerateSalt();
-                var hash = HashPassword(user.PasswordHash, salt);
-
-                user.PasswordSalt = salt;
-                user.PasswordHash = hash;
-
                 sqlcmd = @"INSERT INTO Users (FirstName, LastName, Email, PasswordHash, PasswordSalt, IsAdmin, LastLogin, CompletedTasks) VALUES (@FirstName, @LastName, @Email, @PasswordHash, @PasswordSalt, @IsAdmin, @LastLogin, @CompletedTasks)";
 
                 using (var conn = new SqlConnection(_connectionString))
@@ -157,10 +150,12 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 sqlcmd = @"SELECT UserId, FirstName, LastName, Email, PasswordHash, PasswordSalt, IsAdmin, LastLogin, CompletedTasks FROM Users WHERE Email = @Email";
-                using var conn = new SqlConnection(_connectionString);
-                conn.Open();
-
-                return conn.QuerySingleOrDefault<User>(sqlcmd, new { Email = email });
+                using (var conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var user = conn.QuerySingleOrDefault<User>(sqlcmd, new { Email = email });
+                    return user;
+                }
             }
             catch (SqlException sqlex)
             {
@@ -174,42 +169,6 @@ namespace Schoofs_ATaskO.Repositories
             return null;
         }
 
-        private string HashPassword(string password, string saltBase64)
-        {
-            var saltBytes = Convert.FromBase64String(saltBase64);
-            var passwordWithPepper = password + _securitySettings.PasswordPepper;
-
-            var hashBytes = KeyDerivation.Pbkdf2(password: passwordWithPepper, salt: saltBytes, prf: KeyDerivationPrf.HMACSHA256, iterationCount: 100000, numBytesRequested: 32);
-
-            return Convert.ToBase64String(hashBytes);
-        }
-
-        private string GenerateSalt()
-        {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-        }
-        public bool ValidatePassword(User user, string password)
-        {
-            try
-            {
-                var passwordWithPepper = password + _securitySettings.PasswordPepper;
-                var saltBytes = Convert.FromBase64String(user.PasswordSalt);
-
-                var hashBytes = KeyDerivation.Pbkdf2(
-                    password: passwordWithPepper,
-                    salt: saltBytes,
-                    prf: KeyDerivationPrf.HMACSHA256,
-                    iterationCount: 100000,
-                    numBytesRequested: 32);
-
-                var computedHash = Convert.ToBase64String(hashBytes);
-                return computedHash == user.PasswordHash;
-            }
-            catch
-            {
-                return false;
-            }
-        }
     }
 
 }

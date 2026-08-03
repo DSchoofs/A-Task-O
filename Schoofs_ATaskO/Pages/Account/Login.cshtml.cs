@@ -5,24 +5,26 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Schoofs_ATaskO.Repositories;
+using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.Viewmodels;
 
 namespace Schoofs_ATaskO.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
         [BindProperty]
-        public InputModel Input { get; set; } = new();
+        public LoginViewModel Input { get; set; } = new();
 
         [BindProperty(SupportsGet = true)]
         public string? ReturnUrl { get; set; }
 
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public LoginModel(IUserRepository userRepository)
+        public LoginModel(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
 
         public void OnGet()
@@ -36,11 +38,11 @@ namespace Schoofs_ATaskO.Pages.Account
                 return Page();
             }
 
-            var user = _userRepository.GetUserByEmail(Input.Email);
+            var user = _userService.AuthenticateUser(Input.Email, Input.Password);
 
-            if (user == null || !_userRepository.ValidatePassword(user, Input.Password))
+            if (user == null)
             {
-                ErrorMessage = "Ungültige E-Mail oder ungültiges Passwort.";
+                ErrorMessage = _userService.ErrorMessage;
                 return Page();
             }
 
@@ -75,14 +77,6 @@ namespace Schoofs_ATaskO.Pages.Account
             return RedirectToPage("/Index");
         }
 
-        public class InputModel
-        {
-            [Required(ErrorMessage = "Bitte eine E-Mail eingeben.")]
-            [EmailAddress(ErrorMessage = "Bitte eine gültige E-Mail-Adresse eingeben.")]
-            public string Email { get; set; } = string.Empty;
-
-            [Required(ErrorMessage = "Bitte ein Passwort eingeben.")]
-            public string Password { get; set; } = string.Empty;
-        }
+       
     }
 }

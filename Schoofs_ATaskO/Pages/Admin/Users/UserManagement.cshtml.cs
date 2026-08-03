@@ -1,29 +1,27 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Schoofs_ATaskO.Models;
-using Schoofs_ATaskO.Repositories;
-using System;
-using System.Collections.Generic;
+using Schoofs_ATaskO.Services;
 
 namespace Schoofs_ATaskO.Pages.Admin.Users
 {
     [Authorize(Roles = "Admin")]
     public class UserManagementModel : PageModel
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
         public List<User> Users { get; set; } = new();
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public UserManagementModel(IUserRepository userRepository)
+        public UserManagementModel(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
 
         public void OnGet()
         {
-            Users = _userRepository.GetAllUsers();
-            ErrorMessage = _userRepository.ErrorMessage;
+            Users = _userService.GetAllUsers();
+            ErrorMessage = _userService.ErrorMessage;
         }
     }
 }

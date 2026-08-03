@@ -10,5 +10,6 @@ namespace Schoofs_ATaskO.Repositories
         bool UpdateUser(User user);
         bool DeleteUserById(int id);
         string ErrorMessage { get; set; }
+        User? GetUserByEmail(string email);
     }
 }
