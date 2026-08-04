@@ -235,7 +235,7 @@ body {
     }
 }
 .form-container {
-    max-width: 760px;
+    width: fit-content;
     background: #fff;
     padding: 1.5rem;
     border-radius: 14px;

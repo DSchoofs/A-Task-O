@@ -4,10 +4,14 @@
     ViewData["Title"] = "Dashboard";
 }
 
-
-        <h1>Dashboard</h1>
-        
-@if (User.IsInRole("Admin"))
-{
-    <a asp-page="/Admin/Tasks/Create" class="save-button">Aufgabe anlegen</a>
-}
+<div class="page-container">
+    <div class="form-container wide-container">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+        </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-page="/Admin/Tasks/Create" class="save-button">Aufgabe anlegen</a>
+        }
+    </div>
+</div>

@@ -1,5 +1,5 @@
 ﻿@page
-@model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel
+@model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel;
 @{
     ViewData["Title"] = "Aufgabenverwaltung";
 }
@@ -22,30 +22,32 @@
         }
         else
         {
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Aufgabenname</th>
-                        <th>Intervall</th>
-                        <th>Aktionen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var task in Model.Tasks)
-                    {
+            <div class="table-responsive">
+                <table class="table table-striped table-hover table-bordered align-middle">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@task.TaskId</td>
-                            <td>@task.TaskName</td>
-                            <td>@task.TaskInterval.GetDisplayName()</td>
-                            <td class="action-buttons">
-                                <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.TaskId" class="edit-button">Bearbeiten</a>
-                                <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.TaskId" class="delete-button">Löschen</a>
-                            </td>
+                            <th>ID</th>
+                            <th>Aufgabenname</th>
+                            <th>Intervall</th>
+                            <th>Aktionen</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model.Tasks)
+                        {
+                            <tr>
+                                <td>@task.TaskId</td>
+                                <td>@task.TaskName</td>
+                                <td>@task.TaskInterval.GetDisplayName()</td>
+                                <td class="table-actions">
+                                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.TaskId" class="btn btn-primary btn-sm">Bearbeiten</a>
+                                    <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.TaskId" class="btn btn-danger btn-sm">Löschen</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
     </div>
-</div>
+    </div>
