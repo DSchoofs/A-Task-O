@@ -18,9 +18,8 @@ namespace Schoofs_ATaskO.ViewModels
         public string Email { get; set; } = string.Empty;
 
         public bool IsAdmin { get; set; }
-
+        [Range(0, int.MaxValue, ErrorMessage = "Erledigte Tasks dürfen nicht negativ sein.")]
         public int? CompletedTasks { get; set; }
 
-        public DateTime? LastLogin { get; set; }
     }
 }

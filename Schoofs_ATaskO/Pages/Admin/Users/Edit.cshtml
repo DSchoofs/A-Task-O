@@ -53,19 +53,11 @@
                     <label asp-for="InputUser.CompletedTasks" class="form-label">Erledigte Tasks</label>
                 </td>
                 <td>
-                    <input asp-for="InputUser.CompletedTasks" class="form-control" />
+                    <input asp-for="InputUser.CompletedTasks" type="number" class="form-control" min="0"/>
                     <span asp-validation-for="InputUser.CompletedTasks" class="text-danger"></span>
                 </td>
             </tr>
-            <tr>
-                <td class="form-label-cell">
-                    <label asp-for="InputUser.LastLogin" class="form-label">Letzter Login</label>
-                </td>
-                <td>
-                    <input asp-for="InputUser.LastLogin" class="form-control" />
-                    <span asp-validation-for="InputUser.LastLogin" class="text-danger"></span>
-                </td>
-            </tr>
+            
             <tr>
                 <td class="form-label-cell">
                     <label asp-for="InputUser.IsAdmin" class="form-label">Administrator</label>
