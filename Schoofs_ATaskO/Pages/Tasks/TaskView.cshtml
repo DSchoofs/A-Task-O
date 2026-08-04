@@ -1,0 +1,34 @@
+﻿@page "{id:int}"
+@model Schoofs_ATaskO.Pages.Tasks.TaskViewModel
+@{
+    ViewData["Title"] = Model.TaskItem?.TaskName ?? "Aufgabe";
+}
+
+<div class="page-container">
+    <div class="form-container wide-container">
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="error-message">@Model.ErrorMessage</div>
+        }
+        else if (Model.TaskItem != null)
+        {
+            <h1>@Model.TaskItem.TaskName</h1>
+
+            <div class="task-details">
+                <p><strong>Aufgaben-ID:</strong> @Model.TaskItem.TaskId</p>
+                <p><strong>Intervall:</strong> @Model.TaskItem.TaskInterval</p>
+            </div>
+
+            <div class="form-actions">
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@Model.TaskItem.TaskId" class="edit-button">
+                        Aufgabe bearbeiten
+                    </a>
+                }
+
+                <a asp-page="/Index" class="cancel-button">Zurück zum Dashboard</a>
+            </div>
+        }
+    </div>
+</div>

@@ -1,4 +1,16 @@
-﻿<!doctype html>
+﻿@inject Schoofs_ATaskO.Services.ITaskService TaskService
+
+@{
+    var tasks = new List<Schoofs_ATaskO.Models.TaskItem>();
+
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        tasks = TaskService.GetAllTasks();
+    }
+}
+
+
+<!doctype html>
 <html lang="de">
 <head>
     <meta charset="utf-8" />
@@ -42,6 +54,17 @@
                     {
                         <a asp-page="/Admin/Users/UserManagement">Benutzerverwaltung</a>
                         <a asp-page="/Admin/Tasks/TaskManagement">Aufgabenverwaltung</a>
+                    }
+                    @if (tasks.Count > 0)
+                    {
+                        <div class="sidebar-section-title">Aufgaben</div>
+
+                        @foreach (var task in tasks)
+                        {
+                            <a asp-page="/Tasks/TaskView" asp-route-id="@task.TaskId">
+                                @task.TaskName
+                            </a>
+                        }
                     }
                 }
                 else
