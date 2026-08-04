@@ -183,6 +183,35 @@ namespace Schoofs_ATaskO.Repositories
                 return false;
             }
         }
+        public bool UpdateLastLogin(int userId, DateTime lastLogin)
+        {
+            try
+            {
+                sqlcmd = "UPDATE Users SET LastLogin = @LastLogin WHERE UserId = @UserId";
+
+                using (var conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var rowsAffected = conn.Execute(sqlcmd, new
+                    {
+                        UserId = userId,
+                        LastLogin = lastLogin
+                    });
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+            }
+
+            return false;
+        }
     }
 
 }

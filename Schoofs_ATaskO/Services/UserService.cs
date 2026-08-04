@@ -74,6 +74,17 @@ namespace Schoofs_ATaskO.Services
                     return null;
                 }
 
+                var now = DateTime.Now;
+                var lastLoginUpdated = _userRepository.UpdateLastLogin(user.UserId, now);
+
+                if (!lastLoginUpdated && !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage))
+                {
+                    ErrorMessage = _userRepository.ErrorMessage;
+                    return null;
+                }
+
+                user.LastLogin = now;
+
                 return user;
             }
             catch (Exception ex)

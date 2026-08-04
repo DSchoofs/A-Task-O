@@ -12,5 +12,6 @@ namespace Schoofs_ATaskO.Repositories
         string ErrorMessage { get; set; }
         User? GetUserByEmail(string email);
         bool HasAdminUser();
+        bool UpdateLastLogin(int userId, DateTime lastLogin);
     }
 }
