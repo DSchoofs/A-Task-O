@@ -1,0 +1,28 @@
+﻿@page "{id:int}"
+@model Schoofs_ATaskO.Pages.Admin.Tasks.DeleteModel
+@{
+    ViewData["Title"] = "Aufgabe löschen";
+}
+
+<div class="page-container">
+    <div class="form-container">
+        <h1>Aufgabe löschen</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="error-message">@Model.ErrorMessage</div>
+        }
+
+        @if (Model.TaskItem != null)
+        {
+            <p>Möchtest du die Aufgabe <strong>@Model.TaskItem.TaskName</strong> wirklich löschen?</p>
+
+            <form method="post">
+                <div class="form-actions">
+                    <button type="submit" class="delete-button">Löschen</button>
+                    <a asp-page="/Admin/Tasks/TaskManagement" class="cancel-button">Abbrechen</a>
+                </div>
+            </form>
+        }
+    </div>
+</div>
