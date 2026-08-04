@@ -51,7 +51,7 @@ namespace Schoofs_ATaskO
 
             app.Use(async (context, next) =>
             {
-                var path = context.Request.Path.Value?.ToLowerInvariant();
+                var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
 
                 var allowedPaths = new[]
                 {
@@ -59,7 +59,8 @@ namespace Schoofs_ATaskO
                     "/css",
                     "/js",
                     "/lib",
-                    "/favicon.ico"
+                    "/favicon.ico",
+                    "/account/accessdenied"
                 };
 
                 var isAllowedPath = allowedPaths.Any(p => path != null && path.StartsWith(p));

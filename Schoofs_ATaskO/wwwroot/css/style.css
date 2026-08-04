@@ -67,6 +67,19 @@ body {
         background-color: #ff6b5d;
     }
 
+.login-button {
+    display: inline-block;
+    padding: 0.6rem 1rem;
+    background-color: #1b5e20;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+    .login-button:hover {
+        background-color: #2e7d32;
+    }
+
 .layout {
     display: flex;
     min-height: calc(100vh - 80px - 52px);

@@ -19,18 +19,35 @@
         </div>
 
         <div class="topbar-right">
-            <form method="post" asp-page="/Account/Logout">
-                <button type="submit" class="logout-button">Logout</button>
-            </form>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form method="post" asp-page="/Account/Logout">
+                    <button type="submit" class="logout-button">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a asp-page="/Account/Login" class="login-button">Login</a>
+            }
         </div>
     </header>
 
     <div class="layout">
         <aside class="sidebar">
             <nav class="sidebar-nav">
-                <a asp-page="/Index">Dashboard</a>
-                <a asp-page="/Login">Login</a>
-                <a asp-page="/Admin/Users/UserManagement">Benutzerverwaltung</a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-page="/Index">Dashboard</a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-page="/Admin/Users/UserManagement">Benutzerverwaltung</a>
+                    }
+                }
+                else
+                {
+                    <a asp-page="/Account/Login">Login</a>
+                }
             </nav>
         </aside>
 
