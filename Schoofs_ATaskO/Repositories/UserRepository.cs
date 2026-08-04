@@ -1,10 +1,8 @@
 ﻿using Dapper;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Settings;
-using System.Security.Cryptography;
 
 namespace Schoofs_ATaskO.Repositories
 {
@@ -55,7 +53,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 User? user = null;
-                sqlcmd = "SELECT UserId, FirstName, LastName, Email, PasswordHash, IsAdmin, LastLogin, CompletedTasks FROM Users WHERE UserId = @Id";
+                sqlcmd = "SELECT UserId, FirstName, LastName, Email, PasswordHash, PasswordSalt, IsAdmin, LastLogin, CompletedTasks FROM Users WHERE UserId = @Id";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
