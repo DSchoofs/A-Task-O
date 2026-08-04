@@ -7,8 +7,8 @@ namespace Schoofs_ATaskO.Repositories
     public class TaskRepository : ITaskRepository
     {
         private readonly string _connectionString;
-        public string sqlcmd;
-        public string ErrorMessage { get; set; }
+        public string sqlcmd = string.Empty;
+        public string ErrorMessage { get; set; } = string.Empty;
 
         public TaskRepository(IConfiguration configuration)
         {

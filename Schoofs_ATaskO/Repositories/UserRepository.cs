@@ -11,8 +11,8 @@ namespace Schoofs_ATaskO.Repositories
         private readonly SecuritySettings _securitySettings;
         private readonly IConfiguration _configuration;
         private readonly string _connectionString;
-        public string sqlcmd;
-        public string ErrorMessage { get; set; }
+        public string sqlcmd = string.Empty;
+        public string ErrorMessage { get; set; } = string.Empty;
         public UserRepository(IConfiguration configuration, IOptions<SecuritySettings> securityOptions)
         {
             _securitySettings = securityOptions.Value;
