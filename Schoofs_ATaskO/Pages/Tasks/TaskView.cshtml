@@ -16,7 +16,7 @@
 
             <div class="task-details">
                 <p><strong>Aufgaben-ID:</strong> @Model.TaskItem.TaskId</p>
-                <p><strong>Intervall:</strong> @Model.TaskItem.TaskInterval</p>
+                <p><strong>Intervall:</strong> @Model.TaskItem.TaskInterval.GetDisplayName()</p>
             </div>
 
             <div class="form-actions">

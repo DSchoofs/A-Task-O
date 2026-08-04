@@ -37,7 +37,7 @@
                         <tr>
                             <td>@task.TaskId</td>
                             <td>@task.TaskName</td>
-                            <td>@task.TaskInterval</td>
+                            <td>@task.TaskInterval.GetDisplayName()</td>
                             <td class="action-buttons">
                                 <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.TaskId" class="edit-button">Bearbeiten</a>
                                 <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.TaskId" class="delete-button">Löschen</a>
