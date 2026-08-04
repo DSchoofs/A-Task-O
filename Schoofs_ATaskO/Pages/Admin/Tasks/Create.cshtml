@@ -1,0 +1,44 @@
+﻿@page
+@model Schoofs_ATaskO.Pages.Admin.Tasks.CreateModel
+@using Schoofs_ATaskO.Models
+@{
+    ViewData["Title"] = "Aufgabe erstellen";
+}
+
+<div class="page-container">
+    <div class="form-container">
+        <h1>Neue Aufgabe erstellen</h1>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="error-message">@Model.ErrorMessage</div>
+        }
+
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="Input.TaskName"></label>
+                <input asp-for="Input.TaskName" class="form-input" />
+                <span asp-validation-for="Input.TaskName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Input.TaskInterval"></label>
+                <select asp-for="Input.TaskInterval"
+                        asp-items="Html.GetEnumSelectList<TaskInterval>()"
+                        class="form-input">
+                    <option value="">Bitte wählen</option>
+                </select>
+                <span asp-validation-for="Input.TaskInterval" class="text-danger"></span>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="save-button">Speichern</button>
+                <a asp-page="/Index" class="cancel-button">Abbrechen</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

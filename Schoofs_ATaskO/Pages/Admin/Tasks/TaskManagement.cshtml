@@ -1,0 +1,52 @@
+﻿@page
+@model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel
+@using Schoofs_ATaskO.Models
+@{
+    ViewData["Title"] = "Aufgabenverwaltung";
+}
+
+<div class="page-container">
+    <div class="form-container wide-container">
+        <div class="page-header">
+            <h1>Aufgabenverwaltung</h1>
+            <a asp-page="/Admin/Tasks/Create" class="save-button">Neue Aufgabe anlegen</a>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="error-message">@Model.ErrorMessage</div>
+        }
+
+        @if (Model.Tasks.Count == 0)
+        {
+            <p>Es sind aktuell keine Aufgaben vorhanden.</p>
+        }
+        else
+        {
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Aufgabenname</th>
+                        <th>Intervall</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in Model.Tasks)
+                    {
+                        <tr>
+                            <td>@task.TaskId</td>
+                            <td>@task.TaskName</td>
+                            <td>@task.TaskInterval</td>
+                            <td class="action-buttons">
+                                <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.TaskId" class="edit-button">Bearbeiten</a>
+                                <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.TaskId" class="delete-button">Löschen</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

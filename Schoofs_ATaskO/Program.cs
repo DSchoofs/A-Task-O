@@ -37,6 +37,7 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IEntryRepository, EntryRepository>();
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ITaskService, TaskService>();
 
             var app = builder.Build();
 

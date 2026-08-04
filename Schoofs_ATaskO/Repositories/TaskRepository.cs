@@ -20,7 +20,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 List<TaskItem> tasks = new List<TaskItem>();
-                sqlcmd = "SELECT TaskId, Name, Interval FROM Tasks";
+                sqlcmd = "SELECT TaskId, TaskName, TaskInterval FROM Tasks";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -44,7 +44,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 TaskItem? task = null;
-                sqlcmd = "SELECT TaskId, Name, Interval FROM Tasks WHERE TaskId = @Id";
+                sqlcmd = "SELECT TaskId, TaskName, TaskInterval FROM Tasks WHERE TaskId = @Id";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -67,11 +67,11 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = @"INSERT INTO Tasks (Name, Interval) OUTPUT INSERTED.TaskId VALUES (@Name, @Interval)";
+                sqlcmd = @"INSERT INTO Tasks (TaskName, TaskInterval) OUTPUT INSERTED.TaskId VALUES (@TaskName, @TaskInterval)";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var rowsAffected = conn.Execute(sqlcmd, new { task.Name, Interval = (int)task.Interval });
+                    var rowsAffected = conn.Execute(sqlcmd, new { task.TaskName, TaskInterval = (int)task.TaskInterval });
                     return rowsAffected > 0;
                 }
             }
@@ -90,11 +90,11 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = @"UPDATE Tasks SET Name = @Name, Interval = @Interval WHERE TaskId = @TaskId";
+                sqlcmd = @"UPDATE Tasks SET TaskName = @TaskName, TaskInterval = @TaskInterval WHERE TaskId = @TaskId";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var rowsAffected = conn.Execute(sqlcmd, new { task.TaskId, task.Name, Interval = (int)task.Interval });
+                    var rowsAffected = conn.Execute(sqlcmd, new { task.TaskId, task.TaskName, TaskInterval = (int)task.TaskInterval });
                     return rowsAffected > 0;
                 }
             }

@@ -7,3 +7,7 @@
 
         <h1>Dashboard</h1>
         
+@if (User.IsInRole("Admin"))
+{
+    <a asp-page="/Admin/Tasks/Create" class="save-button">Aufgabe anlegen</a>
+}

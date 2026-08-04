@@ -1,12 +1,25 @@
-﻿namespace Schoofs_ATaskO.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Schoofs_ATaskO.Models
 {
     public enum TaskInterval
     {
-        Minutely = 0,
-        Hourly = 1,
-        Daily = 2,
-        Weekly = 3,
-        Monthly = 4,
-        Yearly = 5
+        [Display(Name = "Minütlich")]
+        Minutely = 1,
+
+        [Display(Name = "Stündlich")]
+        Hourly = 2,
+
+        [Display(Name = "Täglich")]
+        Daily = 3,
+
+        [Display(Name = "Wöchentlich")]
+        Weekly = 4,
+
+        [Display(Name = "Monatlich")]
+        Monthly = 5,
+
+        [Display(Name = "Jährlich")]
+        Yearly = 6
     }
 }
