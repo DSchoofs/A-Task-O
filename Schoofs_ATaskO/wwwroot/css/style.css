@@ -146,11 +146,12 @@ body {
 
         .table thead th {
             padding: 14px 16px;
-            text-align: left;
+            text-align: center;
             font-size: 0.95rem;
             font-weight: 600;
             letter-spacing: 0.02em;
             border-bottom: none;
+
         }
 
     .table tbody td {
@@ -158,6 +159,7 @@ body {
         border-bottom: 1px solid #e5e7eb;
         color: #111827;
         font-size: 0.95rem;
+        text-align: center;
         vertical-align: middle;
     }
 
