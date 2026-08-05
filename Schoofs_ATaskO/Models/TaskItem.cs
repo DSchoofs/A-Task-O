@@ -1,9 +1,33 @@
-﻿namespace Schoofs_ATaskO.Models
+﻿using Schoofs_ATaskO.Models;
+using System.ComponentModel.DataAnnotations;
+
+public class TaskItem
 {
-    public class TaskItem
-    {
-        public int TaskId { get; set; }
-        public string TaskName { get; set; } = string.Empty;
-        public TaskInterval TaskInterval { get; set; }
-    }
+    public int Id { get; set; }
+
+    [Display(Name = "Name")]
+    public string Name { get; set; } = string.Empty;
+
+    [Display(Name = "Beschreibung")]
+    public string? Description { get; set; }
+
+    [Display(Name = "Intervall")]
+    public TaskInterval Interval { get; set; }
+
+    [Display(Name = "Aktiv")]
+    public bool IsActive { get; set; } = true;
+
+    [Display(Name = "Erstellt am")]
+    public DateTime CreatedAt { get; set; }
+
+    [Display(Name = "Erstellt von")]
+    public int? CreatedByUserId { get; set; }
+
+    [Display(Name = "Geändert am")]
+    public DateTime? ModifiedAt { get; set; }
+
+    [Display(Name = "Geändert von")]
+    public int? ModifiedByUserId { get; set; }
+
+    public ICollection<TaskBlock> TaskBlocks { get; set; } = new List<TaskBlock>();
 }

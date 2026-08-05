@@ -35,8 +35,8 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
 
             var task = new TaskItem
             {
-                TaskName = Input.TaskName,
-                TaskInterval = Input.TaskInterval!.Value
+                Name = Input.TaskName,
+                Interval = Input.TaskInterval!.Value
             };
 
             var result = _taskService.CreateTask(task);

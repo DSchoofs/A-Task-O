@@ -1,7 +1,7 @@
 ﻿@page "{id:int}"
 @model Schoofs_ATaskO.Pages.Tasks.TaskViewModel
 @{
-    ViewData["Title"] = Model.TaskItem?.TaskName ?? "Aufgabe";
+    ViewData["Title"] = Model.TaskItem?.Name ?? "Aufgabe";
 }
 
 <div class="page-container">
@@ -12,17 +12,17 @@
         }
         else if (Model.TaskItem != null)
         {
-            <h1>@Model.TaskItem.TaskName</h1>
+            <h1>@Model.TaskItem.Name</h1>
 
             <div class="task-details">
-                <p><strong>Aufgaben-ID:</strong> @Model.TaskItem.TaskId</p>
-                <p><strong>Intervall:</strong> @Model.TaskItem.TaskInterval.GetDisplayName()</p>
+                <p><strong>Aufgaben-ID:</strong> @Model.TaskItem.Id</p>
+                <p><strong>Intervall:</strong> @Model.TaskItem.Interval.GetDisplayName()</p>
             </div>
 
             <div class="form-actions">
                 @if (User.IsInRole("Admin"))
                 {
-                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@Model.TaskItem.TaskId" class="edit-button">
+                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@Model.TaskItem.Id" class="edit-button">
                         Aufgabe bearbeiten
                     </a>
                 }

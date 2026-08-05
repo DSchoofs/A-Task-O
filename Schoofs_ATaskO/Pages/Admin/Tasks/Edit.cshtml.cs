@@ -33,9 +33,9 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
 
             ViewModel = new EditTaskViewModel
             {
-                TaskId = task.TaskId,
-                TaskName = task.TaskName,
-                TaskInterval = task.TaskInterval
+                TaskId = task.Id,
+                TaskName = task.Name,
+                TaskInterval = task.Interval
             };
 
             return Page();
@@ -50,9 +50,9 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
 
             var task = new TaskItem
             {
-                TaskId = ViewModel.TaskId,
-                TaskName = ViewModel.TaskName,
-                TaskInterval = ViewModel.TaskInterval!.Value
+                Id = ViewModel.TaskId,
+                Name = ViewModel.TaskName,
+                Interval = ViewModel.TaskInterval!.Value
             };
 
             var result = _taskService.UpdateTask(task);

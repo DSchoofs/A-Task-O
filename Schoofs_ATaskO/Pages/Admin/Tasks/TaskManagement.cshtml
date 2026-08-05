@@ -36,12 +36,12 @@
                         @foreach (var task in Model.Tasks)
                         {
                             <tr>
-                                <td >@task.TaskId</td>
-                                <td>@task.TaskName</td>
-                                <td>@task.TaskInterval.GetDisplayName()</td>
+                                <td >@task.Id</td>
+                                <td>@task.Name</td>
+                                <td>@task.Interval.GetDisplayName()</td>
                                 <td class="table-actions">
-                                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.TaskId" class="btn btn-primary btn-sm">Bearbeiten</a>
-                                    <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.TaskId" class="btn btn-danger btn-sm">Löschen</a>
+                                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.Id" class="btn btn-primary btn-sm">Bearbeiten</a>
+                                    <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.Id" class="btn btn-danger btn-sm">Löschen</a>
                                 </td>
                             </tr>
                         }

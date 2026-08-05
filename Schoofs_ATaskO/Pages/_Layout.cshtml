@@ -1,7 +1,7 @@
 ﻿@inject Schoofs_ATaskO.Services.ITaskService TaskService
 
 @{
-    var tasks = new List<Schoofs_ATaskO.Models.TaskItem>();
+    var tasks = new List<TaskItem>();
 
     if (User.Identity?.IsAuthenticated == true)
     {
@@ -61,8 +61,8 @@
 
                         @foreach (var task in tasks)
                         {
-                            <a asp-page="/Tasks/TaskView" asp-route-id="@task.TaskId">
-                                @task.TaskName
+                            <a asp-page="/Tasks/TaskView" asp-route-id="@task.Id">
+                                @task.Name
                             </a>
                         }
                     }
