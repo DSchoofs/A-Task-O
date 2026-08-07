@@ -13,5 +13,6 @@ namespace Schoofs_ATaskO.Services
         bool DeleteUserById(int id);
         string ErrorMessage { get; }
         bool HasAdminUser();
+        string GetUserDisplayName(int? userId);
     }
 }

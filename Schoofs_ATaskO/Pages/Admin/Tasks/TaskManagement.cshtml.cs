@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Pages.Admin.Tasks
 {
@@ -10,7 +11,8 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
     {
         private readonly ITaskService _taskService;
 
-        public List<TaskItem> Tasks { get; set; } = new();
+        //public List<TaskItem> Tasks { get; set; } = new();
+        public List<TaskManagementViewModel> Tasks { get; private set; } = new();
         public string ErrorMessage { get; set; } = string.Empty;
 
         public TaskManagementModel(ITaskService taskService)
@@ -20,7 +22,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
 
         public void OnGet()
         {
-            Tasks = _taskService.GetAllTasks();
+            Tasks = _taskService.GetAllTaskManagementViewModels();
             ErrorMessage = _taskService.ErrorMessage;
         }
     }

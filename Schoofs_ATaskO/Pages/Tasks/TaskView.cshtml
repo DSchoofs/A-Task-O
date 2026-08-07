@@ -16,7 +16,11 @@
 
             <div class="task-details">
                 <p><strong>Aufgaben-ID:</strong> @Model.TaskItem.Id</p>
-                <p><strong>Beschreibung:</strong>@Model.TaskItem.Description</p>
+                <p>
+                    <strong>Beschreibung:</strong>
+                            <textarea class="task-description"
+                                  readonly
+                                  wrap="soft" rows="4">@Model.TaskItem.Description</textarea></p>
                 <p><strong>Intervall:</strong> @Model.TaskItem.Interval.GetDisplayName()</p>
                 
             </div>

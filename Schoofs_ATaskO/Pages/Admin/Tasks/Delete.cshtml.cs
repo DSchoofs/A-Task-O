@@ -10,15 +10,17 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks;
 public class DeleteModel : PageModel
 {
     private readonly ITaskService _taskService;
+    private readonly IUserService _userService;
 
     [BindProperty]
     public TaskDeleteViewModel Input { get; set; } = new();
 
     public string ErrorMessage { get; private set; } = string.Empty;
 
-    public DeleteModel(ITaskService taskService)
+    public DeleteModel(ITaskService taskService, IUserService userService)
     {
         _taskService = taskService;
+        _userService = userService;
     }
 
     public IActionResult OnGet(int id)
@@ -39,8 +41,12 @@ public class DeleteModel : PageModel
             IsActive = taskItem.IsActive,
             CreatedAt = taskItem.CreatedAt,
             CreatedByUserId = taskItem.CreatedByUserId,
+            CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId),
             ModifiedAt = taskItem.ModifiedAt,
-            ModifiedByUserId = taskItem.ModifiedByUserId
+            ModifiedByUserId = taskItem.ModifiedByUserId,
+            ModifiedByUserName = taskItem.ModifiedAt.HasValue
+        ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId)
+        : "Noch nicht geändert"
         };
 
         return Page();

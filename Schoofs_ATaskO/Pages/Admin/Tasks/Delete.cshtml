@@ -52,20 +52,20 @@
                     </tr>
 
                     <tr>
+                        <th>Erstellt von</th>
+                        <td>@Model.Input.CreatedByUserName</td>
+                    </tr>
+
+                    <tr>
                         <th>Erstellt am</th>
                         <td>
-                            @Model.Input.CreatedAt
-                            .ToLocalTime()
-                            .ToString("dd.MM.yyyy HH:mm")
+                            @Model.Input.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                         </td>
                     </tr>
 
                     <tr>
-                        <th>Erstellt von Benutzer-ID</th>
-                        <td>
-                            @(Model.Input.CreatedByUserId?.ToString()
-                                ?? "Nicht bekannt")
-                        </td>
+                        <th>Geändert von</th>
+                        <td>@Model.Input.ModifiedByUserName</td>
                     </tr>
 
                     <tr>
@@ -76,14 +76,6 @@
                                     .ToLocalTime()
                                     .ToString("dd.MM.yyyy HH:mm")
                                 : "Noch nicht geändert")
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>Geändert von Benutzer-ID</th>
-                        <td>
-                            @(Model.Input.ModifiedByUserId?.ToString()
-                                ?? "Nicht bekannt")
                         </td>
                     </tr>
                 </tbody>

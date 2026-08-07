@@ -211,5 +211,21 @@ namespace Schoofs_ATaskO.Services
 
             return result;
         }
+        public string GetUserDisplayName(int? userId)
+        {
+            if (!userId.HasValue)
+            {
+                return "Nicht bekannt";
+            }
+
+            var user = GetUserById(userId.Value);
+
+            if (user is null)
+            {
+                return $"Benutzer #{userId.Value}";
+            }
+
+            return $"{user.FirstName} {user.LastName}";
+        }
     }
 }

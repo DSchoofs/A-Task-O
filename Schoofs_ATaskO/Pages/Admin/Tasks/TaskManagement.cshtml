@@ -1,5 +1,5 @@
 ﻿@page
-@model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel;
+@model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel
 @{
     ViewData["Title"] = "Aufgabenverwaltung";
 }
@@ -23,14 +23,28 @@
         else
         {
             <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered align-middle">
+                <table class="table task-management-table table-striped table-hover table-bordered">
+                    <colgroup>
+                        <col class="col-name" />
+                        <col class="col-description" />
+                        <col class="col-interval" />
+                        <col class="col-status" />
+                        <col class="col-createdby" />
+                        <col class="col-createdat" />
+                        <col class="col-modifiedby" />
+                        <col class="col-modifiedat" />
+                        <col class="col-actions" />
+                    </colgroup>
+
                     <thead class="table-dark">
                         <tr>
                             <th>Name</th>
                             <th>Beschreibung</th>
                             <th>Intervall</th>
                             <th>Status</th>
+                            <th>Erstellt von</th>
                             <th>Erstellt am</th>
+                            <th>Geändert von</th>
                             <th>Geändert am</th>
                             <th>Aktionen</th>
                         </tr>
@@ -39,20 +53,39 @@
                         @foreach (var task in Model.Tasks)
                         {
                             <tr>
-                                <td>@task.Name</td>
-                                <td>@task.Description</td>
+                                <td class="name-column">
+                                    <div class="name-box">
+                                        @task.Name
+                                    </div>
+                                </td>
+
+                                <td class="description-column">
+                                    <div class="description-box">
+                                        @(string.IsNullOrWhiteSpace(task.Description)
+                                            ? "Keine Beschreibung"
+                                            : task.Description)
+                                    </div>
+                                </td>
+
+                                
                                 <td>@task.Interval</td>
+
                                 <td>
                                     @(task.IsActive ? "Aktiv" : "Inaktiv")
                                 </td>
+
+                                <td>@task.CreatedByUserName</td>
+
                                 <td>
                                     @task.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                                 </td>
+
+                                <td>@task.ModifiedByUserName</td>
+
                                 <td>
-                                    @(task.ModifiedAt.HasValue
-                                        ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
-                                        : "Noch nicht geändert")
+                                    @(task.ModifiedAt.HasValue ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm") : "Noch nicht geändert")
                                 </td>
+
                                 <td>
                                     <div class="table-actions">
                                         <a asp-page="Edit"
@@ -75,4 +108,4 @@
             </div>
         }
     </div>
-    </div>
+</div>

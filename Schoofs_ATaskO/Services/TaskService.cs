@@ -8,13 +8,15 @@ namespace Schoofs_ATaskO.Services
     {
         private readonly ITaskRepository _taskRepository;
         private readonly ICurrentUserService _currentUserService;
+        private readonly IUserService _userService;
 
         public string ErrorMessage { get; private set; } = string.Empty;
 
-        public TaskService(ITaskRepository taskRepository, ICurrentUserService currentUserService)
+        public TaskService(ITaskRepository taskRepository, ICurrentUserService currentUserService, IUserService userService)
         {
             _taskRepository = taskRepository;
             _currentUserService = currentUserService;
+            _userService = userService;
         }
 
         public List<TaskItem> GetAllTasks()
@@ -39,6 +41,34 @@ namespace Schoofs_ATaskO.Services
             }
         }
 
+        public List<TaskManagementViewModel> GetAllTaskManagementViewModels()
+        {
+            var taskItems = _taskRepository.GetAllTasks();
+
+            var taskViewModels = new List<TaskManagementViewModel>();
+
+            foreach (var taskItem in taskItems)
+            {
+                taskViewModels.Add(new TaskManagementViewModel
+                {
+                    Id = taskItem.Id,
+                    Name = taskItem.Name,
+                    Description = taskItem.Description,
+                    Interval = taskItem.Interval,
+                    IsActive = taskItem.IsActive,
+                    CreatedAt = taskItem.CreatedAt,
+                    CreatedByUserName = _userService.GetUserDisplayName(
+                        taskItem.CreatedByUserId),
+                    ModifiedAt = taskItem.ModifiedAt,
+                    ModifiedByUserName = taskItem.ModifiedAt.HasValue
+                        ? _userService.GetUserDisplayName(
+                            taskItem.ModifiedByUserId)
+                        : "Noch nicht geändert"
+                });
+            }
+
+            return taskViewModels;
+        }
         public TaskItem? GetTaskById(int id)
         {
             ErrorMessage = string.Empty;

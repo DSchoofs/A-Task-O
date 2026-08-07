@@ -6,6 +6,7 @@ namespace Schoofs_ATaskO.Services;
 public interface ITaskService
 {
     List<TaskItem> GetAllTasks();
+    List<TaskManagementViewModel> GetAllTaskManagementViewModels();
 
     TaskItem? GetTaskById(int id);
 

@@ -1,5 +1,10 @@
-﻿html, body {
+﻿html,
+body {
     min-height: 100%;
+}
+
+* {
+    box-sizing: border-box;
 }
 
 body {
@@ -9,34 +14,38 @@ body {
     background: #f7f7f7;
 }
 
+/* Header */
+
 .topbar {
-    height: 80px;
-    background-color: #2c3e50;
-    color: white;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    height: 80px;
     padding: 0 1.5rem;
+    background-color: #2c3e50;
+    color: #ffffff;
 }
+
 .topbar-left {
     position: absolute;
     left: 1.5rem;
-    height: 100%;
     display: flex;
     align-items: center;
+    height: 100%;
 }
 
 .logo {
-    max-height: 90%;
     width: auto;
-    max-width: 180px;
     height: auto;
+    max-width: 180px;
+    max-height: 90%;
     object-fit: contain;
 }
+
 .topbar-center {
-    text-align: center;
     line-height: 1.1;
+    text-align: center;
 }
 
 .app-title {
@@ -54,13 +63,17 @@ body {
     right: 1.5rem;
 }
 
-.logout-button {
+.logout-button,
+.login-button {
     display: inline-block;
     padding: 0.6rem 1rem;
-    background-color: #e74c3c;
-    color: white;
-    text-decoration: none;
     border-radius: 8px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.logout-button {
+    background-color: #e74c3c;
 }
 
     .logout-button:hover {
@@ -68,27 +81,26 @@ body {
     }
 
 .login-button {
-    display: inline-block;
-    padding: 0.6rem 1rem;
     background-color: #1b5e20;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
 }
 
     .login-button:hover {
         background-color: #2e7d32;
     }
 
+/* Layout */
+
 .layout {
     display: flex;
+    min-width: 0;
     min-height: calc(100vh - 80px - 52px);
 }
 
 .sidebar {
     width: 240px;
-    background-color: #1f2d3a;
+    flex: 0 0 240px;
     padding: 1.5rem 1rem;
+    background-color: #1f2d3a;
 }
 
     .sidebar nav {
@@ -101,11 +113,10 @@ body {
             display: block;
             width: 100%;
             padding: 0.9rem 1rem;
-            background-color: #34495e;
-            color: white;
-            text-decoration: none;
             border-radius: 8px;
-            box-sizing: border-box;
+            background-color: #34495e;
+            color: #ffffff;
+            text-decoration: none;
             transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -116,216 +127,46 @@ body {
             }
 
 .content {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     padding: 2rem;
     background: #f7f7f7;
 }
 
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    margin-top: 1rem;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    background: #fff;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 900px;
-    background: #fff;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-    .table thead {
-        background: linear-gradient(135deg, #1f2937, #374151);
-        color: #fff;
-    }
-
-        .table thead th {
-            padding: 14px 16px;
-            text-align: center;
-            font-size: 0.95rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            border-bottom: none;
-
-        }
-
-    .table tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid #e5e7eb;
-        color: #111827;
-        font-size: 0.95rem;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .table tbody tr:nth-child(even) {
-        background: #f9fafb;
-    }
-
-    .table tbody tr:hover {
-        background: #e0f2fe;
-        transition: background 0.2s ease;
-    }
-
-    .table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-.table-bordered {
-    border: 1px solid #e5e7eb;
-}
-
-.table-striped tbody tr:nth-child(odd) {
-    background: #ffffff;
-}
-
-.table-actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-    .table-actions .btn {
-        padding: 0.45rem 0.8rem;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        text-decoration: none;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-        .table-actions .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-
 .footer {
-    background: #ecf0f1;
     padding: 0.75rem 1rem;
-    text-align: center;
-    color: #555;
     border-top: 1px solid #d9d9d9;
+    background: #ecf0f1;
+    color: #555555;
+    text-align: center;
 }
 
-@media (max-width: 900px) {
-    .layout {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: auto;
-    }
-
-    .app-title {
-        font-size: 2rem;
-    }
-
-    .topbar {
-        height: auto;
-        padding: 1rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .topbar-left,
-    .topbar-right {
-        position: static;
-    }
-    .page-header {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .wide-container {
-        width: 100%;
-    }
-
-    .form-table {
-        min-width: 0;
-    }
-
-        .form-table th,
-        .form-table td {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .form-table th {
-            padding-bottom: 0.35rem;
-            border-bottom: none;
-        }
-
-        .form-table td {
-            padding-top: 0.35rem;
-        }
-}
-.form-container {
-    width: fit-content;
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-    .form-container .form-control {
-        border-radius: 10px;
-    }
-
-    .form-container .btn {
-        border-radius: 10px;
-        padding: 0.55rem 1rem;
-    }
-
-.form-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-    .form-table tr {
-        vertical-align: top;
-    }
-
-.form-label-cell {
-    width: 180px;
-    padding: 0.65rem 1rem 0.65rem 0;
-    white-space: nowrap;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.form-input-cell {
-    padding: 0.65rem 0;
-}
-
-    .form-input-cell .form-control {
-        width: 100%;
-    }
-
-    .form-input-cell .text-danger {
-        display: block;
-        margin-top: 0.35rem;
-    }
-
-.form-actions {
-    margin-top: 1.25rem;
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
+/* Container */
 
 .page-container {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.form-container {
+    width: fit-content;
+    max-width: 100%;
+    padding: 1.5rem;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .wide-container {
     width: 100%;
     max-width: 1200px;
-    box-sizing: border-box;
+    margin: 0;
+}
+
+.form-container .form-control,
+.form-container .form-select {
+    border-radius: 10px;
 }
 
 .page-header {
@@ -351,14 +192,233 @@ body {
 }
 
 .warning-message {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
     padding: 1rem;
     border: 1px solid #ffda6a;
     border-radius: 10px;
     background-color: #fff3cd;
     color: #664d03;
 }
+
+/* Tables */
+
+.table-responsive {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+    .table thead {
+        background: linear-gradient(135deg, #1f2937, #374151);
+        color: #ffffff;
+    }
+
+        .table thead th {
+            padding: 14px 16px;
+            border-bottom: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+    .table tbody td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #111827;
+        font-size: 0.95rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background: #f9fafb;
+    }
+
+    .table tbody tr:nth-child(odd) {
+        background: #ffffff;
+    }
+
+    .table tbody tr:hover {
+        background: #e0f2fe;
+        transition: background 0.2s ease;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+.table-bordered {
+    border: 1px solid #e5e7eb;
+}
+
+.table-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+    .table-actions .btn {
+        display: inline-block;
+        padding: 0.45rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+        .table-actions .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+/* TaskManagement table */
+
+.task-management-table {
+    width: max-content;
+    min-width: 1500px;
+    table-layout: fixed;
+}
+
+    .task-management-table .col-name {
+        width: 14%;
+    }
+
+    .task-management-table .col-description {
+        width: 24%;
+    }
+
+    .task-management-table .col-interval {
+        width: 7%;
+    }
+
+    .task-management-table .col-status {
+        width: 7%;
+    }
+
+    .task-management-table .col-createdby {
+        width: 9%;
+    }
+
+    .task-management-table .col-createdat {
+        width: 10%;
+    }
+
+    .task-management-table .col-modifiedby {
+        width: 9%;
+    }
+
+    .task-management-table .col-modifiedat {
+        width: 10%;
+    }
+
+    .task-management-table .col-actions {
+        width: 10%;
+    }
+
+    .task-management-table th,
+    .task-management-table td {
+        min-width: 0;
+    }
+
+    .task-management-table th {
+        white-space: nowrap;
+        word-break: normal;
+        overflow-wrap: normal;
+    }
+
+    .task-management-table td {
+        vertical-align: top;
+    }
+
+        .task-management-table td.name-column,
+        .task-management-table td.description-column {
+            text-align: left;
+            vertical-align: top;
+            white-space: normal;
+        }
+
+    .task-management-table .name-box {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        color: #111827;
+        line-height: 1.5;
+        text-align: left;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .task-management-table .description-box {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: 4.5em;
+        min-height: 4.5em;
+        max-height: 4.5em;
+        margin: 0;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background-color: #f9fafb;
+        color: #111827;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: left;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+/* TaskView description */
+
+.task-description {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: calc(1.5em * 10);
+    min-height: 150px;
+    max-height: calc(1.5em * 10);
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #111827;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    text-align: left;
+    white-space: pre-wrap;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overflow-wrap: anywhere;
+    resize: none;
+}
+
+/* Form tables */
 
 .form-table {
     width: 100%;
@@ -367,14 +427,18 @@ body {
     border-collapse: collapse;
 }
 
+    .form-table tr {
+        vertical-align: top;
+    }
+
     .form-table th {
         width: 30%;
         padding: 14px 16px;
         background-color: #f3f4f6;
         color: #1f2937;
+        font-weight: 600;
         text-align: left;
         vertical-align: middle;
-        font-weight: 600;
     }
 
     .form-table td {
@@ -388,17 +452,16 @@ body {
     .form-table .form-control,
     .form-table .form-select {
         width: 100%;
-        box-sizing: border-box;
+        padding: 0.55rem 0.75rem;
         border: 1px solid #ced4da;
         border-radius: 10px;
-        padding: 0.55rem 0.75rem;
         font-family: inherit;
         font-size: 0.95rem;
     }
 
     .form-table textarea.form-control {
-        resize: vertical;
         min-height: 110px;
+        resize: vertical;
     }
 
     .form-table .form-check {
@@ -423,22 +486,45 @@ body {
         font-size: 0.875rem;
     }
 
+.form-label-cell {
+    width: 180px;
+    padding: 0.65rem 1rem 0.65rem 0;
+    color: #1f2937;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.form-input-cell {
+    padding: 0.65rem 0;
+}
+
+    .form-input-cell .form-control {
+        width: 100%;
+    }
+
+    .form-input-cell .text-danger {
+        display: block;
+        margin-top: 0.35rem;
+    }
+
 .form-actions {
-    margin-top: 1.25rem;
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
+    margin-top: 1.25rem;
 }
+
+/* Buttons */
 
 .save-button,
 .cancel-button,
 .delete-button {
     display: inline-block;
+    padding: 0.55rem 1rem;
     border: none;
     border-radius: 10px;
-    padding: 0.55rem 1rem;
-    font-size: 0.95rem;
     font-family: inherit;
+    font-size: 0.95rem;
     text-decoration: none;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
@@ -479,3 +565,63 @@ body {
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
+
+/* Responsive */
+
+@media (max-width: 900px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: auto;
+        flex-basis: auto;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
+    .topbar {
+        height: auto;
+        min-height: 80px;
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .topbar-left,
+    .topbar-right {
+        position: static;
+    }
+
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .wide-container {
+        width: 100%;
+    }
+
+    .task-management-table {
+        width: max-content;
+        min-width: 1500px;
+        table-layout: fixed;
+    }
+
+    .form-table th,
+    .form-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .form-table th {
+        padding-bottom: 0.35rem;
+        border-bottom: none;
+    }
+
+    .form-table td {
+        padding-top: 0.35rem;
+    }
+}
