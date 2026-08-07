@@ -20,7 +20,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 List<TaskItem> tasks = new List<TaskItem>();
-                sqlcmd = "SELECT Id, Name, Interval FROM Tasks";
+                sqlcmd = "SELECT Id, Name, Description, Interval, IsActive, CreatedAt, CreatedByUserId, ModifiedAt, ModifiedByUserId FROM TaskItems"; 
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -44,7 +44,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 TaskItem? task = null;
-                sqlcmd = "SELECT Id, Name, Interval FROM Tasks WHERE Id = @Id";
+                sqlcmd = "SELECT Id, Name, Description, Interval, IsActive, CreatedAt, CreatedByUserId, ModifiedAt, ModifiedByUserId FROM TaskItems WHERE Id = @Id";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -67,11 +67,24 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = @"INSERT INTO Tasks (Name, Interval) OUTPUT INSERTED.Id VALUES (@Name, @Interval)";
+                sqlcmd = "INSERT INTO TaskItems (Name, Description, Interval, IsActive, CreatedAt, CreatedByUserId) " +
+                         "VALUES (@Name, @Description, @Interval, @IsActive, @CreatedAt, @CreatedByUserId);";
+
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var rowsAffected = conn.Execute(sqlcmd, new { task.Name, Interval = (int)task.Interval });
+
+                    var parameters = new
+                    {
+                        task.Name,
+                        task.Description,
+                        Interval = (int)task.Interval,
+                        task.IsActive,
+                        task.CreatedAt,
+                        task.CreatedByUserId
+                    };
+
+                    var rowsAffected = conn.Execute(sqlcmd, parameters);
                     return rowsAffected > 0;
                 }
             }
@@ -90,11 +103,26 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = @"UPDATE Tasks SET Name = @Name, Interval = @Interval WHERE TaskId = @TaskId";
+                sqlcmd = "UPDATE TaskItems SET Name = @Name, Description = @Description, Interval = @Interval, " +
+                         "IsActive = @IsActive, ModifiedAt = @ModifiedAt, ModifiedByUserId = @ModifiedByUserId " +
+                         "WHERE Id = @Id;";
+
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var rowsAffected = conn.Execute(sqlcmd, new { task.Id, task.Name, Interval = (int)task.Interval });
+
+                    var parameters = new
+                    {
+                        task.Id,
+                        task.Name,
+                        task.Description,
+                        Interval = (int)task.Interval,
+                        task.IsActive,
+                        task.ModifiedAt,
+                        task.ModifiedByUserId
+                    };
+
+                    var rowsAffected = conn.Execute(sqlcmd, parameters);
                     return rowsAffected > 0;
                 }
             }
@@ -113,7 +141,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = "DELETE FROM Tasks WHERE Id = @Id";
+                sqlcmd = "DELETE FROM TaskItems WHERE Id = @Id";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();

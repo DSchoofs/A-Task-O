@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using Schoofs_Atasko.Services;
 using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.Services;
 using Schoofs_ATaskO.Settings;
@@ -13,6 +15,10 @@ namespace Schoofs_ATaskO
 
             //Razor Pages registrieren (macht es erst zu einem Razor Projekt)
             builder.Services.AddRazorPages();
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("Atasko")
+                ?? throw new InvalidOperationException("Connection string 'Atasko' not found.")));
 
             builder.Services
                 .AddOptions<SecuritySettings>()
@@ -29,7 +35,7 @@ namespace Schoofs_ATaskO
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
             builder.Services.AddAuthorization();
-
+            builder.Services.AddHttpContextAccessor();
             // Repos registrieren, damit sie in den Razor Pages verwendet werden können
             builder.Services.AddScoped<ISetupService, SetupService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -38,6 +44,7 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITaskService, TaskService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
             var app = builder.Build();
 

@@ -1,28 +1,107 @@
 ﻿@page "{id:int}"
 @model Schoofs_ATaskO.Pages.Admin.Tasks.DeleteModel
+
 @{
     ViewData["Title"] = "Aufgabe löschen";
 }
 
 <div class="page-container">
-    <div class="form-container">
-        <h1>Aufgabe löschen</h1>
+    <div class="form-container wide-container">
+        <div class="page-header">
+            <h1>Aufgabe löschen</h1>
+        </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
-            <div class="error-message">@Model.ErrorMessage</div>
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
         }
 
-        @if (Model.TaskItem != null)
-        {
-            <p>Möchtest du die Aufgabe <strong>@Model.TaskItem.Name</strong> wirklich löschen?</p>
+        <div class="warning-message">
+            Möchten Sie diese Aufgabe wirklich löschen?
+        </div>
 
-            <form method="post">
-                <div class="form-actions">
-                    <button type="submit" class="delete-button">Löschen</button>
-                    <a asp-page="/Admin/Tasks/TaskManagement" class="cancel-button">Abbrechen</a>
-                </div>
-            </form>
-        }
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle form-table">
+                <tbody>
+                    <tr>
+                        <th>Name</th>
+                        <td>@Model.Input.Name</td>
+                    </tr>
+
+                    <tr>
+                        <th>Beschreibung</th>
+                        <td>
+                            @(string.IsNullOrWhiteSpace(Model.Input.Description)
+                                ? "Keine Beschreibung"
+                                : Model.Input.Description)
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Intervall</th>
+                        <td>@Model.Input.Interval</td>
+                    </tr>
+
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            @(Model.Input.IsActive ? "Aktiv" : "Inaktiv")
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Erstellt am</th>
+                        <td>
+                            @Model.Input.CreatedAt
+                            .ToLocalTime()
+                            .ToString("dd.MM.yyyy HH:mm")
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Erstellt von Benutzer-ID</th>
+                        <td>
+                            @(Model.Input.CreatedByUserId?.ToString()
+                                ?? "Nicht bekannt")
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Geändert am</th>
+                        <td>
+                            @(Model.Input.ModifiedAt.HasValue
+                                ? Model.Input.ModifiedAt.Value
+                                    .ToLocalTime()
+                                    .ToString("dd.MM.yyyy HH:mm")
+                                : "Noch nicht geändert")
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Geändert von Benutzer-ID</th>
+                        <td>
+                            @(Model.Input.ModifiedByUserId?.ToString()
+                                ?? "Nicht bekannt")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <form method="post">
+            <input type="hidden" asp-for="Input.Id" />
+
+            <div class="form-actions">
+                <button type="submit" class="delete-button">
+                    Aufgabe endgültig löschen
+                </button>
+
+                <a asp-page="TaskManagement" class="cancel-button">
+                    Abbrechen
+                </a>
+            </div>
+        </form>
     </div>
 </div>

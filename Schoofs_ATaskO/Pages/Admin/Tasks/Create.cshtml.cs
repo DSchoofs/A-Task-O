@@ -13,7 +13,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
         private readonly ITaskService _taskService;
 
         [BindProperty]
-        public CreateTaskInputModel Input { get; set; } = new();
+        public TaskCreateViewModel Input { get; set; } = new();
 
         public string ErrorMessage { get; set; } = string.Empty;
 
@@ -24,6 +24,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
 
         public void OnGet()
         {
+            Input.IsActive = true;
         }
 
         public IActionResult OnPost()
@@ -33,13 +34,9 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
                 return Page();
             }
 
-            var task = new TaskItem
-            {
-                Name = Input.TaskName,
-                Interval = Input.TaskInterval!.Value
-            };
+            
 
-            var result = _taskService.CreateTask(task);
+            var result = _taskService.CreateTask(Input);
 
             if (!result)
             {
@@ -47,7 +44,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
                 return Page();
             }
 
-            return RedirectToPage("/Index");
+            return RedirectToPage("/Admin/Tasks/TaskManagement");
         }
     }
 }

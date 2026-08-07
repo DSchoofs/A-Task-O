@@ -1,17 +1,20 @@
-﻿using Schoofs_ATaskO.Models;
+﻿using Schoofs_Atasko.Services;
 using Schoofs_ATaskO.Repositories;
+using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Services
 {
     public class TaskService : ITaskService
     {
         private readonly ITaskRepository _taskRepository;
+        private readonly ICurrentUserService _currentUserService;
 
         public string ErrorMessage { get; private set; } = string.Empty;
 
-        public TaskService(ITaskRepository taskRepository)
+        public TaskService(ITaskRepository taskRepository, ICurrentUserService currentUserService)
         {
             _taskRepository = taskRepository;
+            _currentUserService = currentUserService;
         }
 
         public List<TaskItem> GetAllTasks()
@@ -58,48 +61,49 @@ namespace Schoofs_ATaskO.Services
             }
         }
 
-        public bool CreateTask(TaskItem task)
+        public bool CreateTask(TaskCreateViewModel viewModel)
         {
-            ErrorMessage = string.Empty;
-
-            try
+            var taskItem = new TaskItem
             {
-                var result = _taskRepository.AddTask(task);
+                Name = viewModel.Name,
+                Description = viewModel.Description,
+                Interval = viewModel.Interval,
+                IsActive = viewModel.IsActive,
+                CreatedAt = DateTime.UtcNow,
+                CreatedByUserId = _currentUserService.UserId
+            };
 
-                if (!result)
-                {
-                    ErrorMessage = _taskRepository.ErrorMessage;
-                }
+            var result = _taskRepository.AddTask(taskItem);
 
-                return result;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Unexpected Error: {ex.Message}";
-                return false;
-            }
+            ErrorMessage = _taskRepository.ErrorMessage;
+
+            return result;
         }
 
-        public bool UpdateTask(TaskItem task)
+        public bool UpdateTask(TaskEditViewModel viewModel)
         {
-            ErrorMessage = string.Empty;
+            var taskItem = _taskRepository.GetTaskById(viewModel.Id);
 
-            try
+            ErrorMessage = _taskRepository.ErrorMessage;
+
+            if (taskItem is null)
             {
-                var result = _taskRepository.UpdateTask(task);
-
-                if (!result)
-                {
-                    ErrorMessage = _taskRepository.ErrorMessage;
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                ErrorMessage = "Die Aufgabe wurde nicht gefunden.";
                 return false;
             }
+
+            taskItem.Name = viewModel.Name;
+            taskItem.Description = viewModel.Description;
+            taskItem.Interval = viewModel.Interval;
+            taskItem.IsActive = viewModel.IsActive;
+            taskItem.ModifiedAt = DateTime.UtcNow;
+            taskItem.ModifiedByUserId = _currentUserService.UserId;
+
+            var result = _taskRepository.UpdateTask(taskItem);
+
+            ErrorMessage = _taskRepository.ErrorMessage;
+
+            return result;
         }
 
         public bool DeleteTaskById(int id)

@@ -235,6 +235,34 @@ body {
     .topbar-right {
         position: static;
     }
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .wide-container {
+        width: 100%;
+    }
+
+    .form-table {
+        min-width: 0;
+    }
+
+        .form-table th,
+        .form-table td {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-table th {
+            padding-bottom: 0.35rem;
+            border-bottom: none;
+        }
+
+        .form-table td {
+            padding-top: 0.35rem;
+        }
 }
 .form-container {
     width: fit-content;
@@ -289,3 +317,165 @@ body {
     gap: 0.75rem;
     flex-wrap: wrap;
 }
+
+.page-container {
+    width: 100%;
+}
+
+.wide-container {
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+    .page-header h1 {
+        margin: 0;
+        color: #1f2937;
+    }
+
+.error-message {
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #f5c2c7;
+    border-radius: 10px;
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.warning-message {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #ffda6a;
+    border-radius: 10px;
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.form-table {
+    width: 100%;
+    min-width: 0;
+    margin-top: 1rem;
+    border-collapse: collapse;
+}
+
+    .form-table th {
+        width: 30%;
+        padding: 14px 16px;
+        background-color: #f3f4f6;
+        color: #1f2937;
+        text-align: left;
+        vertical-align: middle;
+        font-weight: 600;
+    }
+
+    .form-table td {
+        padding: 14px 16px;
+        background-color: #ffffff;
+        color: #111827;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .form-table .form-control,
+    .form-table .form-select {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ced4da;
+        border-radius: 10px;
+        padding: 0.55rem 0.75rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+    }
+
+    .form-table textarea.form-control {
+        resize: vertical;
+        min-height: 110px;
+    }
+
+    .form-table .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-table .form-check-input {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+
+    .form-table .form-check-label {
+        margin: 0;
+    }
+
+    .form-table .text-danger {
+        display: block;
+        margin-top: 0.35rem;
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+
+.form-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.save-button,
+.cancel-button,
+.delete-button {
+    display: inline-block;
+    border: none;
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.save-button {
+    background-color: #198754;
+    color: #ffffff;
+}
+
+    .save-button:hover {
+        background-color: #157347;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+.cancel-button {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+    .cancel-button:hover {
+        background-color: #565e64;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+.delete-button {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+    .delete-button:hover {
+        background-color: #bb2d3b;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }

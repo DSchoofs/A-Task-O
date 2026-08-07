@@ -5,7 +5,7 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
 {
     public void Configure(EntityTypeBuilder<TaskItem> builder)
     {
-        builder.ToTable("Tasks");
+        builder.ToTable("TaskItems");
 
         builder.HasKey(t => t.Id);
 

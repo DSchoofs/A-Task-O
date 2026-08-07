@@ -1,40 +1,100 @@
 ﻿@page "{id:int}"
 @model Schoofs_ATaskO.Pages.Admin.Tasks.EditModel
+
 @{
     ViewData["Title"] = "Aufgabe bearbeiten";
 }
 
 <div class="page-container">
-    <div class="form-container">
-        <h1>Aufgabe bearbeiten</h1>
+    <div class="form-container wide-container">
+        <div class="page-header">
+            <h1>Aufgabe bearbeiten</h1>
+        </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
-            <div class="error-message">@Model.ErrorMessage</div>
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
         }
 
         <form method="post">
-            <input asp-for="ViewModel.TaskId" type="hidden" />
+            <div asp-validation-summary="All" class="text-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="ViewModel.TaskName"></label>
-                <input asp-for="ViewModel.TaskName" class="form-input" />
-                <span asp-validation-for="ViewModel.TaskName" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="Input.Id" />
 
-            <div class="form-group">
-                <label asp-for="ViewModel.TaskInterval"></label>
-                <select asp-for="ViewModel.TaskInterval"
-                        asp-items="Html.GetEnumSelectList<TaskInterval>()"
-                        class="form-input">
-                    <option value="">Bitte wählen</option>
-                </select>
-                <span asp-validation-for="ViewModel.TaskInterval" class="text-danger"></span>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle form-table">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <label asp-for="Input.Name"></label>
+                            </th>
+                            <td>
+                                <input asp-for="Input.Name" class="form-control" />
+                                <span asp-validation-for="Input.Name"
+                                      class="text-danger"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <label asp-for="Input.Description"></label>
+                            </th>
+                            <td>
+                                <textarea asp-for="Input.Description"
+                                          class="form-control"
+                                          rows="4"></textarea>
+                                <span asp-validation-for="Input.Description"
+                                      class="text-danger"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <label asp-for="Input.Interval"></label>
+                            </th>
+                            <td>
+                                <select asp-for="Input.Interval"
+                                        asp-items="Html.GetEnumSelectList<Schoofs_ATaskO.Models.TaskInterval>()"
+                                        class="form-select">
+                                </select>
+
+                                <span asp-validation-for="Input.Interval"
+                                      class="text-danger"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <label asp-for="Input.IsActive"></label>
+                            </th>
+                            <td>
+                                <div class="form-check">
+                                    <input asp-for="Input.IsActive"
+                                           class="form-check-input" />
+
+                                    <label asp-for="Input.IsActive"
+                                           class="form-check-label">
+                                    </label>
+                                </div>
+
+                                <span asp-validation-for="Input.IsActive"
+                                      class="text-danger"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="save-button">Speichern</button>
-                <a asp-page="/Admin/Tasks/TaskManagement" class="cancel-button">Abbrechen</a>
+                <button type="submit" class="save-button">
+                    Änderungen speichern
+                </button>
+
+                <a asp-page="TaskManagement" class="cancel-button">
+                    Abbrechen
+                </a>
             </div>
         </form>
     </div>

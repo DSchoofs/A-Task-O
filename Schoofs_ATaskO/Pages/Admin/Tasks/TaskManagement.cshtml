@@ -26,9 +26,12 @@
                 <table class="table table-striped table-hover table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
-                            <th>Aufgabenname</th>
+                            <th>Name</th>
+                            <th>Beschreibung</th>
                             <th>Intervall</th>
+                            <th>Status</th>
+                            <th>Erstellt am</th>
+                            <th>Geändert am</th>
                             <th>Aktionen</th>
                         </tr>
                     </thead>
@@ -36,12 +39,34 @@
                         @foreach (var task in Model.Tasks)
                         {
                             <tr>
-                                <td >@task.Id</td>
                                 <td>@task.Name</td>
-                                <td>@task.Interval.GetDisplayName()</td>
-                                <td class="table-actions">
-                                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@task.Id" class="btn btn-primary btn-sm">Bearbeiten</a>
-                                    <a asp-page="/Admin/Tasks/Delete" asp-route-id="@task.Id" class="btn btn-danger btn-sm">Löschen</a>
+                                <td>@task.Description</td>
+                                <td>@task.Interval</td>
+                                <td>
+                                    @(task.IsActive ? "Aktiv" : "Inaktiv")
+                                </td>
+                                <td>
+                                    @task.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                </td>
+                                <td>
+                                    @(task.ModifiedAt.HasValue
+                                        ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                        : "Noch nicht geändert")
+                                </td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a asp-page="Edit"
+                                           asp-route-id="@task.Id"
+                                           class="btn btn-primary btn-sm">
+                                            Bearbeiten
+                                        </a>
+
+                                        <a asp-page="Delete"
+                                           asp-route-id="@task.Id"
+                                           class="btn btn-danger btn-sm">
+                                            Löschen
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }

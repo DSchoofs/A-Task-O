@@ -13,7 +13,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
         private readonly ITaskService _taskService;
 
         [BindProperty]
-        public EditTaskViewModel ViewModel { get; set; } = new();
+        public TaskEditViewModel Input { get; set; } = new();
 
         public string ErrorMessage { get; set; } = string.Empty;
 
@@ -31,11 +31,13 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
                 return RedirectToPage("/Admin/Tasks/TaskManagement");
             }
 
-            ViewModel = new EditTaskViewModel
+            Input = new TaskEditViewModel
             {
-                TaskId = task.Id,
-                TaskName = task.Name,
-                TaskInterval = task.Interval
+                Id = task.Id,
+                Name = task.Name,
+                Interval = task.Interval,
+                Description = task.Description,
+                IsActive = task.IsActive
             };
 
             return Page();
@@ -48,14 +50,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
                 return Page();
             }
 
-            var task = new TaskItem
-            {
-                Id = ViewModel.TaskId,
-                Name = ViewModel.TaskName,
-                Interval = ViewModel.TaskInterval!.Value
-            };
-
-            var result = _taskService.UpdateTask(task);
+            var result = _taskService.UpdateTask(Input);
 
             if (!result)
             {

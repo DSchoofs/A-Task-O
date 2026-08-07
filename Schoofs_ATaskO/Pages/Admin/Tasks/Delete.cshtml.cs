@@ -1,50 +1,80 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.ViewModels;
 
-namespace Schoofs_ATaskO.Pages.Admin.Tasks
+namespace Schoofs_ATaskO.Pages.Admin.Tasks;
+
+[Authorize(Roles = "Admin")]
+public class DeleteModel : PageModel
 {
-    [Authorize(Roles = "Admin")]
-    public class DeleteModel : PageModel
+    private readonly ITaskService _taskService;
+
+    [BindProperty]
+    public TaskDeleteViewModel Input { get; set; } = new();
+
+    public string ErrorMessage { get; private set; } = string.Empty;
+
+    public DeleteModel(ITaskService taskService)
     {
-        private readonly ITaskService _taskService;
+        _taskService = taskService;
+    }
 
-        [BindProperty]
-        public TaskItem? TaskItem { get; set; }
+    public IActionResult OnGet(int id)
+    {
+        var taskItem = _taskService.GetTaskById(id);
 
-        public string ErrorMessage { get; set; } = string.Empty;
-
-        public DeleteModel(ITaskService taskService)
+        if (taskItem is null)
         {
-            _taskService = taskService;
+            return NotFound();
         }
 
-        public IActionResult OnGet(int id)
+        Input = new TaskDeleteViewModel
         {
-            TaskItem = _taskService.GetTaskById(id);
+            Id = taskItem.Id,
+            Name = taskItem.Name,
+            Description = taskItem.Description,
+            Interval = taskItem.Interval,
+            IsActive = taskItem.IsActive,
+            CreatedAt = taskItem.CreatedAt,
+            CreatedByUserId = taskItem.CreatedByUserId,
+            ModifiedAt = taskItem.ModifiedAt,
+            ModifiedByUserId = taskItem.ModifiedByUserId
+        };
 
-            if (TaskItem == null)
+        return Page();
+    }
+
+    public IActionResult OnPost()
+    {
+        var success = _taskService.DeleteTaskById(Input.Id);
+
+        if (!success)
+        {
+            ErrorMessage = _taskService.ErrorMessage;
+
+            var taskItem = _taskService.GetTaskById(Input.Id);
+
+            if (taskItem is not null)
             {
-                return RedirectToPage("/Admin/Tasks/TaskManagement");
+                Input = new TaskDeleteViewModel
+                {
+                    Id = taskItem.Id,
+                    Name = taskItem.Name,
+                    Description = taskItem.Description,
+                    Interval = taskItem.Interval,
+                    IsActive = taskItem.IsActive,
+                    CreatedAt = taskItem.CreatedAt,
+                    CreatedByUserId = taskItem.CreatedByUserId,
+                    ModifiedAt = taskItem.ModifiedAt,
+                    ModifiedByUserId = taskItem.ModifiedByUserId
+                };
             }
 
             return Page();
         }
 
-        public IActionResult OnPost(int id)
-        {
-            var result = _taskService.DeleteTaskById(id);
-
-            if (!result)
-            {
-                ErrorMessage = _taskService.ErrorMessage;
-                TaskItem = _taskService.GetTaskById(id);
-                return Page();
-            }
-
-            return RedirectToPage("/Admin/Tasks/TaskManagement");
-        }
+        return RedirectToPage("TaskManagement");
     }
 }
