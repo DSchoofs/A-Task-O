@@ -12,7 +12,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
         private readonly IUserService _userService;
 
         [BindProperty]
-        public User InputUser { get; set; } = new();
+        public User Input { get; set; } = new();
 
         public string ErrorMessage { get; set; } = string.Empty;
 
@@ -34,7 +34,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
                 return RedirectToPage("./UserManagement");
             }
 
-            InputUser = user;
+            Input = user;
             return Page();
         }
 
@@ -45,7 +45,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
                 return Page();
             }
 
-            var existingUser = _userService.GetUserById(InputUser.UserId);
+            var existingUser = _userService.GetUserById(Input.UserId);
 
             if (existingUser == null)
             {
@@ -53,12 +53,12 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
                 return Page();
             }
 
-            existingUser.FirstName = InputUser.FirstName;
-            existingUser.LastName = InputUser.LastName;
-            existingUser.Email = InputUser.Email;
-            existingUser.IsAdmin = InputUser.IsAdmin;
-            existingUser.CompletedTasks = InputUser.CompletedTasks;
-            existingUser.LastLogin = InputUser.LastLogin;
+            existingUser.FirstName = Input.FirstName;
+            existingUser.LastName = Input.LastName;
+            existingUser.Email = Input.Email;
+            existingUser.IsAdmin = Input.IsAdmin;
+            existingUser.CompletedTasks = Input.CompletedTasks;
+            existingUser.LastLogin = Input.LastLogin;
 
             var result = _userService.UpdateUser(existingUser);
 

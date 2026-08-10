@@ -29,5 +29,8 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
             .WithOne(b => b.TaskItem)
             .HasForeignKey(b => b.TaskItemId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Property(task => task.WeekMode)
+            .IsRequired();
     }
 }

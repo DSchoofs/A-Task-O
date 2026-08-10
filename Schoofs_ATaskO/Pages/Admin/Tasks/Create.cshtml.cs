@@ -25,6 +25,8 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
         public void OnGet()
         {
             Input.IsActive = true;
+            Input.WeekMode = TaskWeekMode.Weekdays;
+        
         }
 
         public IActionResult OnPost()

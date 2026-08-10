@@ -16,56 +16,56 @@
     }
 
     <form method="post">
-        <input type="hidden" asp-for="InputUser.UserId" />
+        <input type="hidden" asp-for="Input.UserId" />
 
         <div asp-validation-summary="All" class="text-danger"></div>
 
         <table class="form-table">
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="InputUser.FirstName" class="form-label">Vorname</label>
+                    <label asp-for="Input.FirstName" class="form-label">Vorname</label>
                 </td>
                 <td>
-                    <input asp-for="InputUser.FirstName" class="form-control" />
-                    <span asp-validation-for="InputUser.FirstName" class="text-danger"></span>
+                    <input asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="InputUser.LastName" class="form-label">Nachname</label>
+                    <label asp-for="Input.LastName" class="form-label">Nachname</label>
                 </td>
                 <td>
-                    <input asp-for="InputUser.LastName" class="form-control" />
-                    <span asp-validation-for="InputUser.LastName" class="text-danger"></span>
+                    <input asp-for="Input.LastName" class="form-control" />
+                    <span asp-validation-for="Input.LastName" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="InputUser.Email" class="form-label">E-Mail</label>
+                    <label asp-for="Input.Email" class="form-label">E-Mail</label>
                 </td>
                 <td>
-                    <input asp-for="InputUser.Email" class="form-control" />
-                    <span asp-validation-for="InputUser.Email" class="text-danger"></span>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </td>
             </tr>
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="InputUser.CompletedTasks" class="form-label">Erledigte Tasks</label>
+                    <label asp-for="Input.CompletedTasks" class="form-label">Erledigte Tasks</label>
                 </td>
                 <td>
-                    <input asp-for="InputUser.CompletedTasks" type="number" class="form-control" min="0"/>
-                    <span asp-validation-for="InputUser.CompletedTasks" class="text-danger"></span>
+                    <input asp-for="Input.CompletedTasks" type="number" class="form-control" min="0"/>
+                    <span asp-validation-for="Input.CompletedTasks" class="text-danger"></span>
                 </td>
             </tr>
             
             <tr>
                 <td class="form-label-cell">
-                    <label asp-for="InputUser.IsAdmin" class="form-label">Administrator</label>
+                    <label asp-for="Input.IsAdmin" class="form-label">Administrator</label>
                 </td>
                 <td>
                     <div class="form-check">
-                        <input asp-for="InputUser.IsAdmin" class="form-check-input" />
-                        <label asp-for="InputUser.IsAdmin" class="form-check-label">
+                        <input asp-for="Input.IsAdmin" class="form-check-input" />
+                        <label asp-for="Input.IsAdmin" class="form-check-label">
                             Benutzer hat Administratorrechte
                         </label>
                     </div>

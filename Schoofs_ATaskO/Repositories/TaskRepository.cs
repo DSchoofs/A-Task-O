@@ -12,7 +12,7 @@ namespace Schoofs_ATaskO.Repositories
 
         public TaskRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("Atasko")!;
+            _connectionString = configuration.GetConnectionString("ATaskO")!;
         }
 
         public List<TaskItem> GetAllTasks()
@@ -20,7 +20,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 List<TaskItem> tasks = new List<TaskItem>();
-                sqlcmd = "SELECT Id, Name, Description, Interval, IsActive, CreatedAt, CreatedByUserId, ModifiedAt, ModifiedByUserId FROM TaskItems"; 
+                sqlcmd = "SELECT Id, Name, Description, Interval, WeekMode, IsActive, CreatedAt, CreatedByUserId, ModifiedAt, ModifiedByUserId FROM TaskItems"; 
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -44,7 +44,7 @@ namespace Schoofs_ATaskO.Repositories
             try
             {
                 TaskItem? task = null;
-                sqlcmd = "SELECT Id, Name, Description, Interval, IsActive, CreatedAt, CreatedByUserId, ModifiedAt, ModifiedByUserId FROM TaskItems WHERE Id = @Id";
+                sqlcmd = "SELECT Id, Name, Description, Interval, WeekMode, IsActive, CreatedAt, CreatedByUserId, ModifiedAt, ModifiedByUserId FROM TaskItems WHERE Id = @Id";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -67,8 +67,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = "INSERT INTO TaskItems (Name, Description, Interval, IsActive, CreatedAt, CreatedByUserId) " +
-                         "VALUES (@Name, @Description, @Interval, @IsActive, @CreatedAt, @CreatedByUserId);";
+                sqlcmd = "INSERT INTO TaskItems (Name, Description, Interval, WeekMode, IsActive, CreatedAt, CreatedByUserId) VALUES (@Name, @Description, @Interval, @WeekMode, @IsActive, @CreatedAt, @CreatedByUserId);";
 
                 using (var conn = new SqlConnection(_connectionString))
                 {
@@ -79,6 +78,7 @@ namespace Schoofs_ATaskO.Repositories
                         task.Name,
                         task.Description,
                         Interval = (int)task.Interval,
+                        WeekMode = (int)task.WeekMode,
                         task.IsActive,
                         task.CreatedAt,
                         task.CreatedByUserId
@@ -103,9 +103,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = "UPDATE TaskItems SET Name = @Name, Description = @Description, Interval = @Interval, " +
-                         "IsActive = @IsActive, ModifiedAt = @ModifiedAt, ModifiedByUserId = @ModifiedByUserId " +
-                         "WHERE Id = @Id;";
+                sqlcmd = "UPDATE TaskItems SET Name = @Name, Description = @Description, Interval = @Interval, WeekMode = @WeekMode, IsActive = @IsActive, ModifiedAt = @ModifiedAt, ModifiedByUserId = @ModifiedByUserId WHERE Id = @Id;";
 
                 using (var conn = new SqlConnection(_connectionString))
                 {
@@ -117,6 +115,7 @@ namespace Schoofs_ATaskO.Repositories
                         task.Name,
                         task.Description,
                         Interval = (int)task.Interval,
+                        WeekMode = (int)task.WeekMode,
                         task.IsActive,
                         task.ModifiedAt,
                         task.ModifiedByUserId

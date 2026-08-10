@@ -22,4 +22,8 @@ public class TaskEditViewModel
 
     [Display(Name = "Aktiv")]
     public bool IsActive { get; set; }
+
+    [Required(ErrorMessage = "Bitte wählen Sie eine Wochenendregel aus.")]
+    [Display(Name = "Wochenendregel")]
+    public TaskWeekMode? WeekMode { get; set; }
 }

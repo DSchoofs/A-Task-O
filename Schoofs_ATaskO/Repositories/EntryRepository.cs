@@ -12,7 +12,7 @@ namespace Schoofs_ATaskO.Repositories
 
         public EntryRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("Atasko")!;
+            _connectionString = configuration.GetConnectionString("ATaskO")!;
         }
 
         public List<Entry> GetAllEntries()

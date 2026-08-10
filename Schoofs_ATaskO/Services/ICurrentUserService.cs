@@ -1,4 +1,4 @@
-﻿namespace Schoofs_Atasko.Services;
+﻿namespace Schoofs_ATaskO.Services;
 
 public interface ICurrentUserService
 {

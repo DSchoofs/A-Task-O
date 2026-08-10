@@ -36,6 +36,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Tasks
                 Id = task.Id,
                 Name = task.Name,
                 Interval = task.Interval,
+                WeekMode = task.WeekMode,
                 Description = task.Description,
                 IsActive = task.IsActive
             };

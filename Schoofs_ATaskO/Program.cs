@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Schoofs_Atasko.Services;
 using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.Services;
 using Schoofs_ATaskO.Settings;
@@ -17,8 +16,8 @@ namespace Schoofs_ATaskO
             builder.Services.AddRazorPages();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("Atasko")
-                ?? throw new InvalidOperationException("Connection string 'Atasko' not found.")));
+                options.UseSqlServer(builder.Configuration.GetConnectionString("ATaskO")
+                ?? throw new InvalidOperationException("Connection string 'ATaskO' not found.")));
 
             builder.Services
                 .AddOptions<SecuritySettings>()
@@ -45,6 +44,8 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ITaskService, TaskService>();
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<ITaskBlockRepository, TaskBlockRepository>();
+            builder.Services.AddScoped<ITaskBlockService, TaskBlockService>();
 
             var app = builder.Build();
 

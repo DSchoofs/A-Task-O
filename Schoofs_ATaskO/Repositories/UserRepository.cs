@@ -17,7 +17,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             _securitySettings = securityOptions.Value;
             _configuration = configuration;
-            _connectionString = configuration.GetConnectionString("Atasko")!;
+            _connectionString = configuration.GetConnectionString("ATaskO")!;
             if (string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper))
             {
                 throw new InvalidOperationException("PasswordPepper ist nicht konfiguriert.");
@@ -170,12 +170,13 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                using var connection = new SqlConnection(_connectionString);
-
-                var sql = "SELECT COUNT(1) FROM Users WHERE IsAdmin = 1";
-                var adminCount = connection.ExecuteScalar<int>(sql);
-
-                return adminCount > 0;
+                sqlcmd = $"SELECT COUNT(1) FROM Users WHERE IsAdmin = 1";
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    var adminCount = connection.ExecuteScalar<int>(sqlcmd);
+                    return adminCount > 0;
+                }
             }
             catch (Exception ex)
             {

@@ -1,6 +1,8 @@
 ﻿@page
 @model Schoofs_ATaskO.Pages.Admin.Tasks.CreateModel
 
+@using Schoofs_ATaskO.Models
+
 @{
     ViewData["Title"] = "Aufgabe anlegen";
 }
@@ -43,6 +45,7 @@
                                 <textarea asp-for="Input.Description"
                                           class="form-control"
                                           rows="4"></textarea>
+
                                 <span asp-validation-for="Input.Description"
                                       class="text-danger"></span>
                             </td>
@@ -54,12 +57,32 @@
                             </th>
                             <td>
                                 <select asp-for="Input.Interval"
-                                        asp-items="Html.GetEnumSelectList<Schoofs_ATaskO.Models.TaskInterval>()"
+                                        asp-items="Html.GetEnumSelectList<TaskInterval>()"
                                         class="form-select">
                                 </select>
 
                                 <span asp-validation-for="Input.Interval"
                                       class="text-danger"></span>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>
+                                <label asp-for="Input.WeekMode"></label>
+                            </th>
+                            <td>
+                                <select asp-for="Input.WeekMode"
+                                        asp-items="Html.GetEnumSelectList<TaskWeekMode>()"
+                                        class="form-select">
+                                    <option value="">Bitte auswählen</option>
+                                </select>
+
+                                <span asp-validation-for="Input.WeekMode"
+                                      class="text-danger"></span>
+
+                                <small class="form-hint">
+                                    Wird nur bei wöchentlichem Intervall verwendet. 
+                                </small>
                             </td>
                         </tr>
 

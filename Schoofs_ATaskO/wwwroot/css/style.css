@@ -14,14 +14,16 @@ body {
     background: #f7f7f7;
 }
 
-/* Header */
+/* ==================================================
+   Header
+================================================== */
 
 .topbar {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 80px;
+    min-height: 80px;
     padding: 0 1.5rem;
     background-color: #2c3e50;
     color: #ffffff;
@@ -36,10 +38,11 @@ body {
 }
 
 .logo {
+    display: block;
     width: auto;
     height: auto;
     max-width: 180px;
-    max-height: 90%;
+    max-height: 72px;
     object-fit: contain;
 }
 
@@ -49,7 +52,7 @@ body {
 }
 
 .app-title {
-    font-size: 3em;
+    font-size: 3rem;
     font-weight: 700;
 }
 
@@ -63,6 +66,10 @@ body {
     right: 1.5rem;
 }
 
+/* ==================================================
+   Login / Logout
+================================================== */
+
 .logout-button,
 .login-button {
     display: inline-block;
@@ -70,6 +77,7 @@ body {
     border-radius: 8px;
     color: #ffffff;
     text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .logout-button {
@@ -78,6 +86,9 @@ body {
 
     .logout-button:hover {
         background-color: #ff6b5d;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
 
 .login-button {
@@ -86,9 +97,14 @@ body {
 
     .login-button:hover {
         background-color: #2e7d32;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
 
-/* Layout */
+/* ==================================================
+   Layout
+================================================== */
 
 .layout {
     display: flex;
@@ -97,8 +113,8 @@ body {
 }
 
 .sidebar {
-    width: 240px;
     flex: 0 0 240px;
+    width: 240px;
     padding: 1.5rem 1rem;
     background-color: #1f2d3a;
 }
@@ -122,6 +138,7 @@ body {
 
             .sidebar nav a:hover {
                 background-color: #3f5974;
+                color: #ffffff;
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
             }
@@ -130,43 +147,44 @@ body {
     flex: 1 1 auto;
     min-width: 0;
     padding: 2rem;
-    background: #f7f7f7;
+    background-color: #f7f7f7;
 }
 
 .footer {
     padding: 0.75rem 1rem;
     border-top: 1px solid #d9d9d9;
-    background: #ecf0f1;
+    background-color: #ecf0f1;
     color: #555555;
     text-align: center;
 }
 
-/* Container */
+/* ==================================================
+   Allgemeine Container
+================================================== */
 
 .page-container {
     width: 100%;
-    max-width: 100%;
     min-width: 0;
 }
 
 .form-container {
-    width: fit-content;
-    max-width: 100%;
+    width: 100%;
+    max-width: 760px;
     padding: 1.5rem;
     border-radius: 14px;
-    background: #ffffff;
+    background-color: #ffffff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+/*
+   Die breite Variante nutzt jetzt die komplette
+   verfügbare Breite. Dadurch wird die Task-Tabelle
+   nicht mehr auf 1200px begrenzt.
+*/
 .wide-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: none;
     margin: 0;
-}
-
-.form-container .form-control,
-.form-container .form-select {
-    border-radius: 10px;
 }
 
 .page-header {
@@ -200,229 +218,18 @@ body {
     color: #664d03;
 }
 
-/* Tables */
+/* ==================================================
+   Formulare
+================================================== */
 
-.table-responsive {
+.form-container .form-control,
+.form-container .form-select {
     width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    margin-top: 1rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    border-radius: 14px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-.table {
-    width: 100%;
-    min-width: 900px;
-    border-collapse: collapse;
-    background: #ffffff;
-}
-
-    .table thead {
-        background: linear-gradient(135deg, #1f2937, #374151);
-        color: #ffffff;
-    }
-
-        .table thead th {
-            padding: 14px 16px;
-            border-bottom: none;
-            font-size: 0.95rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-    .table tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid #e5e7eb;
-        color: #111827;
-        font-size: 0.95rem;
-        text-align: center;
-        vertical-align: middle;
-    }
-
-    .table tbody tr:nth-child(even) {
-        background: #f9fafb;
-    }
-
-    .table tbody tr:nth-child(odd) {
-        background: #ffffff;
-    }
-
-    .table tbody tr:hover {
-        background: #e0f2fe;
-        transition: background 0.2s ease;
-    }
-
-    .table tbody tr:last-child td {
-        border-bottom: none;
-    }
-
-.table-bordered {
-    border: 1px solid #e5e7eb;
-}
-
-.table-actions {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-    .table-actions .btn {
-        display: inline-block;
-        padding: 0.45rem 0.8rem;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-        .table-actions .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-
-/* TaskManagement table */
-
-.task-management-table {
-    width: max-content;
-    min-width: 1500px;
-    table-layout: fixed;
-}
-
-    .task-management-table .col-name {
-        width: 14%;
-    }
-
-    .task-management-table .col-description {
-        width: 24%;
-    }
-
-    .task-management-table .col-interval {
-        width: 7%;
-    }
-
-    .task-management-table .col-status {
-        width: 7%;
-    }
-
-    .task-management-table .col-createdby {
-        width: 9%;
-    }
-
-    .task-management-table .col-createdat {
-        width: 10%;
-    }
-
-    .task-management-table .col-modifiedby {
-        width: 9%;
-    }
-
-    .task-management-table .col-modifiedat {
-        width: 10%;
-    }
-
-    .task-management-table .col-actions {
-        width: 10%;
-    }
-
-    .task-management-table th,
-    .task-management-table td {
-        min-width: 0;
-    }
-
-    .task-management-table th {
-        white-space: nowrap;
-        word-break: normal;
-        overflow-wrap: normal;
-    }
-
-    .task-management-table td {
-        vertical-align: top;
-    }
-
-        .task-management-table td.name-column,
-        .task-management-table td.description-column {
-            text-align: left;
-            vertical-align: top;
-            white-space: normal;
-        }
-
-    .task-management-table .name-box {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-        color: #111827;
-        line-height: 1.5;
-        text-align: left;
-        white-space: normal;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-    }
-
-    .task-management-table .description-box {
-        display: block;
-        width: 100%;
-        max-width: 100%;
-        height: 4.5em;
-        min-height: 4.5em;
-        max-height: 4.5em;
-        margin: 0;
-        padding: 0.55rem 0.7rem;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        background-color: #f9fafb;
-        color: #111827;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 0.95rem;
-        font-weight: 400;
-        line-height: 1.5;
-        text-align: left;
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-
-/* TaskView description */
-
-.task-description {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    height: calc(1.5em * 10);
-    min-height: 150px;
-    max-height: calc(1.5em * 10);
-    padding: 0.75rem;
-    border: 1px solid #d1d5db;
     border-radius: 10px;
-    background-color: #ffffff;
-    color: #111827;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    text-align: left;
-    white-space: pre-wrap;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overflow-wrap: anywhere;
-    resize: none;
 }
-
-/* Form tables */
 
 .form-table {
     width: 100%;
-    min-width: 0;
     margin-top: 1rem;
     border-collapse: collapse;
 }
@@ -455,8 +262,7 @@ body {
         padding: 0.55rem 0.75rem;
         border: 1px solid #ced4da;
         border-radius: 10px;
-        font-family: inherit;
-        font-size: 0.95rem;
+        font: inherit;
     }
 
     .form-table textarea.form-control {
@@ -479,7 +285,8 @@ body {
         margin: 0;
     }
 
-    .form-table .text-danger {
+    .form-table .text-danger,
+    .form-input-cell .text-danger {
         display: block;
         margin-top: 0.35rem;
         color: #dc3545;
@@ -502,11 +309,6 @@ body {
         width: 100%;
     }
 
-    .form-input-cell .text-danger {
-        display: block;
-        margin-top: 0.35rem;
-    }
-
 .form-actions {
     display: flex;
     gap: 0.75rem;
@@ -514,20 +316,510 @@ body {
     margin-top: 1.25rem;
 }
 
-/* Buttons */
+/* ==================================================
+   Tabellen allgemein
+================================================== */
+
+.table-responsive {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin-top: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+}
+
+    .table thead {
+        background: linear-gradient(135deg, #1f2937, #374151);
+        color: #ffffff;
+    }
+
+        .table thead th {
+            padding: 12px 14px;
+            border-bottom: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+    .table tbody td {
+        padding: 12px 14px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #111827;
+        font-size: 0.9rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f9fafb;
+    }
+
+    .table tbody tr:nth-child(odd) {
+        background-color: #ffffff;
+    }
+
+    .table tbody tr:hover {
+        background-color: #e0f2fe;
+    }
+
+    .table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+.table-bordered {
+    border: 1px solid #e5e7eb;
+}
+
+.table-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+    .table-actions .btn {
+        display: inline-block;
+        padding: 0.4rem 0.7rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+        .table-actions .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+
+/* ==================================================
+   TaskManagement-Tabelle
+================================================== */
+
+.task-management-table {
+    width: 100%;
+    min-width: 1100px;
+    table-layout: fixed;
+}
+
+    .task-management-table .col-name {
+        width: 14%;
+    }
+
+    .task-management-table .col-description {
+        width: 22%;
+    }
+
+    .task-management-table .col-interval {
+        width: 8%;
+    }
+
+    .task-management-table .col-status {
+        width: 8%;
+    }
+
+    .task-management-table .col-createdby {
+        width: 10%;
+    }
+
+    .task-management-table .col-createdat {
+        width: 11%;
+    }
+
+    .task-management-table .col-modifiedby {
+        width: 10%;
+    }
+
+    .task-management-table .col-modifiedat {
+        width: 11%;
+    }
+
+    .task-management-table .col-actions {
+        width: 16%;
+    }
+
+    .task-management-table th {
+        white-space: nowrap;
+        word-break: normal;
+    }
+
+    .task-management-table td.name-column,
+    .task-management-table td.description-column {
+        text-align: left;
+        vertical-align: middle;
+    }
+
+.name-box {
+    width: 100%;
+    overflow: hidden;
+    color: #111827;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.description-column {
+    max-width: 0;
+}
+
+.description-preview {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    color: #4b5563;
+    line-height: 1.4;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.description-preview-empty {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.description-button {
+    width: max-content;
+    display: inline-block;
+    margin-top: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    border: none;
+    border-radius: 7px;
+    background-color: #6b7280;
+    color: #ffffff;
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .description-button:hover {
+        background-color: #4b5563;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+
+/* ==================================================
+   Beschreibungsoverlay
+================================================== */
+
+.description-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: rgba(15, 23, 42, 0.65);
+}
+
+    .description-overlay.is-open {
+        display: flex;
+    }
+
+.description-dialog {
+    display: flex;
+    flex-direction: column;
+    width: min(760px, 100%);
+    max-height: min(680px, 90vh);
+    padding: 1.5rem;
+    border-radius: 14px;
+    background-color: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.description-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+    .description-dialog-header h2 {
+        margin: 0;
+        color: #1f2937;
+        font-size: 1.3rem;
+    }
+
+.description-close-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: 50%;
+    background-color: #e5e7eb;
+    color: #374151;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+    .description-close-button:hover {
+        background-color: #d1d5db;
+    }
+
+.description-textarea {
+    width: 100%;
+    min-height: 320px;
+    padding: 0.85rem;
+    resize: vertical;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background-color: #f9fafb;
+    color: #1f2937;
+    font: inherit;
+    line-height: 1.5;
+}
+
+.description-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+body.description-overlay-open {
+    overflow: hidden;
+}
+
+/* ==================================================
+   TaskView
+================================================== */
+
+.task-view-subtitle {
+    margin: 0.4rem 0 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.task-details {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background-color: #f9fafb;
+}
+
+.task-detail-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+    .task-detail-row:last-child {
+        margin-bottom: 0;
+    }
+
+.task-detail-label {
+    min-width: 150px;
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.task-detail-description {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+    .task-detail-description .task-detail-label {
+        min-width: 150px;
+    }
+
+    .task-detail-description .description-button {
+        width: fit-content;
+        margin-top: 0;
+    }
+
+    .task-detail-description .description-preview-empty {
+        margin: 0;
+    }
+
+.task-view-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.period-navigation-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    background-color: #6c757d;
+    color: #ffffff;
+    text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .period-navigation-button:hover {
+        background-color: #565e64;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+.task-periods {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.task-period {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    background-color: #ffffff;
+}
+
+    .task-period h2 {
+        margin: 0;
+        color: #1f2937;
+        font-size: 1.05rem;
+    }
+
+.current-period {
+    border: 2px solid #3b82f6;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.15);
+}
+
+.task-period-label {
+    margin: 0.5rem 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.task-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.6rem;
+    padding: 0.7rem;
+    border-left: 5px solid transparent;
+    border-radius: 8px;
+    background-color: #f3f4f6;
+}
+
+    .task-block:last-child {
+        margin-bottom: 0;
+    }
+
+.task-block-time,
+.task-block-status {
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+}
+
+.task-block-status {
+    font-weight: 600;
+}
+
+.block-free {
+    border-left-color: #9ca3af;
+    background-color: #f3f4f6;
+}
+
+.block-mine {
+    border-left-color: #3b82f6;
+    background-color: #dbeafe;
+}
+
+.block-other {
+    border-left-color: #f59e0b;
+    background-color: #fef3c7;
+}
+
+.block-overdue {
+    border-left-color: #ef4444;
+    background-color: #fee2e2;
+}
+
+.block-completed {
+    border-left-color: #22c55e;
+    background-color: #dcfce7;
+}
+
+.empty-block-message {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.task-legend {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+    .task-legend h2 {
+        margin: 0 0 0.75rem;
+        color: #1f2937;
+        font-size: 1.05rem;
+    }
+
+.legend-items {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+.legend-color {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 4px;
+}
+
+/* ==================================================
+   Buttons
+================================================== */
 
 .save-button,
 .cancel-button,
+.edit-button,
 .delete-button {
     display: inline-block;
     padding: 0.55rem 1rem;
     border: none;
     border-radius: 10px;
-    font-family: inherit;
+    font: inherit;
     font-size: 0.95rem;
     text-decoration: none;
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .save-button {
@@ -542,12 +834,14 @@ body {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
 
-.cancel-button {
+.cancel-button,
+.edit-button {
     background-color: #6c757d;
     color: #ffffff;
 }
 
-    .cancel-button:hover {
+    .cancel-button:hover,
+    .edit-button:hover {
         background-color: #565e64;
         color: #ffffff;
         transform: translateY(-1px);
@@ -566,7 +860,23 @@ body {
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     }
 
-/* Responsive */
+/* ==================================================
+   Responsive Design
+================================================== */
+
+@media (max-width: 1100px) {
+    .content {
+        padding: 1.25rem;
+    }
+
+    .task-periods {
+        grid-template-columns: 1fr;
+    }
+
+    .task-period {
+        width: 100%;
+    }
+}
 
 @media (max-width: 900px) {
     .layout {
@@ -574,20 +884,18 @@ body {
     }
 
     .sidebar {
-        width: auto;
         flex-basis: auto;
+        width: 100%;
     }
 
-    .app-title {
-        font-size: 2rem;
-    }
+        .sidebar nav {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
 
     .topbar {
-        height: auto;
         min-height: 80px;
         padding: 1rem;
-        flex-wrap: wrap;
-        gap: 1rem;
     }
 
     .topbar-left,
@@ -595,19 +903,34 @@ body {
         position: static;
     }
 
+    .topbar {
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .topbar-center {
+        order: 2;
+    }
+
+    .topbar-left {
+        order: 1;
+    }
+
+    .topbar-right {
+        order: 3;
+    }
+
+    .app-title {
+        font-size: 2rem;
+    }
+
     .page-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .wide-container {
-        width: 100%;
-    }
-
     .task-management-table {
-        width: max-content;
-        min-width: 1500px;
-        table-layout: fixed;
+        min-width: 1100px;
     }
 
     .form-table th,
@@ -624,4 +947,97 @@ body {
     .form-table td {
         padding-top: 0.35rem;
     }
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding: 0.75rem;
+    }
+
+    .form-container {
+        padding: 1rem;
+    }
+
+    .sidebar nav {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar {
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .topbar-left,
+    .topbar-right,
+    .topbar-center {
+        position: static;
+    }
+
+    .topbar-left {
+        order: 1;
+    }
+
+    .topbar-center {
+        order: 2;
+    }
+
+    .topbar-right {
+        order: 3;
+    }
+
+    .logo {
+        max-width: 120px;
+        max-height: 60px;
+    }
+
+    .app-title {
+        font-size: 1.8rem;
+    }
+
+    .app-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .task-detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .task-detail-label {
+        min-width: 0;
+    }
+
+    .task-view-navigation {
+        gap: 0.5rem;
+    }
+
+    .period-navigation-button {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .description-overlay {
+        padding: 0.75rem;
+    }
+
+    .description-dialog {
+        max-height: 95vh;
+        padding: 1rem;
+    }
+
+    .description-textarea {
+        min-height: 240px;
+    }
+
+    .task-detail-description {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+        .task-detail-description .task-detail-label {
+            min-width: 0;
+        }
 }

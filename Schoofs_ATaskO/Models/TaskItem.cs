@@ -30,4 +30,5 @@ public class TaskItem
     public int? ModifiedByUserId { get; set; }
 
     public ICollection<TaskBlock> TaskBlocks { get; set; } = new List<TaskBlock>();
+    public TaskWeekMode WeekMode { get; set; } = TaskWeekMode.Weekdays;
 }

@@ -1,24 +1,34 @@
 ﻿@page
 @model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel
+
 @{
     ViewData["Title"] = "Aufgabenverwaltung";
 }
 
 <div class="page-container">
-    <div class="form-container wide-container">
+    <div class="form-container wide-container task-management-container">
+
         <div class="page-header">
             <h1>Aufgabenverwaltung</h1>
-            <a asp-page="/Admin/Tasks/Create" class="save-button">Neue Aufgabe anlegen</a>
+
+            <a asp-page="/Admin/Tasks/Create"
+               class="save-button">
+                Neue Aufgabe anlegen
+            </a>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
-            <div class="error-message">@Model.ErrorMessage</div>
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
         }
 
         @if (Model.Tasks.Count == 0)
         {
-            <p>Es sind aktuell keine Aufgaben vorhanden.</p>
+            <p>
+                Es sind aktuell keine Aufgaben vorhanden.
+            </p>
         }
         else
         {
@@ -49,6 +59,7 @@
                             <th>Aktionen</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach (var task in Model.Tasks)
                         {
@@ -60,27 +71,48 @@
                                 </td>
 
                                 <td class="description-column">
-                                    <div class="description-box">
-                                        @(string.IsNullOrWhiteSpace(task.Description)
-                                            ? "Keine Beschreibung"
-                                            : task.Description)
-                                    </div>
+                                    @if (string.IsNullOrWhiteSpace(task.Description))
+                                    {
+                                        <span class="description-preview-empty">
+                                            Keine Beschreibung
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="description-preview"
+                                              title="@task.Description">
+                                            @task.Description
+                                        </span>
+
+                                        <button type="button"
+                                                class="description-button"
+                                                data-description-open
+                                                data-description-title="@task.Name"
+                                                data-description="@task.Description">
+                                            Anzeigen
+                                        </button>
+                                    }
                                 </td>
 
-                                
-                                <td>@task.Interval</td>
+                                <td>
+                                    @task.Interval
+                                </td>
 
                                 <td>
                                     @(task.IsActive ? "Aktiv" : "Inaktiv")
                                 </td>
 
-                                <td>@task.CreatedByUserName</td>
+                                <td>
+                                    @task.CreatedByUserName
+                                </td>
 
                                 <td>
                                     @task.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                                 </td>
 
-                                <td>@task.ModifiedByUserName</td>
+                                <td>
+                                    @task.ModifiedByUserName
+                                </td>
 
                                 <td>
                                     @(task.ModifiedAt.HasValue ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm") : "Noch nicht geändert")
@@ -107,5 +139,40 @@
                 </table>
             </div>
         }
+    </div>
+</div>
+
+<!-- Beschreibungsoverlay -->
+<div id="descriptionOverlay"
+     class="description-overlay"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="descriptionDialogTitle">
+
+    <div class="description-dialog">
+        <div class="description-dialog-header">
+            <h2 id="descriptionDialogTitle">
+                Beschreibung
+            </h2>
+
+            <button type="button"
+                    class="description-close-button"
+                    data-description-close
+                    aria-label="Beschreibung schließen">
+                ×
+            </button>
+        </div>
+
+        <textarea id="descriptionText"
+                  class="description-textarea"
+                  readonly></textarea>
+
+        <div class="description-dialog-actions">
+            <button type="button"
+                    class="cancel-button"
+                    data-description-close>
+                Schließen
+            </button>
+        </div>
     </div>
 </div>

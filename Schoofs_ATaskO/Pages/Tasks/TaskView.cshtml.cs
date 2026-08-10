@@ -1,31 +1,40 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Pages.Tasks
 {
     [Authorize]
     public class TaskViewModel : PageModel
     {
-        private readonly ITaskService _taskService;
+        private readonly ITaskBlockService _taskBlockService;
 
-        public TaskItem? TaskItem { get; set; }
+        public TaskViewViewModel? TaskView { get; set; }
+
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public TaskViewModel(ITaskService taskService)
+        public TaskViewModel(ITaskBlockService taskBlockService)
         {
-            _taskService = taskService;
+            _taskBlockService = taskBlockService;
         }
 
-        public IActionResult OnGet(int id)
+        public IActionResult OnGet(int id, DateTime? focusDate)
         {
-            TaskItem = _taskService.GetTaskById(id);
+            var selectedDate = focusDate ?? DateTime.Today;
 
-            if (TaskItem == null)
+            TaskView = _taskBlockService.GetTaskView(
+                id,
+                selectedDate);
+
+            if (TaskView == null)
             {
-                ErrorMessage = "Die angeforderte Aufgabe wurde nicht gefunden.";
+                ErrorMessage = !string.IsNullOrWhiteSpace(
+                    _taskBlockService.ErrorMessage)
+                    ? _taskBlockService.ErrorMessage
+                    : "Die angeforderte Aufgabe wurde nicht gefunden.";
+
                 return Page();
             }
 

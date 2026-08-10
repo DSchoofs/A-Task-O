@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
-namespace Schoofs_Atasko.Services;
+namespace Schoofs_ATaskO.Services;
 
 public class CurrentUserService : ICurrentUserService
 {
@@ -12,16 +12,13 @@ public class CurrentUserService : ICurrentUserService
         this.httpContextAccessor = httpContextAccessor;
     }
 
-    public bool IsAuthenticated =>
-        httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true;
+    public bool IsAuthenticated => httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated == true;
 
     public int? UserId
     {
         get
         {
-            var userIdValue = httpContextAccessor.HttpContext?
-                .User
-                .FindFirstValue(ClaimTypes.NameIdentifier);
+            var userIdValue = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (int.TryParse(userIdValue, out var userId))
             {

@@ -1,5 +1,4 @@
-﻿using Schoofs_Atasko.Services;
-using Schoofs_ATaskO.Repositories;
+﻿using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Services
@@ -43,6 +42,8 @@ namespace Schoofs_ATaskO.Services
 
         public List<TaskManagementViewModel> GetAllTaskManagementViewModels()
         {
+            ErrorMessage = string.Empty;
+
             var taskItems = _taskRepository.GetAllTasks();
 
             var taskViewModels = new List<TaskManagementViewModel>();
@@ -55,15 +56,12 @@ namespace Schoofs_ATaskO.Services
                     Name = taskItem.Name,
                     Description = taskItem.Description,
                     Interval = taskItem.Interval,
+                    WeekMode = taskItem.WeekMode,
                     IsActive = taskItem.IsActive,
                     CreatedAt = taskItem.CreatedAt,
-                    CreatedByUserName = _userService.GetUserDisplayName(
-                        taskItem.CreatedByUserId),
+                    CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId),
                     ModifiedAt = taskItem.ModifiedAt,
-                    ModifiedByUserName = taskItem.ModifiedAt.HasValue
-                        ? _userService.GetUserDisplayName(
-                            taskItem.ModifiedByUserId)
-                        : "Noch nicht geändert"
+                    ModifiedByUserName = taskItem.ModifiedAt.HasValue ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId) : "Noch nicht geändert"
                 });
             }
 
@@ -98,6 +96,7 @@ namespace Schoofs_ATaskO.Services
                 Name = viewModel.Name,
                 Description = viewModel.Description,
                 Interval = viewModel.Interval,
+                WeekMode = viewModel.WeekMode!.Value,
                 IsActive = viewModel.IsActive,
                 CreatedAt = DateTime.UtcNow,
                 CreatedByUserId = _currentUserService.UserId
@@ -125,6 +124,7 @@ namespace Schoofs_ATaskO.Services
             taskItem.Name = viewModel.Name;
             taskItem.Description = viewModel.Description;
             taskItem.Interval = viewModel.Interval;
+            taskItem.WeekMode = viewModel.WeekMode!.Value;
             taskItem.IsActive = viewModel.IsActive;
             taskItem.ModifiedAt = DateTime.UtcNow;
             taskItem.ModifiedByUserId = _currentUserService.UserId;

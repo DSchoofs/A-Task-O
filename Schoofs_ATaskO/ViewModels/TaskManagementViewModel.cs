@@ -11,6 +11,7 @@ public class TaskManagementViewModel
     public string? Description { get; set; }
 
     public TaskInterval Interval { get; set; }
+    public TaskWeekMode WeekMode { get; set; }
 
     public bool IsActive { get; set; }
 

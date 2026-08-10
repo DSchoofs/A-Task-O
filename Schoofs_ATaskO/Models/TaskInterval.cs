@@ -4,12 +4,6 @@ namespace Schoofs_ATaskO.Models
 {
     public enum TaskInterval
     {
-        [Display(Name = "Minütlich")]
-        Minutely = 1,
-
-        [Display(Name = "Stündlich")]
-        Hourly = 2,
-
         [Display(Name = "Täglich")]
         Daily = 3,
 
@@ -18,8 +12,5 @@ namespace Schoofs_ATaskO.Models
 
         [Display(Name = "Monatlich")]
         Monthly = 5,
-
-        [Display(Name = "Jährlich")]
-        Yearly = 6
     }
 }

@@ -1,40 +1,287 @@
 ﻿@page "{id:int}"
 @model Schoofs_ATaskO.Pages.Tasks.TaskViewModel
+
+@using Schoofs_ATaskO.Models
+
 @{
-    ViewData["Title"] = Model.TaskItem?.Name ?? "Aufgabe";
+    ViewData["Title"] = Model.TaskView?.Name ?? "Aufgabe";
 }
 
 <div class="page-container">
     <div class="form-container wide-container">
+
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
-            <div class="error-message">@Model.ErrorMessage</div>
+            <div class="error-message">
+                @Model.ErrorMessage
+            </div>
         }
-        else if (Model.TaskItem != null)
+        else if (Model.TaskView != null)
         {
-            <h1>@Model.TaskItem.Name</h1>
+            <div class="page-header">
+                <div>
+                    <h1>@Model.TaskView.Name</h1>
+
+                    <p class="task-view-subtitle">
+                        Aufgaben-ID: @Model.TaskView.TaskId
+                    </p>
+                </div>
+            </div>
 
             <div class="task-details">
-                <p><strong>Aufgaben-ID:</strong> @Model.TaskItem.Id</p>
-                <p>
-                    <strong>Beschreibung:</strong>
-                            <textarea class="task-description"
-                                  readonly
-                                  wrap="soft" rows="4">@Model.TaskItem.Description</textarea></p>
-                <p><strong>Intervall:</strong> @Model.TaskItem.Interval.GetDisplayName()</p>
-                
+                <div class="task-detail-row">
+                    <span class="task-detail-label">
+                        Intervall:
+                    </span>
+
+                    <span>
+                        @Model.TaskView.Interval.GetDisplayName()
+                    </span>
+                </div>
+
+                @if (Model.TaskView.Interval == TaskInterval.Weekly)
+                {
+                    <div class="task-detail-row">
+                        <span class="task-detail-label">
+                            Wochenendregel:
+                        </span>
+
+                        <span>
+                            @Model.TaskView.WeekMode.GetDisplayName()
+                        </span>
+                    </div>
+                }
+
+                <div class="task-detail-row">
+                    <span class="task-detail-label">
+                        Status:
+                    </span>
+
+                    <span>
+                        @(Model.TaskView.IsActive ? "Aktiv" : "Inaktiv")
+                    </span>
+                </div>
+
+                <div class="task-detail-description">
+                    <span class="task-detail-label">
+                        Beschreibung:
+                    </span>
+
+                    
+                    @if (string.IsNullOrWhiteSpace(Model.TaskView.Description))
+                    {
+                        <span class="description-preview-empty">
+                            Keine Beschreibung vorhanden.
+                        </span>
+                    }
+                    else
+                    {
+                        
+                        <button type="button" class="description-button" data-description-open data-description-title="@Model.TaskView.Name" data-description="@Model.TaskView.Description">
+                            Beschreibung öffnen
+                        </button>
+                        
+                    }
+                   
+                </div>
+            </div>
+            <div class="task-view-navigation">
+                <a asp-page="/Tasks/TaskView"
+                   asp-route-id="@Model.TaskView.TaskId"
+                   asp-route-focusDate="@Model.TaskView.PreviousFocusDate.ToString("yyyy-MM-dd")"
+                   class="period-navigation-button">
+                    ← Zurück
+                </a>
+
+                <a asp-page="/Tasks/TaskView"
+                   asp-route-id="@Model.TaskView.TaskId"
+                   asp-route-focusDate="@Model.TaskView.NextFocusDate.ToString("yyyy-MM-dd")"
+                   class="period-navigation-button">
+                    Weiter →
+                </a>
+            </div>
+            <div class="task-periods">
+
+                <section class="task-period">
+                    <h2>
+                        Vorheriger Zeitraum
+                    </h2>
+
+                    <div class="task-period-label">
+                        @Model.TaskView.PreviousFocusDate.ToString("dd.MM.yyyy")
+                    </div>
+
+                    @if (Model.TaskView.PreviousBlocks.Count == 0)
+                    {
+                        <p class="empty-block-message">
+                            Keine Blöcke vorhanden.
+                        </p>
+                    }
+                    else
+                    {
+                        foreach (var block in Model.TaskView.PreviousBlocks)
+                        {
+                            <div class="task-block @block.CssClass">
+                                <span class="task-block-time">
+                                    @block.DisplayTime
+                                </span>
+
+                                <span class="task-block-status">
+                                    @block.StatusText
+                                </span>
+                            </div>
+                        }
+                    }
+                </section>
+
+                <section class="task-period current-period">
+                    
+
+                    <h2>
+                        Aktueller Zeitraum
+                    </h2>
+
+                    <div class="task-period-label">
+                        @Model.TaskView.CurrentPeriodLabel
+                    </div>
+
+                    @if (Model.TaskView.CurrentBlocks.Count == 0)
+                    {
+                        <p class="empty-block-message">
+                            Keine Blöcke vorhanden.
+                        </p>
+                    }
+                    else
+                    {
+                        foreach (var block in Model.TaskView.CurrentBlocks)
+                        {
+                            <div class="task-block @block.CssClass">
+                                <span class="task-block-time">
+                                    @block.DisplayTime
+                                </span>
+
+                                <span class="task-block-status">
+                                    @block.StatusText
+                                </span>
+                            </div>
+                        }
+                    }
+                </section>
+
+                <section class="task-period">
+                    <h2>
+                        Nächster Zeitraum
+                    </h2>
+
+                    <div class="task-period-label">
+                        @Model.TaskView.NextFocusDate.ToString("dd.MM.yyyy")
+                    </div>
+
+                    @if (Model.TaskView.NextBlocks.Count == 0)
+                    {
+                        <p class="empty-block-message">
+                            Keine Blöcke vorhanden.
+                        </p>
+                    }
+                    else
+                    {
+                        foreach (var block in Model.TaskView.NextBlocks)
+                        {
+                            <div class="task-block @block.CssClass">
+                                <span class="task-block-time">
+                                    @block.DisplayTime
+                                </span>
+
+                                <span class="task-block-status">
+                                    @block.StatusText
+                                </span>
+                            </div>
+                        }
+                    }
+                </section>
+
+            </div>
+
+            <div class="task-legend">
+                <h2>Legende</h2>
+
+                <div class="legend-items">
+                    <span class="legend-item">
+                        <span class="legend-color block-free"></span>
+                        Frei
+                    </span>
+
+                    <span class="legend-item">
+                        <span class="legend-color block-mine"></span>
+                        Von mir übernommen
+                    </span>
+
+                    <span class="legend-item">
+                        <span class="legend-color block-other"></span>
+                        Von anderem Benutzer übernommen
+                    </span>
+
+                    <span class="legend-item">
+                        <span class="legend-color block-overdue"></span>
+                        Überfällig
+                    </span>
+
+                    <span class="legend-item">
+                        <span class="legend-color block-completed"></span>
+                        Erledigt
+                    </span>
+                </div>
             </div>
 
             <div class="form-actions">
                 @if (User.IsInRole("Admin"))
                 {
-                    <a asp-page="/Admin/Tasks/Edit" asp-route-id="@Model.TaskItem.Id" class="edit-button">
+                    <a asp-page="/Admin/Tasks/Edit"
+                       asp-route-id="@Model.TaskView.TaskId"
+                       class="edit-button">
                         Aufgabe bearbeiten
                     </a>
                 }
 
-                <a asp-page="/Index" class="cancel-button">Zurück zum Dashboard</a>
+                <a asp-page="/Index"
+                   class="cancel-button">
+                    Zurück zum Dashboard
+                </a>
             </div>
         }
+    </div>
+</div>
+
+<div id="descriptionOverlay"
+     class="description-overlay"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="descriptionDialogTitle">
+
+    <div class="description-dialog">
+        <div class="description-dialog-header">
+            <h2 id="descriptionDialogTitle">
+                Beschreibung
+            </h2>
+
+            <button type="button"
+                    class="description-close-button"
+                    data-description-close
+                    aria-label="Beschreibung schließen">
+                ×
+            </button>
+        </div>
+
+        <textarea id="descriptionText"
+                  class="description-textarea"
+                  readonly></textarea>
+
+        <div class="description-dialog-actions">
+            <button type="button"
+                    class="cancel-button"
+                    data-description-close>
+                Schließen
+            </button>
+        </div>
     </div>
 </div>

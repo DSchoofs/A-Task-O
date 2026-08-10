@@ -13,7 +13,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
         private readonly IUserService _userService;
 
         [BindProperty]
-        public UserCreateViewModel InputUser { get; set; } = new();
+        public UserCreateViewModel Input { get; set; } = new();
 
         public string ErrorMessage { get; set; } = string.Empty;
 
@@ -35,15 +35,15 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
 
             var user = new User
             {
-                FirstName = InputUser.FirstName,
-                LastName = InputUser.LastName,
-                Email = InputUser.Email,
-                IsAdmin = InputUser.IsAdmin,
+                FirstName = Input.FirstName,
+                LastName = Input.LastName,
+                Email = Input.Email,
+                IsAdmin = Input.IsAdmin,
                 CompletedTasks = 0,
                 LastLogin = null
             };
 
-            var result = _userService.CreateUser(user, InputUser.PlainPassword);
+            var result = _userService.CreateUser(user, Input.PlainPassword);
 
             if (!result)
             {
