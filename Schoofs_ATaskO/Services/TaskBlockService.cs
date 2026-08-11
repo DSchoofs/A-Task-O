@@ -22,7 +22,7 @@ namespace Schoofs_ATaskO.Services
             _userService = userService;
         }
 
-        public TaskViewViewModel? GetTaskView(int taskItemId, DateTime focusDate)
+        public TaskViewViewModel? GetTaskView(int taskItemId, DateTime focusDate, int? selectedBlockId = null)
         {
             ErrorMessage = string.Empty;
 
@@ -93,9 +93,64 @@ namespace Schoofs_ATaskO.Services
                 NextCalendarWeek = nextPeriod.CalendarWeek
             };
 
+            if (selectedBlockId.HasValue)
+            {
+                var selectedBlock = viewModel.PreviousBlocks
+                    .Concat(viewModel.CurrentBlocks)
+                    .Concat(viewModel.NextBlocks)
+                    .FirstOrDefault(block => block.Id == selectedBlockId.Value);
+
+                if (selectedBlock is not null)
+                {
+                    selectedBlock.IsSelected = true;
+                    viewModel.SelectedBlock = selectedBlock;
+                }
+            }
+
             return viewModel;
         }
+        public bool TakeOverBlock(int blockId)
+        {
+            ErrorMessage = string.Empty;
 
+            var currentUserId = _currentUserService.UserId;
+
+            if (!currentUserId.HasValue)
+            {
+                ErrorMessage = "Es konnte kein angemeldeter Benutzer ermittelt werden.";
+                return false;
+            }
+
+            var block = _taskBlockRepository.GetBlockById(blockId);
+
+            if (block is null)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock wurde nicht gefunden.";
+
+                return false;
+            }
+
+            if (block.Status != TaskBlockStatus.Free)
+            {
+                ErrorMessage = "Dieser Aufgabenblock ist nicht mehr frei.";
+                return false;
+            }
+
+            block.Status = TaskBlockStatus.Assigned;
+            block.AssignedByUserId = currentUserId.Value;
+            block.AssignedAt = DateTime.UtcNow;
+
+            var updated = _taskBlockRepository.UpdateBlock(block);
+
+            if (!updated)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock konnte nicht übernommen werden.";
+
+                return false;
+            }
+
+            return true;
+        }
         private PeriodInformation GetPeriod(TaskInterval interval, DateTime focusDate)
         {
             var start = TaskBlockDateHelper.GetPeriodStart(interval, focusDate);

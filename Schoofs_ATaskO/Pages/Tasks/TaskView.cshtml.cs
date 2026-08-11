@@ -20,23 +20,38 @@ namespace Schoofs_ATaskO.Pages.Tasks
             _taskBlockService = taskBlockService;
         }
 
-        public IActionResult OnGet(int id, DateTime? focusDate)
+        public IActionResult OnGet(int id,DateTime? focusDate,int? selectedBlockId)
         {
             var selectedDate = focusDate ?? DateTime.Today;
 
-            TaskView = _taskBlockService.GetTaskView(id, selectedDate);
+            TaskView = _taskBlockService.GetTaskView(id,selectedDate, selectedBlockId);
 
             if (TaskView == null)
             {
-                ErrorMessage = !string.IsNullOrWhiteSpace(
-                    _taskBlockService.ErrorMessage)
-                    ? _taskBlockService.ErrorMessage
-                    : "Die angeforderte Aufgabe wurde nicht gefunden.";
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockService.ErrorMessage) ? _taskBlockService.ErrorMessage : "Die angeforderte Aufgabe wurde nicht gefunden.";
 
                 return Page();
             }
 
             return Page();
+        }
+
+        public IActionResult OnPostTakeOver( int id,int blockId,DateTime? focusDate)
+        {
+            var selectedDate = focusDate ?? DateTime.Today;
+
+            var success = _taskBlockService.TakeOverBlock(blockId);
+
+            if (!success)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockService.ErrorMessage) ? _taskBlockService.ErrorMessage : "Der Aufgabenblock konnte nicht übernommen werden.";
+
+                TaskView = _taskBlockService.GetTaskView( id, selectedDate, blockId);
+
+                return Page();
+            }
+
+            return RedirectToPage( new{ id, focusDate = selectedDate, selectedBlockId = blockId });
         }
     }
 }

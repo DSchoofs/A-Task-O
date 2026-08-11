@@ -76,13 +76,13 @@
                     }
                     else
                     {
-                        
+
                         <button type="button" class="description-button" data-description-open data-description-title="@Model.TaskView.Name" data-description="@Model.TaskView.Description">
                             Beschreibung öffnen
                         </button>
-                        
+
                     }
-                   
+
                 </div>
             </div>
             <div class="task-view-navigation">
@@ -135,7 +135,16 @@
                     {
                         foreach (var block in Model.TaskView.PreviousBlocks)
                         {
-                            <div class="task-block">
+                            <button type="button"
+                                    class="task-block @block.CssClass @(block.IsSelected ? "task-block-selected" : string.Empty)"
+                                    data-block-id="@block.Id"
+                                    data-display-time="@block.DisplayTime"
+                                    data-status="@block.StatusText"
+                                    data-assigned-user="@block.AssignedByUserName"
+                                    data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
+                                    data-note="@block.Note"
+                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()">
+
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -143,13 +152,14 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
-                            </div>
+                            </button>
                         }
+                    }
                     }
                 </section>
 
                 <section class="task-period current-period">
-                    
+
                     <h2>
                         @Model.TaskView.CurrentPeriodTitle
                     </h2>
@@ -182,7 +192,16 @@
                     {
                         foreach (var block in Model.TaskView.CurrentBlocks)
                         {
-                            <div class="task-block">
+                            <button type="button"
+                                    class="task-block @block.CssClass @(block.IsSelected ? "task-block-selected" : string.Empty)"
+                                    data-block-id="@block.Id"
+                                    data-display-time="@block.DisplayTime"
+                                    data-status="@block.StatusText"
+                                    data-assigned-user="@block.AssignedByUserName"
+                                    data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
+                                    data-note="@block.Note"
+                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()">
+
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -190,7 +209,7 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
-                            </div>
+                            </button>
                         }
                     }
                 </section>
@@ -228,7 +247,16 @@
                     {
                         foreach (var block in Model.TaskView.NextBlocks)
                         {
-                            <div class="task-block">
+                            <button type="button"
+                                    class="task-block @block.CssClass @(block.IsSelected ? "task-block-selected" : string.Empty)"
+                                    data-block-id="@block.Id"
+                                    data-display-time="@block.DisplayTime"
+                                    data-status="@block.StatusText"
+                                    data-assigned-user="@block.AssignedByUserName"
+                                    data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
+                                    data-note="@block.Note"
+                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()">
+
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -236,13 +264,91 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
-                            </div>
+                            </button>
                         }
+                    }
                     }
                 </section>
 
             </div>
+            <div id="taskBlockDetails"
+                 class="task-details task-block-details"
+                 hidden>
 
+                <div class="task-detail-row">
+                    <span class="task-detail-label">
+                        Block:
+                    </span>
+
+                    <span id="selectedBlockDisplayTime"></span>
+                </div>
+
+                <div class="task-detail-row">
+                    <span class="task-detail-label">
+                        Status:
+                    </span>
+
+                    <span id="selectedBlockStatus"></span>
+                </div>
+
+                <div id="selectedBlockAssignedUserRow"
+                     class="task-detail-row"
+                     hidden>
+
+                    <span class="task-detail-label">
+                        Übernommen von:
+                    </span>
+
+                    <span id="selectedBlockAssignedUser"></span>
+                </div>
+
+                <div id="selectedBlockAssignedAtRow"
+                     class="task-detail-row"
+                     hidden>
+
+                    <span class="task-detail-label">
+                        Übernommen am:
+                    </span>
+
+                    <span id="selectedBlockAssignedAt"></span>
+                </div>
+
+                <div id="selectedBlockNoteRow"
+                     class="task-detail-row"
+                     hidden>
+
+                    <span class="task-detail-label">
+                        Notiz:
+                    </span>
+
+                    <span id="selectedBlockNote"></span>
+                </div>
+
+                <div class="form-actions">
+                    <form method="post"
+                          asp-page-handler="TakeOver"
+                          id="takeOverBlockForm"
+                          hidden>
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.TaskView.TaskId" />
+
+                        <input type="hidden"
+                               name="blockId"
+                               id="selectedBlockId" />
+
+                        <input type="hidden"
+                               name="focusDate"
+                               value="@Model.TaskView.FocusDate.ToString("yyyy-MM-dd")" />
+
+                        <button type="submit"
+                                class="edit-button">
+                            Block übernehmen
+                        </button>
+                    </form>
+                </div>
+            </div>
             <div class="task-legend">
                 <h2>Legende</h2>
 
@@ -326,3 +432,71 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const blocks = document.querySelectorAll(".task-block");
+        const details = document.getElementById("taskBlockDetails");
+        const takeoverForm = document.getElementById("takeOverBlockForm");
+
+        const selectedBlockId = document.getElementById("selectedBlockId");
+        const displayTime = document.getElementById("selectedBlockDisplayTime");
+        const status = document.getElementById("selectedBlockStatus");
+
+        const assignedUserRow = document.getElementById("selectedBlockAssignedUserRow");
+        const assignedUser = document.getElementById("selectedBlockAssignedUser");
+
+        const assignedAtRow = document.getElementById("selectedBlockAssignedAtRow");
+        const assignedAt = document.getElementById("selectedBlockAssignedAt");
+
+        const noteRow = document.getElementById("selectedBlockNoteRow");
+        const note = document.getElementById("selectedBlockNote");
+
+        blocks.forEach(function(block) {
+            block.addEventListener("click", function() {
+                blocks.forEach(function(item) {
+                    item.classList.remove("task-block-selected");
+                });
+
+                block.classList.add("task-block-selected");
+
+                displayTime.textContent = block.dataset.displayTime;
+                status.textContent = block.dataset.status;
+                selectedBlockId.value = block.dataset.blockId;
+
+                if (block.dataset.assignedUser) {
+                    assignedUser.textContent = block.dataset.assignedUser;
+                    assignedUserRow.hidden = false;
+                }
+                else {
+                    assignedUser.textContent = "";
+                    assignedUserRow.hidden = true;
+                }
+
+                if (block.dataset.assignedAt) {
+                    assignedAt.textContent = block.dataset.assignedAt;
+                    assignedAtRow.hidden = false;
+                }
+                else {
+                    assignedAt.textContent = "";
+                    assignedAtRow.hidden = true;
+                }
+
+                if (block.dataset.note) {
+                    note.textContent = block.dataset.note;
+                    noteRow.hidden = false;
+                }
+                else {
+                    note.textContent = "";
+                    noteRow.hidden = true;
+                }
+
+                takeoverForm.hidden =
+                    block.dataset.canBeTakenOver !== "true";
+
+                details.hidden = false;
+            });
+        });
+    });
+</script>
