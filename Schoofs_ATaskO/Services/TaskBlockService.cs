@@ -35,6 +35,13 @@ namespace Schoofs_ATaskO.Services
                 return null;
             }
 
+            var blocksGenerated = GenerateBlocks(taskItemId, focusDate);
+
+            if (!blocksGenerated)
+            {
+                return null;
+            }
+
 
             var taskBlocks = _taskBlockRepository.GetBlocksByTaskItemId(taskItemId);
 
@@ -200,6 +207,178 @@ namespace Schoofs_ATaskO.Services
             return text;
         }
 
+        public bool GenerateBlocks(int taskItemId, DateTime focusDate)
+        {
+            ErrorMessage = string.Empty;
+
+            var taskItem = _taskRepository.GetTaskById(taskItemId);
+
+            if (taskItem is null)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskRepository.ErrorMessage)
+                    ? _taskRepository.ErrorMessage
+                    : "Die Aufgabe wurde nicht gefunden.";
+
+                return false;
+            }
+
+            if (!taskItem.IsActive)
+            {
+                return true;
+            }
+
+            var currentPeriod = GetPeriod(taskItem.Interval, focusDate);
+
+            var previousFocusDate = TaskBlockDateHelper.GetPreviousFocusDate(taskItem.Interval, currentPeriod.Start);
+
+            var nextFocusDate = TaskBlockDateHelper.GetNextFocusDate(taskItem.Interval, currentPeriod.Start);
+
+            var previousPeriod = GetPeriod(taskItem.Interval, previousFocusDate);
+
+            var nextPeriod = GetPeriod(taskItem.Interval, nextFocusDate);
+
+            var existingBlocks = _taskBlockRepository.GetBlocksByTaskItemId(taskItemId);
+
+            if (existingBlocks.Count == 0 && !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage))
+            {
+                ErrorMessage = _taskBlockRepository.ErrorMessage;
+                return false;
+            }
+
+            var rangeStart = previousPeriod.Start;
+            var rangeEnd = nextPeriod.End;
+
+            var blocksToCreate = CreateExpectedBlocks(taskItem, rangeStart, rangeEnd);
+
+            foreach (var block in blocksToCreate)
+            {
+                var alreadyExists = existingBlocks.Any(existingBlock =>
+                    existingBlock.Start == block.Start &&
+                    existingBlock.End == block.End);
+
+                if (alreadyExists)
+                {
+                    continue;
+                }
+
+                var blockId = _taskBlockRepository.AddBlock(block);
+
+                if (blockId <= 0)
+                {
+                    ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage)
+                        ? _taskBlockRepository.ErrorMessage
+                        : "Ein Aufgabenblock konnte nicht angelegt werden.";
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private List<TaskBlock> CreateExpectedBlocks(TaskItem taskItem, DateTime rangeStart, DateTime rangeEnd)
+        {
+            var blocks = new List<TaskBlock>();
+
+            switch (taskItem.Interval)
+            {
+                case TaskInterval.Daily:
+                    blocks = CreateDailyBlocks(taskItem, rangeStart, rangeEnd);
+                    break;
+
+                case TaskInterval.Weekly:
+                    blocks = CreateWeeklyBlocks(taskItem, rangeStart, rangeEnd);
+                    break;
+
+                case TaskInterval.Monthly:
+                    blocks = CreateMonthlyBlocks(taskItem, rangeStart, rangeEnd);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(taskItem.Interval), taskItem.Interval, "Unbekanntes Aufgabenintervall.");
+            }
+
+            return blocks;
+        }
+        private List<TaskBlock> CreateDailyBlocks(TaskItem taskItem, DateTime rangeStart, DateTime rangeEnd)
+        {
+            var blocks = new List<TaskBlock>();
+
+            var currentStart = rangeStart.Date;
+
+            while (currentStart < rangeEnd)
+            {
+                var currentEnd = currentStart.AddDays(1);
+
+                var block = CreateFreeBlock(taskItem.Id, currentStart, currentEnd);
+
+                blocks.Add(block);
+
+                currentStart = currentEnd;
+            }
+
+            return blocks;
+        }
+        private List<TaskBlock> CreateWeeklyBlocks(TaskItem taskItem, DateTime rangeStart, DateTime rangeEnd)
+        {
+            var blocks = new List<TaskBlock>();
+
+            var currentStart = TaskBlockDateHelper.StartOfWeek(rangeStart);
+
+            while (currentStart < rangeEnd)
+            {
+                var currentEnd = TaskBlockDateHelper.GetWeeklyBlockEnd(currentStart, taskItem.WeekMode);
+
+                var overlapsRange = currentStart < rangeEnd && currentEnd > rangeStart;
+
+                if (overlapsRange)
+                {
+                    var block = CreateFreeBlock(taskItem.Id, currentStart, currentEnd);
+
+                    blocks.Add(block);
+                }
+
+                currentStart = currentStart.AddDays(7);
+            }
+
+            return blocks;
+        }
+        private List<TaskBlock> CreateMonthlyBlocks(TaskItem taskItem, DateTime rangeStart, DateTime rangeEnd)
+        {
+            var blocks = new List<TaskBlock>();
+
+            var currentStart = new DateTime(rangeStart.Year, rangeStart.Month, 1);
+
+            while (currentStart < rangeEnd)
+            {
+                var currentEnd = currentStart.AddMonths(1);
+
+                var block = CreateFreeBlock(taskItem.Id, currentStart, currentEnd);
+
+                blocks.Add(block);
+
+                currentStart = currentEnd;
+            }
+
+            return blocks;
+        }
+        private TaskBlock CreateFreeBlock(int taskItemId, DateTime start, DateTime end)
+        {
+            var block = new TaskBlock
+            {
+                TaskItemId = taskItemId,
+                Start = start,
+                End = end,
+                Status = TaskBlockStatus.Free,
+                AssignedByUserId = null,
+                AssignedAt = null,
+                CompletedByUserId = null,
+                CompletedAt = null,
+                Note = null
+            };
+
+            return block;
+        }
         private class PeriodInformation
         {
             public DateTime Start { get; set; }
