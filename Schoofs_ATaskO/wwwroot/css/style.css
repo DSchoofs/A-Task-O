@@ -176,11 +176,7 @@ body {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-/*
-   Die breite Variante nutzt jetzt die komplette
-   verfügbare Breite. Dadurch wird die Task-Tabelle
-   nicht mehr auf 1200px begrenzt.
-*/
+
 .wide-container {
     width: 100%;
     max-width: none;
@@ -803,6 +799,28 @@ body.description-overlay-open {
     border-radius: 4px;
 }
 
+.task-block-continuation {
+    display: block;
+    margin-bottom: 0.35rem;
+    color: #4b5563;
+    font-size: 0.75rem;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+.continuation-into-next {
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+    text-align: right;
+}
+
+.block-continues-from-previous {
+    border-top: 3px dashed rgba(59, 130, 246, 0.7);
+}
+
+.block-continues-into-next {
+    border-bottom: 3px dashed rgba(59, 130, 246, 0.7);
+}
 /* ==================================================
    Buttons
 ================================================== */

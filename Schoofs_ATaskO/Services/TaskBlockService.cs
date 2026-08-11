@@ -105,7 +105,6 @@ namespace Schoofs_ATaskO.Services
 
         private List<TaskBlockViewModel> MapBlocks(List<TaskBlock> blocks, DateTime periodStart, DateTime periodEnd, int? currentUserId)
         {
-            // Block wird angezeigt, wenn er den Zeitraum überschneidet ([Start,End) Logik)
             var matchingBlocks = blocks.Where(block => block.Start < periodEnd && block.End > periodStart).OrderBy(block => block.Start).ToList();
 
             var viewModels = new List<TaskBlockViewModel>();
@@ -119,6 +118,10 @@ namespace Schoofs_ATaskO.Services
                 var cssClass = GetCssClass(block, isOverdue, currentUserId);
 
                 var statusText = GetStatusText(block.Status, isOverdue);
+
+                var continuesFromPreviousPeriod = block.Start < periodStart;
+
+                var continuesIntoNextPeriod = block.End > periodEnd;
 
                 var vm = new TaskBlockViewModel
                 {
@@ -139,7 +142,9 @@ namespace Schoofs_ATaskO.Services
                     IsCompleted = isCompleted,
                     IsOverdue = isOverdue,
                     CanBeTakenOver = block.Status == TaskBlockStatus.Free,
-                    IsSelected = false
+                    IsSelected = false,
+                    ContinuesFromPreviousPeriod = continuesFromPreviousPeriod,
+                    ContinuesIntoNextPeriod = continuesIntoNextPeriod
                 };
 
                 viewModels.Add(vm);

@@ -121,7 +121,15 @@
                     {
                         foreach (var block in Model.TaskView.PreviousBlocks)
                         {
-                            <div class="task-block @block.CssClass">
+                            <div class="task-block @block.CssClass @(block.ContinuesFromPreviousPeriod ? "block-continues-from-previous" : "") @(block.ContinuesIntoNextPeriod ? "block-continues-into-next" : "")">
+
+                                @if (block.ContinuesFromPreviousPeriod)
+                                {
+                                    <span class="task-block-continuation continuation-from-previous">
+                                        ← Fortsetzung aus vorherigem Zeitraum
+                                    </span>
+                                }
+
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -129,6 +137,13 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
+
+                                @if (block.ContinuesIntoNextPeriod)
+                                {
+                                    <span class="task-block-continuation continuation-into-next">
+                                        Fortsetzung im nächsten Zeitraum →
+                                    </span>
+                                }
                             </div>
                         }
                     }
@@ -155,7 +170,15 @@
                     {
                         foreach (var block in Model.TaskView.CurrentBlocks)
                         {
-                            <div class="task-block @block.CssClass">
+                            <div class="task-block @block.CssClass @(block.ContinuesFromPreviousPeriod ? "block-continues-from-previous" : "") @(block.ContinuesIntoNextPeriod ? "block-continues-into-next" : "")">
+
+                                @if (block.ContinuesFromPreviousPeriod)
+                                {
+                                    <span class="task-block-continuation continuation-from-previous">
+                                        ← Fortsetzung aus vorherigem Zeitraum
+                                    </span>
+                                }
+
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -163,6 +186,13 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
+
+                                @if (block.ContinuesIntoNextPeriod)
+                                {
+                                    <span class="task-block-continuation continuation-into-next">
+                                        Fortsetzung im nächsten Zeitraum →
+                                    </span>
+                                }
                             </div>
                         }
                     }
@@ -187,7 +217,15 @@
                     {
                         foreach (var block in Model.TaskView.NextBlocks)
                         {
-                            <div class="task-block @block.CssClass">
+                            <div class="task-block @block.CssClass @(block.ContinuesFromPreviousPeriod ? "block-continues-from-previous" : "") @(block.ContinuesIntoNextPeriod ? "block-continues-into-next" : "")">
+
+                                @if (block.ContinuesFromPreviousPeriod)
+                                {
+                                    <span class="task-block-continuation continuation-from-previous">
+                                        ← Fortsetzung aus vorherigem Zeitraum
+                                    </span>
+                                }
+
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -195,6 +233,13 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
+
+                                @if (block.ContinuesIntoNextPeriod)
+                                {
+                                    <span class="task-block-continuation continuation-into-next">
+                                        Fortsetzung im nächsten Zeitraum →
+                                    </span>
+                                }
                             </div>
                         }
                     }
