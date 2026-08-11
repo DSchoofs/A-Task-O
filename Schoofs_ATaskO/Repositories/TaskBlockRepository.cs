@@ -22,7 +22,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 List<TaskBlock> blocks = new List<TaskBlock>();
 
-                sqlcmd = "SELECT Id, TaskItemId, Start, [End], Status, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note FROM TaskBlocks ORDER BY Start";
+                sqlcmd = "SELECT Id, TaskItemId, Start, [End], Status, Interval, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note FROM TaskBlocks ORDER BY Start";
 
                 using (var conn = new SqlConnection(connectionString))
                 {
@@ -51,13 +51,13 @@ namespace Schoofs_ATaskO.Repositories
 
             try
             {
-                sqlcmd = "SELECT Id, TaskItemId, Start, [End], Status, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note FROM TaskBlocks WHERE TaskItemId = @TaskItemId ORDER BY Start";
+                sqlcmd = "SELECT Id, TaskItemId, Start, [End], Status, Interval, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note FROM TaskBlocks WHERE TaskItemId = @TaskItemId ORDER BY Start";
 
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    blocks = conn.Query<TaskBlock>(sqlcmd, new{ TaskItemId = taskItemId }).ToList();
+                    blocks = conn.Query<TaskBlock>(sqlcmd, new { TaskItemId = taskItemId }).ToList();
                     return blocks;
                 }
             }
@@ -79,7 +79,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 TaskBlock? block = null;
 
-                sqlcmd = "SELECT Id, TaskItemId, Start, [End], Status, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note FROM TaskBlocks WHERE Id = @Id";
+                sqlcmd = "SELECT Id, TaskItemId, Start, [End], Status, AssignedByUserId, Interval, AssignedAt, CompletedByUserId, CompletedAt, Note FROM TaskBlocks WHERE Id = @Id";
 
                 using (var conn = new SqlConnection(connectionString))
                 {
@@ -108,24 +108,25 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = "INSERT INTO TaskBlocks (TaskItemId, Start, [End], Status, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note) OUTPUT INSERTED.Id VALUES (@TaskItemId, @Start, @End, @Status, @AssignedByUserId, @AssignedAt, @CompletedByUserId, @CompletedAt, @Note)";
+                sqlcmd = "INSERT INTO TaskBlocks (TaskItemId, Start, [End], Interval, Status, AssignedByUserId, AssignedAt, CompletedByUserId, CompletedAt, Note) OUTPUT INSERTED.Id VALUES (@TaskItemId, @Start, @End, @Interval, @Status, @AssignedByUserId, @AssignedAt, @CompletedByUserId, @CompletedAt, @Note)";
 
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    var blockId = conn.QuerySingle<int>( sqlcmd, new
-                        {
-                            block.TaskItemId,
-                            block.Start,
-                            block.End,
-                            Status = (int)block.Status,
-                            block.AssignedByUserId,
-                            block.AssignedAt,
-                            block.CompletedByUserId,
-                            block.CompletedAt,
-                            block.Note
-                        });
+                    var blockId = conn.QuerySingle<int>(sqlcmd, new
+                    {
+                        block.TaskItemId,
+                        block.Start,
+                        block.End,
+                        Interval = (int)block.Interval,
+                        Status = (int)block.Status,
+                        block.AssignedByUserId,
+                        block.AssignedAt,
+                        block.CompletedByUserId,
+                        block.CompletedAt,
+                        block.Note
+                    });
 
                     return blockId;
                 }
@@ -146,25 +147,26 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                sqlcmd = "UPDATE TaskBlocks SET TaskItemId = @TaskItemId, Start = @Start, [End] = @End, Status = @Status, AssignedByUserId = @AssignedByUserId, AssignedAt = @AssignedAt, CompletedByUserId = @CompletedByUserId, CompletedAt = @CompletedAt, Note = @Note WHERE Id = @Id";
+                sqlcmd = "UPDATE TaskBlocks SET TaskItemId = @TaskItemId, Start = @Start, [End] = @End, Interval = @Interval, Status = @Status, AssignedByUserId = @AssignedByUserId, AssignedAt = @AssignedAt, CompletedByUserId = @CompletedByUserId, CompletedAt = @CompletedAt, Note = @Note WHERE Id = @Id";
 
                 using (var conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
                     var rowsAffected = conn.Execute(sqlcmd, new
-                        {
-                            block.Id,
-                            block.TaskItemId,
-                            block.Start,
-                            block.End,
-                            Status = (int)block.Status,
-                            block.AssignedByUserId,
-                            block.AssignedAt,
-                            block.CompletedByUserId,
-                            block.CompletedAt,
-                            block.Note
-                        });
+                    {
+                        block.Id,
+                        block.TaskItemId,
+                        block.Start,
+                        block.End,
+                        Interval = (int)block.Interval,
+                        Status = (int)block.Status,
+                        block.AssignedByUserId,
+                        block.AssignedAt,
+                        block.CompletedByUserId,
+                        block.CompletedAt,
+                        block.Note
+                    });
 
                     return rowsAffected > 0;
                 }

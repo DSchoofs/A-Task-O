@@ -171,5 +171,33 @@ namespace Schoofs_ATaskO.Helpers
 
             return label;
         }
+        public static string GetBlockDisplayName(TaskInterval interval, TaskWeekMode weekMode, DateTime start, DateTime end)
+        {
+            var culture = CultureInfo.GetCultureInfo("de-DE");
+
+            string displayName;
+
+            switch (interval)
+            {
+                case TaskInterval.Daily:
+                    displayName = start.ToString("dddd dd.MM.", culture);
+                    break;
+
+                case TaskInterval.Weekly:
+                    var lastDay = end.AddDays(-1);
+
+                    displayName = $"{start.ToString("dddd dd.MM.", culture)} - {lastDay.ToString("dddd dd.MM.", culture)}";
+                    break;
+
+                case TaskInterval.Monthly:
+                    displayName = start.ToString("MMMM", culture);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(interval), interval, "Unbekanntes Aufgabenintervall.");
+            }
+
+            return displayName;
+        }
     }
 }

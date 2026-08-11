@@ -33,4 +33,5 @@ public class TaskBlock
 
     [Display(Name = "Anmerkung")]
     public string? Note { get; set; }
+    public TaskInterval Interval { get; set; }
 }

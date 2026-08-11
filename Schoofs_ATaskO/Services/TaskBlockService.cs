@@ -77,9 +77,9 @@ namespace Schoofs_ATaskO.Services
                 CurrentPeriodStart = currentPeriod.Start,
                 CurrentPeriodEnd = currentPeriod.End,
                 CurrentPeriodLabel = currentPeriod.Label,
-                PreviousBlocks = MapBlocks(taskBlocks, previousPeriod.Start, previousPeriod.End, currentUserId),
-                CurrentBlocks = MapBlocks(taskBlocks, currentPeriod.Start, currentPeriod.End, currentUserId),
-                NextBlocks = MapBlocks(taskBlocks, nextPeriod.Start, nextPeriod.End, currentUserId)
+                PreviousBlocks = MapBlocks(taskBlocks, taskItem.Interval, taskItem.WeekMode, previousPeriod.Start, previousPeriod.End, currentUserId),
+                CurrentBlocks = MapBlocks(taskBlocks, taskItem.Interval, taskItem.WeekMode, currentPeriod.Start, currentPeriod.End, currentUserId),
+                NextBlocks = MapBlocks(taskBlocks, taskItem.Interval, taskItem.WeekMode, nextPeriod.Start, nextPeriod.End, currentUserId)
             };
 
             return viewModel;
@@ -103,10 +103,9 @@ namespace Schoofs_ATaskO.Services
             return period;
         }
 
-        private List<TaskBlockViewModel> MapBlocks(List<TaskBlock> blocks, DateTime periodStart, DateTime periodEnd, int? currentUserId)
+        private List<TaskBlockViewModel> MapBlocks(List<TaskBlock> blocks, TaskInterval interval, TaskWeekMode weekMode, DateTime periodStart, DateTime periodEnd, int? currentUserId)
         {
-            var matchingBlocks = blocks.Where(block => block.Start < periodEnd && block.End > periodStart).OrderBy(block => block.Start).ToList();
-
+            var matchingBlocks = blocks.Where(block => block.Interval == interval && block.Start < periodEnd && block.End > periodStart).OrderBy(block => block.Start).ToList();
             var viewModels = new List<TaskBlockViewModel>();
 
             foreach (var block in matchingBlocks)
@@ -122,13 +121,14 @@ namespace Schoofs_ATaskO.Services
                 var continuesFromPreviousPeriod = block.Start < periodStart;
 
                 var continuesIntoNextPeriod = block.End > periodEnd;
-
+                var displayName = TaskBlockDateHelper.GetBlockDisplayName(interval, weekMode, block.Start, block.End);
                 var vm = new TaskBlockViewModel
                 {
                     Id = block.Id,
                     TaskItemId = block.TaskItemId,
                     Start = block.Start,
                     End = block.End,
+                    DisplayTime = displayName,
                     Status = block.Status,
                     StatusText = statusText,
                     CssClass = cssClass,
@@ -313,13 +313,36 @@ namespace Schoofs_ATaskO.Services
 
             while (currentStart < rangeEnd)
             {
-                var currentEnd = currentStart.AddDays(1);
+                var includeDay = true;
 
-                var block = CreateFreeBlock(taskItem.Id, currentStart, currentEnd);
+                switch (taskItem.WeekMode)
+                {
+                    case TaskWeekMode.Weekdays:
+                        includeDay = currentStart.DayOfWeek != DayOfWeek.Saturday && currentStart.DayOfWeek != DayOfWeek.Sunday;
+                        break;
 
-                blocks.Add(block);
+                    case TaskWeekMode.MondayToSaturday:
+                        includeDay = currentStart.DayOfWeek != DayOfWeek.Sunday;
+                        break;
 
-                currentStart = currentEnd;
+                    case TaskWeekMode.FullWeek:
+                        includeDay = true;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(taskItem.WeekMode), taskItem.WeekMode, "Unbekannte Wochenendregel.");
+                }
+
+                if (includeDay)
+                {
+                    var currentEnd = currentStart.AddDays(1);
+
+                    var block = CreateFreeBlock(taskItem.Id, taskItem.Interval, currentStart, currentEnd);
+
+                    blocks.Add(block);
+                }
+
+                currentStart = currentStart.AddDays(1);
             }
 
             return blocks;
@@ -338,7 +361,7 @@ namespace Schoofs_ATaskO.Services
 
                 if (overlapsRange)
                 {
-                    var block = CreateFreeBlock(taskItem.Id, currentStart, currentEnd);
+                    var block = CreateFreeBlock(taskItem.Id, taskItem.Interval, currentStart, currentEnd);
 
                     blocks.Add(block);
                 }
@@ -358,7 +381,7 @@ namespace Schoofs_ATaskO.Services
             {
                 var currentEnd = currentStart.AddMonths(1);
 
-                var block = CreateFreeBlock(taskItem.Id, currentStart, currentEnd);
+                var block = CreateFreeBlock(taskItem.Id, taskItem.Interval, currentStart, currentEnd);
 
                 blocks.Add(block);
 
@@ -367,13 +390,14 @@ namespace Schoofs_ATaskO.Services
 
             return blocks;
         }
-        private TaskBlock CreateFreeBlock(int taskItemId, DateTime start, DateTime end)
+        private TaskBlock CreateFreeBlock(int taskItemId, TaskInterval interval, DateTime start, DateTime end)
         {
             var block = new TaskBlock
             {
                 TaskItemId = taskItemId,
                 Start = start,
                 End = end,
+                Interval = interval,
                 Status = TaskBlockStatus.Free,
                 AssignedByUserId = null,
                 AssignedAt = null,
