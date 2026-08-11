@@ -30,7 +30,9 @@ namespace Schoofs_ATaskO.Services
 
             if (taskItem is null)
             {
-                ErrorMessage = !string.IsNullOrWhiteSpace(_taskRepository.ErrorMessage) ? _taskRepository.ErrorMessage : "Die Aufgabe wurde nicht gefunden.";
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskRepository.ErrorMessage)
+                    ? _taskRepository.ErrorMessage
+                    : "Die Aufgabe wurde nicht gefunden.";
 
                 return null;
             }
@@ -42,12 +44,12 @@ namespace Schoofs_ATaskO.Services
                 return null;
             }
 
-
             var taskBlocks = _taskBlockRepository.GetBlocksByTaskItemId(taskItemId);
 
             if (taskBlocks.Count == 0 && !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage))
             {
                 ErrorMessage = _taskBlockRepository.ErrorMessage;
+
                 return null;
             }
 
@@ -77,9 +79,18 @@ namespace Schoofs_ATaskO.Services
                 CurrentPeriodStart = currentPeriod.Start,
                 CurrentPeriodEnd = currentPeriod.End,
                 CurrentPeriodLabel = currentPeriod.Label,
-                PreviousBlocks = MapBlocks(taskBlocks, taskItem.Interval, taskItem.WeekMode, previousPeriod.Start, previousPeriod.End, currentUserId),
-                CurrentBlocks = MapBlocks(taskBlocks, taskItem.Interval, taskItem.WeekMode, currentPeriod.Start, currentPeriod.End, currentUserId),
-                NextBlocks = MapBlocks(taskBlocks, taskItem.Interval, taskItem.WeekMode, nextPeriod.Start, nextPeriod.End, currentUserId)
+                PreviousBlocks = MapBlocks(taskBlocks,taskItem.Interval,taskItem.WeekMode, previousPeriod.Start,previousPeriod.End,currentUserId),
+                CurrentBlocks = MapBlocks(taskBlocks, taskItem.Interval,taskItem.WeekMode,currentPeriod.Start,currentPeriod.End, currentUserId),
+                NextBlocks = MapBlocks(taskBlocks,taskItem.Interval,taskItem.WeekMode,nextPeriod.Start,nextPeriod.End,currentUserId),
+                PreviousPeriodTitle = TaskBlockDateHelper.GetPeriodTitle( taskItem.Interval,PeriodPosition.Previous),
+                CurrentPeriodTitle = TaskBlockDateHelper.GetPeriodTitle(taskItem.Interval,PeriodPosition.Current),
+                NextPeriodTitle = TaskBlockDateHelper.GetPeriodTitle( taskItem.Interval, PeriodPosition.Next),
+                PreviousPeriodDateRange = previousPeriod.DateRange,
+                CurrentPeriodDateRange = currentPeriod.DateRange,
+                NextPeriodDateRange = nextPeriod.DateRange,
+                PreviousCalendarWeek = previousPeriod.CalendarWeek,
+                CurrentCalendarWeek = currentPeriod.CalendarWeek,
+                NextCalendarWeek = nextPeriod.CalendarWeek
             };
 
             return viewModel;
@@ -93,11 +104,17 @@ namespace Schoofs_ATaskO.Services
 
             var label = TaskBlockDateHelper.GetPeriodLabel(interval, start, end);
 
+            var dateRange = TaskBlockDateHelper.GetPeriodDateRange(start, end);
+
+            var calendarWeek = TaskBlockDateHelper.GetCalendarWeekLabel(interval, start);
+
             var period = new PeriodInformation
             {
                 Start = start,
                 End = end,
-                Label = label
+                Label = label,
+                DateRange = dateRange,
+                CalendarWeek = calendarWeek
             };
 
             return period;
@@ -257,9 +274,7 @@ namespace Schoofs_ATaskO.Services
 
             foreach (var block in blocksToCreate)
             {
-                var alreadyExists = existingBlocks.Any(existingBlock =>
-                    existingBlock.Start == block.Start &&
-                    existingBlock.End == block.End);
+                var alreadyExists = existingBlocks.Any(existingBlock => existingBlock.Start == block.Start && existingBlock.End == block.End && existingBlock.Interval == block.Interval);
 
                 if (alreadyExists)
                 {
@@ -415,6 +430,10 @@ namespace Schoofs_ATaskO.Services
             public DateTime End { get; set; }
 
             public string Label { get; set; } = string.Empty;
+
+            public string DateRange { get; set; } = string.Empty;
+
+            public string CalendarWeek { get; set; } = string.Empty;
         }
     }
 }

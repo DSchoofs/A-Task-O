@@ -158,7 +158,7 @@ namespace Schoofs_ATaskO.Helpers
                     break;
 
                 case TaskInterval.Weekly:
-                    label = start.ToString("MMMM yyyy", culture);
+                    label = start.ToString("MMMM", culture);
                     break;
 
                 case TaskInterval.Monthly:
@@ -198,6 +198,103 @@ namespace Schoofs_ATaskO.Helpers
             }
 
             return displayName;
+        }
+        public static string GetPeriodTitle(TaskInterval interval, PeriodPosition position)
+        {
+            string title;
+
+            switch (interval)
+            {
+                case TaskInterval.Daily:
+                    switch (position)
+                    {
+                        case PeriodPosition.Previous:
+                            title = "Vorherige Woche";
+                            break;
+
+                        case PeriodPosition.Current:
+                            title = "Aktuelle Woche";
+                            break;
+
+                        case PeriodPosition.Next:
+                            title = "Nächste Woche";
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(position), position, "Unbekannte Zeitraumposition.");
+                    }
+
+                    break;
+
+                case TaskInterval.Weekly:
+                    switch (position)
+                    {
+                        case PeriodPosition.Previous:
+                            title = "Vorheriger Monat";
+                            break;
+
+                        case PeriodPosition.Current:
+                            title = "Aktueller Monat";
+                            break;
+
+                        case PeriodPosition.Next:
+                            title = "Nächster Monat";
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(position), position, "Unbekannte Zeitraumposition.");
+                    }
+
+                    break;
+
+                case TaskInterval.Monthly:
+                    switch (position)
+                    {
+                        case PeriodPosition.Previous:
+                            title = "Vorheriges Jahr";
+                            break;
+
+                        case PeriodPosition.Current:
+                            title = "Aktuelles Jahr";
+                            break;
+
+                        case PeriodPosition.Next:
+                            title = "Nächstes Jahr";
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(position), position, "Unbekannte Zeitraumposition.");
+                    }
+
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(interval), interval, "Unbekanntes Aufgabenintervall.");
+            }
+
+            return title;
+        }
+        public static string GetPeriodDateRange(DateTime start, DateTime end)
+        {
+            var lastIncludedDay = end.AddDays(-1);
+
+            var dateRange = $"{start:dd.MM.yyyy} - {lastIncludedDay:dd.MM.yyyy}";
+
+            return dateRange;
+        }
+        public static string GetCalendarWeekLabel(TaskInterval interval, DateTime start)
+        {
+            if (interval != TaskInterval.Daily)
+            {
+                return string.Empty;
+            }
+
+            var calendar = CultureInfo.GetCultureInfo("de-DE");
+            var calendarWeek = calendar.Calendar.GetWeekOfYear(start, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            var label = $"KW {calendarWeek}";
+
+            return label;
         }
     }
 }

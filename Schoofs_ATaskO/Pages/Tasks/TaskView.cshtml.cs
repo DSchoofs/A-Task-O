@@ -24,9 +24,7 @@ namespace Schoofs_ATaskO.Pages.Tasks
         {
             var selectedDate = focusDate ?? DateTime.Today;
 
-            TaskView = _taskBlockService.GetTaskView(
-                id,
-                selectedDate);
+            TaskView = _taskBlockService.GetTaskView(id, selectedDate);
 
             if (TaskView == null)
             {

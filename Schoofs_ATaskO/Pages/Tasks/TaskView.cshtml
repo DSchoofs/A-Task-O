@@ -104,12 +104,26 @@
 
                 <section class="task-period">
                     <h2>
-                        Vorheriger Zeitraum
+                        @Model.TaskView.PreviousPeriodTitle
                     </h2>
 
                     <div class="task-period-label">
-                        @Model.TaskView.PreviousFocusDate.ToString("dd.MM.yyyy")
+                        @if (Model.TaskView.Interval == TaskInterval.Daily)
+                        {
+                            @Model.TaskView.PreviousPeriodDateRange
+                        }
+                        else
+                        {
+                            @Model.TaskView.PreviousPeriodTitle
+                        }
                     </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.TaskView.PreviousCalendarWeek))
+                    {
+                        <div class="task-period-calendar-week">
+                            @Model.TaskView.PreviousCalendarWeek
+                        </div>
+                    }
 
                     @if (Model.TaskView.PreviousBlocks.Count == 0)
                     {
@@ -121,15 +135,7 @@
                     {
                         foreach (var block in Model.TaskView.PreviousBlocks)
                         {
-                            <div class="task-block @block.CssClass @(block.ContinuesFromPreviousPeriod ? "block-continues-from-previous" : "") @(block.ContinuesIntoNextPeriod ? "block-continues-into-next" : "")">
-
-                                @if (block.ContinuesFromPreviousPeriod)
-                                {
-                                    <span class="task-block-continuation continuation-from-previous">
-                                        ← Fortsetzung aus vorherigem Zeitraum
-                                    </span>
-                                }
-
+                            <div class="task-block">
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -137,13 +143,6 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
-
-                                @if (block.ContinuesIntoNextPeriod)
-                                {
-                                    <span class="task-block-continuation continuation-into-next">
-                                        Fortsetzung im nächsten Zeitraum →
-                                    </span>
-                                }
                             </div>
                         }
                     }
@@ -151,14 +150,27 @@
 
                 <section class="task-period current-period">
                     
-
                     <h2>
-                        Aktueller Zeitraum
+                        @Model.TaskView.CurrentPeriodTitle
                     </h2>
 
                     <div class="task-period-label">
-                        @Model.TaskView.CurrentPeriodLabel
+                        @if (Model.TaskView.Interval == TaskInterval.Daily)
+                        {
+                            @Model.TaskView.CurrentPeriodDateRange
+                        }
+                        else
+                        {
+                            @Model.TaskView.CurrentPeriodLabel
+                        }
                     </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.TaskView.CurrentCalendarWeek))
+                    {
+                        <div class="task-period-calendar-week">
+                            @Model.TaskView.CurrentCalendarWeek
+                        </div>
+                    }
 
                     @if (Model.TaskView.CurrentBlocks.Count == 0)
                     {
@@ -170,15 +182,7 @@
                     {
                         foreach (var block in Model.TaskView.CurrentBlocks)
                         {
-                            <div class="task-block @block.CssClass @(block.ContinuesFromPreviousPeriod ? "block-continues-from-previous" : "") @(block.ContinuesIntoNextPeriod ? "block-continues-into-next" : "")">
-
-                                @if (block.ContinuesFromPreviousPeriod)
-                                {
-                                    <span class="task-block-continuation continuation-from-previous">
-                                        ← Fortsetzung aus vorherigem Zeitraum
-                                    </span>
-                                }
-
+                            <div class="task-block">
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -186,13 +190,6 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
-
-                                @if (block.ContinuesIntoNextPeriod)
-                                {
-                                    <span class="task-block-continuation continuation-into-next">
-                                        Fortsetzung im nächsten Zeitraum →
-                                    </span>
-                                }
                             </div>
                         }
                     }
@@ -200,12 +197,26 @@
 
                 <section class="task-period">
                     <h2>
-                        Nächster Zeitraum
+                        @Model.TaskView.NextPeriodTitle
                     </h2>
 
                     <div class="task-period-label">
-                        @Model.TaskView.NextFocusDate.ToString("dd.MM.yyyy")
+                        @if (Model.TaskView.Interval == TaskInterval.Daily)
+                        {
+                            @Model.TaskView.NextPeriodDateRange
+                        }
+                        else
+                        {
+                            @Model.TaskView.NextPeriodTitle
+                        }
                     </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.TaskView.NextCalendarWeek))
+                    {
+                        <div class="task-period-calendar-week">
+                            @Model.TaskView.NextCalendarWeek
+                        </div>
+                    }
 
                     @if (Model.TaskView.NextBlocks.Count == 0)
                     {
@@ -217,15 +228,7 @@
                     {
                         foreach (var block in Model.TaskView.NextBlocks)
                         {
-                            <div class="task-block @block.CssClass @(block.ContinuesFromPreviousPeriod ? "block-continues-from-previous" : "") @(block.ContinuesIntoNextPeriod ? "block-continues-into-next" : "")">
-
-                                @if (block.ContinuesFromPreviousPeriod)
-                                {
-                                    <span class="task-block-continuation continuation-from-previous">
-                                        ← Fortsetzung aus vorherigem Zeitraum
-                                    </span>
-                                }
-
+                            <div class="task-block">
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -233,13 +236,6 @@
                                 <span class="task-block-status">
                                     @block.StatusText
                                 </span>
-
-                                @if (block.ContinuesIntoNextPeriod)
-                                {
-                                    <span class="task-block-continuation continuation-into-next">
-                                        Fortsetzung im nächsten Zeitraum →
-                                    </span>
-                                }
                             </div>
                         }
                     }
