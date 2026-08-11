@@ -143,7 +143,8 @@
                                     data-assigned-user="@block.AssignedByUserName"
                                     data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
                                     data-note="@block.Note"
-                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()">
+                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
+                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -155,7 +156,7 @@
                             </button>
                         }
                     }
-                    }
+                    
                 </section>
 
                 <section class="task-period current-period">
@@ -200,7 +201,8 @@
                                     data-assigned-user="@block.AssignedByUserName"
                                     data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
                                     data-note="@block.Note"
-                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()">
+                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
+                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -255,7 +257,8 @@
                                     data-assigned-user="@block.AssignedByUserName"
                                     data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
                                     data-note="@block.Note"
-                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()">
+                                    data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
+                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -267,7 +270,7 @@
                             </button>
                         }
                     }
-                    }
+                    
                 </section>
 
             </div>
@@ -343,8 +346,31 @@
                                value="@Model.TaskView.FocusDate.ToString("yyyy-MM-dd")" />
 
                         <button type="submit"
-                                class="edit-button">
-                            Block übernehmen
+                                class="save-button">
+                            Aufgabe übernehmen
+                        </button>
+                    </form>
+
+                    <form method="post"
+                          asp-page-handler="Complete"
+                          id="completeBlockForm"
+                          hidden>
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.TaskView.TaskId" />
+
+                        <input type="hidden"
+                               name="blockId"
+                               id="completedBlockId" />
+
+                        <input type="hidden"
+                               name="focusDate"
+                               value="@Model.TaskView.FocusDate.ToString("yyyy-MM-dd")" />
+
+                        <button type="submit"
+                                class="save-button">
+                            Aufgabe erledigen
                         </button>
                     </form>
                 </div>
@@ -439,6 +465,8 @@
         const blocks = document.querySelectorAll(".task-block");
         const details = document.getElementById("taskBlockDetails");
         const takeoverForm = document.getElementById("takeOverBlockForm");
+        const completeForm = document.getElementById("completeBlockForm");
+        const completedBlockId = document.getElementById("completedBlockId");
 
         const selectedBlockId = document.getElementById("selectedBlockId");
         const displayTime = document.getElementById("selectedBlockDisplayTime");
@@ -464,6 +492,7 @@
                 displayTime.textContent = block.dataset.displayTime;
                 status.textContent = block.dataset.status;
                 selectedBlockId.value = block.dataset.blockId;
+                completedBlockId.value = block.dataset.blockId;
 
                 if (block.dataset.assignedUser) {
                     assignedUser.textContent = block.dataset.assignedUser;
@@ -494,6 +523,9 @@
 
                 takeoverForm.hidden =
                     block.dataset.canBeTakenOver !== "true";
+
+                completeForm.hidden =
+                    block.dataset.canBeCompleted !== "true";
 
                 details.hidden = false;
             });

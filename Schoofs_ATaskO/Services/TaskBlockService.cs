@@ -95,10 +95,7 @@ namespace Schoofs_ATaskO.Services
 
             if (selectedBlockId.HasValue)
             {
-                var selectedBlock = viewModel.PreviousBlocks
-                    .Concat(viewModel.CurrentBlocks)
-                    .Concat(viewModel.NextBlocks)
-                    .FirstOrDefault(block => block.Id == selectedBlockId.Value);
+                var selectedBlock = viewModel.PreviousBlocks.Concat(viewModel.CurrentBlocks).Concat(viewModel.NextBlocks).FirstOrDefault(block => block.Id == selectedBlockId.Value);
 
                 if (selectedBlock is not null)
                 {
@@ -151,6 +148,56 @@ namespace Schoofs_ATaskO.Services
 
             return true;
         }
+
+        public bool CompleteBlock(int blockId)
+        {
+            ErrorMessage = string.Empty;
+
+            var currentUserId = _currentUserService.UserId;
+
+            if (!currentUserId.HasValue)
+            {
+                ErrorMessage = "Es konnte kein angemeldeter Benutzer ermittelt werden.";
+                return false;
+            }
+
+            var block = _taskBlockRepository.GetBlockById(blockId);
+
+            if (block is null)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock wurde nicht gefunden.";
+
+                return false;
+            }
+
+            if (block.Status != TaskBlockStatus.Assigned)
+            {
+                ErrorMessage = "Nur übernommene Aufgabenblöcke können erledigt werden.";
+                return false;
+            }
+
+            if (block.AssignedByUserId != currentUserId.Value)
+            {
+                ErrorMessage = "Nur der Benutzer, der den Block übernommen hat, darf ihn erledigen.";
+                return false;
+            }
+
+            block.Status = TaskBlockStatus.Completed;
+            block.CompletedByUserId = currentUserId.Value;
+            block.CompletedAt = DateTime.UtcNow;
+
+            var updated = _taskBlockRepository.UpdateBlock(block);
+
+            if (!updated)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock konnte nicht als erledigt gespeichert werden.";
+
+                return false;
+            }
+
+            return true;
+        }
+
         private PeriodInformation GetPeriod(TaskInterval interval, DateTime focusDate)
         {
             var start = TaskBlockDateHelper.GetPeriodStart(interval, focusDate);
@@ -214,6 +261,7 @@ namespace Schoofs_ATaskO.Services
                     IsCompleted = isCompleted,
                     IsOverdue = isOverdue,
                     CanBeTakenOver = block.Status == TaskBlockStatus.Free,
+                    CanBeCompleted = block.Status == TaskBlockStatus.Assigned && block.AssignedByUserId == currentUserId,
                     IsSelected = false,
                     ContinuesFromPreviousPeriod = continuesFromPreviousPeriod,
                     ContinuesIntoNextPeriod = continuesIntoNextPeriod

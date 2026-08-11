@@ -53,5 +53,23 @@ namespace Schoofs_ATaskO.Pages.Tasks
 
             return RedirectToPage( new{ id, focusDate = selectedDate, selectedBlockId = blockId });
         }
+
+        public IActionResult OnPostComplete(int id,int blockId,DateTime? focusDate)
+        {
+            var selectedDate = focusDate ?? DateTime.Today;
+
+            var success = _taskBlockService.CompleteBlock(blockId);
+
+            if (!success)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockService.ErrorMessage) ? _taskBlockService.ErrorMessage : "Der Aufgabenblock konnte nicht als erledigt gespeichert werden.";
+
+                TaskView = _taskBlockService.GetTaskView(id, selectedDate,blockId);
+
+                return Page();
+            }
+
+            return RedirectToPage(new {id, focusDate = selectedDate,selectedBlockId = blockId});
+        }
     }
 }

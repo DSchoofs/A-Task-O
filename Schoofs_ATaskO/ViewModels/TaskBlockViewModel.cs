@@ -22,6 +22,7 @@ namespace Schoofs_ATaskO.ViewModels
         public bool IsOverdue { get; set; }
         public bool IsCompleted { get; set; }
         public bool CanBeTakenOver { get; set; }
+        public bool CanBeCompleted { get; set; }
         public string DisplayTime { get; set;  } = string.Empty;
         public bool ContinuesFromPreviousPeriod { get; set; }
         public bool ContinuesIntoNextPeriod { get; set; }
