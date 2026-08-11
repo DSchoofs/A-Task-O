@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Reflection;
+﻿using Schoofs_ATaskO.Helpers;
 using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.ViewModels;
@@ -37,6 +35,7 @@ namespace Schoofs_ATaskO.Services
                 return null;
             }
 
+
             var taskBlocks = _taskBlockRepository.GetBlocksByTaskItemId(taskItemId);
 
             if (taskBlocks.Count == 0 && !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage))
@@ -47,9 +46,9 @@ namespace Schoofs_ATaskO.Services
 
             var currentPeriod = GetPeriod(taskItem.Interval, focusDate);
 
-            var previousFocusDate = GetPreviousFocusDate(taskItem.Interval, currentPeriod.Start);
+            var previousFocusDate = TaskBlockDateHelper.GetPreviousFocusDate(taskItem.Interval, currentPeriod.Start);
 
-            var nextFocusDate = GetNextFocusDate(taskItem.Interval, currentPeriod.Start);
+            var nextFocusDate = TaskBlockDateHelper.GetNextFocusDate(taskItem.Interval, currentPeriod.Start);
 
             var previousPeriod = GetPeriod(taskItem.Interval, previousFocusDate);
 
@@ -57,7 +56,7 @@ namespace Schoofs_ATaskO.Services
 
             var currentUserId = _currentUserService.UserId;
 
-            return new TaskViewViewModel
+            var viewModel = new TaskViewViewModel
             {
                 TaskId = taskItem.Id,
                 Name = taskItem.Name,
@@ -73,13 +72,34 @@ namespace Schoofs_ATaskO.Services
                 CurrentPeriodLabel = currentPeriod.Label,
                 PreviousBlocks = MapBlocks(taskBlocks, previousPeriod.Start, previousPeriod.End, currentUserId),
                 CurrentBlocks = MapBlocks(taskBlocks, currentPeriod.Start, currentPeriod.End, currentUserId),
-                NextBlocks = MapBlocks(taskBlocks, nextPeriod.Start,nextPeriod.End, currentUserId)
+                NextBlocks = MapBlocks(taskBlocks, nextPeriod.Start, nextPeriod.End, currentUserId)
             };
+
+            return viewModel;
+        }
+
+        private PeriodInformation GetPeriod(TaskInterval interval, DateTime focusDate)
+        {
+            var start = TaskBlockDateHelper.GetPeriodStart(interval, focusDate);
+
+            var end = TaskBlockDateHelper.GetNextPeriodStart(interval, start);
+
+            var label = TaskBlockDateHelper.GetPeriodLabel(interval, start, end);
+
+            var period = new PeriodInformation
+            {
+                Start = start,
+                End = end,
+                Label = label
+            };
+
+            return period;
         }
 
         private List<TaskBlockViewModel> MapBlocks(List<TaskBlock> blocks, DateTime periodStart, DateTime periodEnd, int? currentUserId)
         {
-            var matchingBlocks = blocks.Where(block => block.Start >= periodStart && block.Start < periodEnd).OrderBy(block => block.Start).ToList();
+            // Block wird angezeigt, wenn er den Zeitraum überschneidet ([Start,End) Logik)
+            var matchingBlocks = blocks.Where(block => block.Start < periodEnd && block.End > periodStart).OrderBy(block => block.Start).ToList();
 
             var viewModels = new List<TaskBlockViewModel>();
 
@@ -93,7 +113,7 @@ namespace Schoofs_ATaskO.Services
 
                 var statusText = GetStatusText(block.Status, isOverdue);
 
-                viewModels.Add(new TaskBlockViewModel
+                var vm = new TaskBlockViewModel
                 {
                     Id = block.Id,
                     TaskItemId = block.TaskItemId,
@@ -113,7 +133,9 @@ namespace Schoofs_ATaskO.Services
                     IsOverdue = isOverdue,
                     CanBeTakenOver = block.Status == TaskBlockStatus.Free,
                     IsSelected = false
-                });
+                };
+
+                viewModels.Add(vm);
             }
 
             return viewModels;
@@ -126,8 +148,7 @@ namespace Schoofs_ATaskO.Services
                 return "block-completed";
             }
 
-            if (isOverdue ||
-                block.Status == TaskBlockStatus.Overdue)
+            if (isOverdue || block.Status == TaskBlockStatus.Overdue)
             {
                 return "block-overdue";
             }
@@ -152,96 +173,31 @@ namespace Schoofs_ATaskO.Services
                 return "Überfällig";
             }
 
-            var displayAttribute = typeof(TaskBlockStatus).GetMember(status.ToString()).FirstOrDefault()?.GetCustomAttribute<DisplayAttribute>();
+            string text;
 
-            return displayAttribute?.Name ?? status.ToString();
-        }
-
-        private PeriodInformation GetPeriod(TaskInterval interval, DateTime focusDate)
-        {
-            var start = GetPeriodStart(interval, focusDate);
-            var end = GetNextPeriodStart(interval, start);
-            var label = GetPeriodLabel(interval, start, end);
-
-            return new PeriodInformation
+            switch (status)
             {
-                Start = start,
-                End = end,
-                Label = label
-            };
-        }
+                case TaskBlockStatus.Free:
+                    text = "Frei";
+                    break;
 
-        private DateTime GetPeriodStart(TaskInterval interval, DateTime focusDate)
-        {
-            var date = focusDate.Date;
+                case TaskBlockStatus.Assigned:
+                    text = "Übernommen";
+                    break;
 
-            return interval switch
-            {
-                TaskInterval.Daily => StartOfWeek(date),
+                case TaskBlockStatus.Completed:
+                    text = "Erledigt";
+                    break;
 
-                TaskInterval.Weekly => new DateTime(date.Year, date.Month, 1),
+                case TaskBlockStatus.Overdue:
+                    text = "Überfällig";
+                    break;
 
-                TaskInterval.Monthly => new DateTime(date.Year, 1, 1), _ => date
-            };
-        }
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(status), status, "Unbekannter Blockstatus.");
+            }
 
-        private DateTime GetNextPeriodStart(TaskInterval interval, DateTime periodStart)
-        {
-            return interval switch
-            {
-                TaskInterval.Daily => periodStart.AddDays(7),
-
-                TaskInterval.Weekly => periodStart.AddMonths(1),
-
-                TaskInterval.Monthly => periodStart.AddYears(1), _ => periodStart.AddDays(1)
-            };
-        }
-
-        private DateTime GetPreviousFocusDate(TaskInterval interval, DateTime currentPeriodStart)
-        {
-            return interval switch
-            {
-                TaskInterval.Daily => currentPeriodStart.AddDays(-7),
-
-                TaskInterval.Weekly => currentPeriodStart.AddMonths(-1),
-
-                TaskInterval.Monthly => currentPeriodStart.AddYears(-1), _ => currentPeriodStart.AddDays(-1)
-            };
-        }
-
-        private DateTime GetNextFocusDate(TaskInterval interval, DateTime currentPeriodStart)
-        {
-            return interval switch
-            {
-                TaskInterval.Daily => currentPeriodStart.AddDays(7),
-
-                TaskInterval.Weekly => currentPeriodStart.AddMonths(1),
-
-                TaskInterval.Monthly => currentPeriodStart.AddYears(1), _ => currentPeriodStart.AddDays(1)
-            };
-        }
-
-        private DateTime StartOfWeek(DateTime date)
-        {
-            var dayOfWeek = date.DayOfWeek;
-
-            var daysSinceMonday = dayOfWeek == DayOfWeek.Sunday ? 6 : (int)dayOfWeek - 1;
-
-            return date.AddDays(-daysSinceMonday).Date;
-        }
-
-        private string GetPeriodLabel(TaskInterval interval,DateTime start, DateTime end)
-        {
-            var culture = CultureInfo.GetCultureInfo("de-DE");
-
-            return interval switch
-            {
-                TaskInterval.Daily => $"{start:dd.MM.yyyy} - {end.AddDays(-1):dd.MM.yyyy}",
-
-                TaskInterval.Weekly => start.ToString("MMMM yyyy", culture),
-
-                TaskInterval.Monthly => start.ToString("yyyy", culture), _ => start.ToString("dd.MM.yyyy")
-            };
+            return text;
         }
 
         private class PeriodInformation
