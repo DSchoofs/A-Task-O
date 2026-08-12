@@ -67,7 +67,6 @@
                         Beschreibung:
                     </span>
 
-                    
                     @if (string.IsNullOrWhiteSpace(Model.TaskView.Description))
                     {
                         <span class="description-preview-empty">
@@ -76,15 +75,17 @@
                     }
                     else
                     {
-
-                        <button type="button" class="description-button" data-description-open data-description-title="@Model.TaskView.Name" data-description="@Model.TaskView.Description">
+                        <button type="button"
+                                class="description-button"
+                                data-description-open
+                                data-description-title="@Model.TaskView.Name"
+                                data-description="@Model.TaskView.Description">
                             Beschreibung öffnen
                         </button>
-
                     }
-
                 </div>
             </div>
+
             <div class="task-view-navigation">
                 <a asp-page="/Tasks/TaskView"
                    asp-route-id="@Model.TaskView.TaskId"
@@ -100,6 +101,7 @@
                     Weiter →
                 </a>
             </div>
+
             <div class="task-periods">
 
                 <section class="task-period">
@@ -142,9 +144,12 @@
                                     data-status="@block.StatusText"
                                     data-assigned-user="@block.AssignedByUserName"
                                     data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
+                                    data-completed-user="@block.CompletedByUserName"
+                                    data-completed-at="@((block.CompletedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
                                     data-note="@block.Note"
                                     data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
-                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()">
+                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()"
+                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -156,11 +161,9 @@
                             </button>
                         }
                     }
-                    
                 </section>
 
                 <section class="task-period current-period">
-
                     <h2>
                         @Model.TaskView.CurrentPeriodTitle
                     </h2>
@@ -200,9 +203,12 @@
                                     data-status="@block.StatusText"
                                     data-assigned-user="@block.AssignedByUserName"
                                     data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
+                                    data-completed-user="@block.CompletedByUserName"
+                                    data-completed-at="@((block.CompletedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
                                     data-note="@block.Note"
                                     data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
-                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()">
+                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()"
+                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -256,9 +262,12 @@
                                     data-status="@block.StatusText"
                                     data-assigned-user="@block.AssignedByUserName"
                                     data-assigned-at="@((block.AssignedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
+                                    data-completed-user="@block.CompletedByUserName"
+                                    data-completed-at="@((block.CompletedAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm")) ?? string.Empty)"
                                     data-note="@block.Note"
                                     data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
-                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()">
+                                    data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()"
+                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -270,20 +279,23 @@
                             </button>
                         }
                     }
-                    
                 </section>
-
             </div>
+
             <div id="taskBlockDetails"
                  class="task-details task-block-details"
                  hidden>
 
-                <div class="task-detail-row">
-                    <span class="task-detail-label">
-                        Block:
-                    </span>
+                <div class="task-block-details-header">
+                    <div>
+                        <h2>
+                            Blockdetails
+                        </h2>
 
-                    <span id="selectedBlockDisplayTime"></span>
+                        <p class="task-block-details-time"
+                           id="selectedBlockDisplayTime">
+                        </p>
+                    </div>
                 </div>
 
                 <div class="task-detail-row">
@@ -314,6 +326,28 @@
                     </span>
 
                     <span id="selectedBlockAssignedAt"></span>
+                </div>
+
+                <div id="selectedBlockCompletedUserRow"
+                     class="task-detail-row"
+                     hidden>
+
+                    <span class="task-detail-label">
+                        Erledigt von:
+                    </span>
+
+                    <span id="selectedBlockCompletedUser"></span>
+                </div>
+
+                <div id="selectedBlockCompletedAtRow"
+                     class="task-detail-row"
+                     hidden>
+
+                    <span class="task-detail-label">
+                        Erledigt am:
+                    </span>
+
+                    <span id="selectedBlockCompletedAt"></span>
                 </div>
 
                 <div id="selectedBlockNoteRow"
@@ -347,7 +381,7 @@
 
                         <button type="submit"
                                 class="save-button">
-                            Aufgabe übernehmen
+                            Block übernehmen
                         </button>
                     </form>
 
@@ -370,13 +404,39 @@
 
                         <button type="submit"
                                 class="save-button">
-                            Aufgabe erledigen
+                            Erledigt markieren
+                        </button>
+                    </form>
+
+                    <form method="post"
+                          asp-page-handler="Release"
+                          id="releaseBlockForm"
+                          hidden>
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.TaskView.TaskId" />
+
+                        <input type="hidden"
+                               name="blockId"
+                               id="releasedBlockId" />
+
+                        <input type="hidden"
+                               name="focusDate"
+                               value="@Model.TaskView.FocusDate.ToString("yyyy-MM-dd")" />
+
+                        <button type="submit"
+                                class="cancel-button">
+                            Block freigeben
                         </button>
                     </form>
                 </div>
             </div>
+
             <div class="task-legend">
-                <h2>Legende</h2>
+                <h2>
+                    Legende
+                </h2>
 
                 <div class="legend-items">
                     <span class="legend-item">
@@ -459,16 +519,20 @@
     </div>
 </div>
 
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const blocks = document.querySelectorAll(".task-block");
+
         const details = document.getElementById("taskBlockDetails");
+
         const takeoverForm = document.getElementById("takeOverBlockForm");
         const completeForm = document.getElementById("completeBlockForm");
-        const completedBlockId = document.getElementById("completedBlockId");
+        const releaseForm = document.getElementById("releaseBlockForm");
 
         const selectedBlockId = document.getElementById("selectedBlockId");
+        const completedBlockId = document.getElementById("completedBlockId");
+        const releasedBlockId = document.getElementById("releasedBlockId");
+
         const displayTime = document.getElementById("selectedBlockDisplayTime");
         const status = document.getElementById("selectedBlockStatus");
 
@@ -477,6 +541,12 @@
 
         const assignedAtRow = document.getElementById("selectedBlockAssignedAtRow");
         const assignedAt = document.getElementById("selectedBlockAssignedAt");
+
+        const completedUserRow = document.getElementById("selectedBlockCompletedUserRow");
+        const completedUser = document.getElementById("selectedBlockCompletedUser");
+
+        const completedAtRow = document.getElementById("selectedBlockCompletedAtRow");
+        const completedAt = document.getElementById("selectedBlockCompletedAt");
 
         const noteRow = document.getElementById("selectedBlockNoteRow");
         const note = document.getElementById("selectedBlockNote");
@@ -491,8 +561,10 @@
 
                 displayTime.textContent = block.dataset.displayTime;
                 status.textContent = block.dataset.status;
+
                 selectedBlockId.value = block.dataset.blockId;
                 completedBlockId.value = block.dataset.blockId;
+                releasedBlockId.value = block.dataset.blockId;
 
                 if (block.dataset.assignedUser) {
                     assignedUser.textContent = block.dataset.assignedUser;
@@ -512,6 +584,24 @@
                     assignedAtRow.hidden = true;
                 }
 
+                if (block.dataset.completedUser) {
+                    completedUser.textContent = block.dataset.completedUser;
+                    completedUserRow.hidden = false;
+                }
+                else {
+                    completedUser.textContent = "";
+                    completedUserRow.hidden = true;
+                }
+
+                if (block.dataset.completedAt) {
+                    completedAt.textContent = block.dataset.completedAt;
+                    completedAtRow.hidden = false;
+                }
+                else {
+                    completedAt.textContent = "";
+                    completedAtRow.hidden = true;
+                }
+
                 if (block.dataset.note) {
                     note.textContent = block.dataset.note;
                     noteRow.hidden = false;
@@ -527,8 +617,49 @@
                 completeForm.hidden =
                     block.dataset.canBeCompleted !== "true";
 
+                releaseForm.hidden =
+                    block.dataset.canBeReleased !== "true";
+
                 details.hidden = false;
+
+                details.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
             });
+        });
+
+        const descriptionOverlay = document.getElementById("descriptionOverlay");
+        const descriptionText = document.getElementById("descriptionText");
+        const descriptionTitle = document.getElementById("descriptionDialogTitle");
+        const descriptionOpenButton = document.querySelector("[data-description-open]");
+        const descriptionCloseButtons = document.querySelectorAll("[data-description-close]");
+
+        if (descriptionOpenButton) {
+            descriptionOpenButton.addEventListener("click", function() {
+                descriptionTitle.textContent =
+                    descriptionOpenButton.dataset.descriptionTitle;
+
+                descriptionText.value =
+                    descriptionOpenButton.dataset.description;
+
+                descriptionOverlay.classList.add("is-open");
+                document.body.classList.add("description-overlay-open");
+            });
+        }
+
+        descriptionCloseButtons.forEach(function(button) {
+            button.addEventListener("click", function() {
+                descriptionOverlay.classList.remove("is-open");
+                document.body.classList.remove("description-overlay-open");
+            });
+        });
+
+        descriptionOverlay.addEventListener("click", function(event) {
+            if (event.target === descriptionOverlay) {
+                descriptionOverlay.classList.remove("is-open");
+                document.body.classList.remove("description-overlay-open");
+            }
         });
     });
 </script>

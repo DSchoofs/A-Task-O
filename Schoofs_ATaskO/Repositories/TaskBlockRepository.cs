@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Schoofs_ATaskO.Models;
 
 namespace Schoofs_ATaskO.Repositories
 {
@@ -182,6 +183,109 @@ namespace Schoofs_ATaskO.Repositories
 
             return false;
         }
+
+        public bool TakeOverBlock(int blockId, int userId)
+        {
+            try
+            {
+                sqlcmd = "UPDATE TaskBlocks SET Status = @Status, AssignedByUserId = @AssignedByUserId, AssignedAt = @AssignedAt WHERE Id = @Id AND Status = @FreeStatus";
+
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var rowsAffected = conn.Execute(sqlcmd, new
+                    {
+                        Id = blockId,
+                        Status = (int)TaskBlockStatus.Assigned,
+                        AssignedByUserId = userId,
+                        AssignedAt = DateTime.Now,
+                        FreeStatus = (int)TaskBlockStatus.Free
+                    });
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                ErrorMessage = $"SQL Error:  {sqlex.Message}";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error:  {ex.Message}";
+            }
+
+            return false;
+        }
+
+        public bool CompleteBlock(int blockId, int userId)
+        {
+            try
+            {
+                sqlcmd = "UPDATE TaskBlocks SET Status = @Status, CompletedByUserId = @CompletedByUserId, CompletedAt = @CompletedAt WHERE Id = @Id AND AssignedByUserId = @AssignedByUserId AND Status = @AssignedStatus";
+
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var rowsAffected = conn.Execute(sqlcmd, new
+                    {
+                        Id = blockId,
+                        Status = (int)TaskBlockStatus.Completed,
+                        CompletedByUserId = userId,
+                        CompletedAt = DateTime.Now,
+                        AssignedByUserId = userId,
+                        AssignedStatus = (int)TaskBlockStatus.Assigned
+                    });
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                ErrorMessage = $"SQL Error:  {sqlex.Message}";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error:  {ex.Message}";
+            }
+
+            return false;
+        }
+
+        public bool ReleaseBlock(int blockId, int userId)
+        {
+            try
+            {
+                sqlcmd = "UPDATE TaskBlocks SET Status = @FreeStatus, AssignedByUserId = NULL, AssignedAt = NULL WHERE Id = @Id AND AssignedByUserId = @AssignedByUserId AND Status = @AssignedStatus";
+
+                using (var conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var rowsAffected = conn.Execute(sqlcmd, new
+                    {
+                        Id = blockId,
+                        AssignedByUserId = userId,
+                        AssignedStatus = (int)TaskBlockStatus.Assigned,
+                        FreeStatus = (int)TaskBlockStatus.Free
+                    });
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                ErrorMessage = $"SQL Error:  {sqlex.Message}";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error:  {ex.Message}";
+            }
+
+            return false;
+        }
+
 
         public bool DeleteBlockById(int id)
         {

@@ -198,6 +198,62 @@ namespace Schoofs_ATaskO.Services
             return true;
         }
 
+        public bool ReleaseBlock(int blockId)
+        {
+            ErrorMessage = string.Empty;
+
+            var currentUserId = _currentUserService.UserId;
+
+            if (!currentUserId.HasValue)
+            {
+                ErrorMessage = "Es konnte kein angemeldeter Benutzer ermittelt werden.";
+                return false;
+            }
+
+            var block = _taskBlockRepository.GetBlockById(blockId);
+
+            if (block is null)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(
+                    _taskBlockRepository.ErrorMessage)
+                    ? _taskBlockRepository.ErrorMessage
+                    : "Der Aufgabenblock wurde nicht gefunden.";
+
+                return false;
+            }
+
+            if (block.Status != TaskBlockStatus.Assigned)
+            {
+                ErrorMessage = "Nur übernommene Aufgabenblöcke können freigegeben werden.";
+                return false;
+            }
+
+            if (block.AssignedByUserId != currentUserId.Value)
+            {
+                ErrorMessage = "Nur der Benutzer, der den Block übernommen hat, darf ihn freigeben.";
+                return false;
+            }
+
+            block.Status = TaskBlockStatus.Free;
+            block.AssignedByUserId = null;
+            block.AssignedAt = null;
+            block.CompletedByUserId = null;
+            block.CompletedAt = null;
+
+            var updated = _taskBlockRepository.UpdateBlock(block);
+
+            if (!updated)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(
+                    _taskBlockRepository.ErrorMessage)
+                    ? _taskBlockRepository.ErrorMessage
+                    : "Der Aufgabenblock konnte nicht freigegeben werden.";
+
+                return false;
+            }
+
+            return true;
+        }
         private PeriodInformation GetPeriod(TaskInterval interval, DateTime focusDate)
         {
             var start = TaskBlockDateHelper.GetPeriodStart(interval, focusDate);
@@ -262,6 +318,7 @@ namespace Schoofs_ATaskO.Services
                     IsOverdue = isOverdue,
                     CanBeTakenOver = block.Status == TaskBlockStatus.Free,
                     CanBeCompleted = block.Status == TaskBlockStatus.Assigned && block.AssignedByUserId == currentUserId,
+                    CanBeReleased = block.Status == TaskBlockStatus.Assigned && block.AssignedByUserId.HasValue && block.AssignedByUserId.Value == currentUserId,
                     IsSelected = false,
                     ContinuesFromPreviousPeriod = continuesFromPreviousPeriod,
                     ContinuesIntoNextPeriod = continuesIntoNextPeriod

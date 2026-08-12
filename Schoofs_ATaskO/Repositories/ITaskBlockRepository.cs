@@ -16,6 +16,12 @@ namespace Schoofs_ATaskO.Repositories
 
         bool DeleteBlockById(int id);
 
+        bool TakeOverBlock(int blockId, int userId);
+
+        bool CompleteBlock(int blockId, int userId);
+
+        bool ReleaseBlock(int blockId, int userId);
+
         string ErrorMessage { get; set; }
     }
 }
