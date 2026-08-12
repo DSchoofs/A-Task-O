@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Pages.Admin.Users
 {
@@ -12,7 +12,7 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
         private readonly IUserService _userService;
 
         [BindProperty]
-        public User Input { get; set; } = new();
+        public UserEditViewModel Input { get; set; } = new();
 
         public string ErrorMessage { get; set; } = string.Empty;
 
@@ -27,14 +27,24 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
 
             if (user == null)
             {
-                ErrorMessage = string.IsNullOrWhiteSpace(_userService.ErrorMessage)
+                ErrorMessage = string.IsNullOrWhiteSpace(
+                    _userService.ErrorMessage)
                     ? "Benutzer wurde nicht gefunden."
                     : _userService.ErrorMessage;
 
                 return RedirectToPage("./UserManagement");
             }
 
-            Input = user;
+            Input = new UserEditViewModel
+            {
+                UserId = user.UserId,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                IsAdmin = user.IsAdmin,
+                CompletedTasks = user.CompletedTasks
+            };
+
             return Page();
         }
 
@@ -49,7 +59,11 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
 
             if (existingUser == null)
             {
-                ErrorMessage = "Benutzer wurde nicht gefunden.";
+                ErrorMessage = string.IsNullOrWhiteSpace(
+                    _userService.ErrorMessage)
+                    ? "Benutzer wurde nicht gefunden."
+                    : _userService.ErrorMessage;
+
                 return Page();
             }
 
@@ -58,13 +72,16 @@ namespace Schoofs_ATaskO.Pages.Admin.Users
             existingUser.Email = Input.Email;
             existingUser.IsAdmin = Input.IsAdmin;
             existingUser.CompletedTasks = Input.CompletedTasks;
-            existingUser.LastLogin = Input.LastLogin;
 
             var result = _userService.UpdateUser(existingUser);
 
             if (!result)
             {
-                ErrorMessage = _userService.ErrorMessage;
+                ErrorMessage = string.IsNullOrWhiteSpace(
+                    _userService.ErrorMessage)
+                    ? "Der Benutzer konnte nicht aktualisiert werden."
+                    : _userService.ErrorMessage;
+
                 return Page();
             }
 
