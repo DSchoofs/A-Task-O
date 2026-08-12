@@ -16,6 +16,8 @@ namespace Schoofs_ATaskO.ViewModels
         public DateTime CurrentPeriodStart { get; set; }
         public DateTime CurrentPeriodEnd { get; set; }
         public string CurrentPeriodLabel { get; set; } = string.Empty;
+        public string PreviousPeriodLabel { get; set; } = string.Empty;
+        public string NextPeriodLabel { get; set; } = string.Empty;
         public List<TaskBlockViewModel> PreviousBlocks { get; set; } = new List<TaskBlockViewModel>();
         public List<TaskBlockViewModel> CurrentBlocks { get; set; } = new List<TaskBlockViewModel>();
         public List<TaskBlockViewModel> NextBlocks { get; set; } = new List<TaskBlockViewModel>();
