@@ -72,8 +72,11 @@ body {
 
 .logout-button,
 .login-button {
-    display: inline-block;
-    padding: 0.6rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0.65rem 1rem;
     border-radius: 8px;
     color: #ffffff;
     text-decoration: none;
@@ -142,6 +145,14 @@ body {
                 transform: translateY(-2px);
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
             }
+.sidebar-divider {
+    width: 100%;
+    height: 3px;
+    margin: 0.4rem 0 0.1rem;
+    border-radius: 999px;
+    background: linear-gradient( to right, transparent, #718096 20%, #a0aec0 50%, #718096 80%, transparent );
+    opacity: 0.9;
+}
 
 .content {
     flex: 1 1 auto;
@@ -175,7 +186,6 @@ body {
     background-color: #ffffff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
-
 
 .wide-container {
     width: 100%;
@@ -313,6 +323,114 @@ body {
 }
 
 /* ==================================================
+   Einheitliche Aktionsbuttons
+================================================== */
+
+.action-button,
+.description-button,
+.save-button,
+.cancel-button,
+.edit-button,
+.delete-button,
+.task-block-takeover-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.25rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #ffffff;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .action-button:hover,
+    .description-button:hover,
+    .save-button:hover,
+    .cancel-button:hover,
+    .edit-button:hover,
+    .delete-button:hover,
+    .task-block-takeover-button:hover {
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-button:focus-visible,
+    .description-button:focus-visible,
+    .save-button:focus-visible,
+    .cancel-button:focus-visible,
+    .edit-button:focus-visible,
+    .delete-button:focus-visible,
+    .task-block-takeover-button:focus-visible {
+        outline: 3px solid rgba(13, 110, 253, 0.25);
+        outline-offset: 2px;
+    }
+
+    .action-button:active,
+    .description-button:active,
+    .save-button:active,
+    .cancel-button:active,
+    .edit-button:active,
+    .delete-button:active,
+    .task-block-takeover-button:active {
+        transform: translateY(0);
+        box-shadow: none;
+    }
+
+.details-button,
+.edit-button,
+.delete-button {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+    .details-button:hover,
+    .edit-button:hover,
+    .delete-button:hover {
+        background-color: #565e64;
+        border-color: #565e64;
+    }
+
+.save-button,
+.task-block-takeover-button {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+    .save-button:hover,
+    .task-block-takeover-button:hover {
+        background-color: #157347;
+        border-color: #157347;
+    }
+
+.cancel-button {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+    .cancel-button:hover {
+        background-color: #565e64;
+        border-color: #565e64;
+    }
+
+.create-button {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+    .create-button:hover {
+        background-color: #157347;
+        border-color: #157347;
+    }
+/* ==================================================
    Tabellen allgemein
 ================================================== */
 
@@ -377,29 +495,6 @@ body {
 .table-bordered {
     border: 1px solid #e5e7eb;
 }
-
-.table-actions {
-    display: flex;
-    justify-content: center;
-    gap: 0.4rem;
-    flex-wrap: wrap;
-}
-
-    .table-actions .btn {
-        display: inline-block;
-        padding: 0.4rem 0.7rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        text-decoration: none;
-        white-space: nowrap;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-        .table-actions .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-        }
-
 /* ==================================================
    TaskManagement-Tabelle
 ================================================== */
@@ -411,11 +506,11 @@ body {
 }
 
     .task-management-table .col-name {
-        width: 14%;
+        width: 12%;
     }
 
     .task-management-table .col-description {
-        width: 22%;
+        width: 12%;
     }
 
     .task-management-table .col-interval {
@@ -423,11 +518,11 @@ body {
     }
 
     .task-management-table .col-status {
-        width: 8%;
+        width: 6%;
     }
 
     .task-management-table .col-createdby {
-        width: 10%;
+        width: 11%;
     }
 
     .task-management-table .col-createdat {
@@ -435,7 +530,7 @@ body {
     }
 
     .task-management-table .col-modifiedby {
-        width: 10%;
+        width: 11%;
     }
 
     .task-management-table .col-modifiedat {
@@ -443,7 +538,7 @@ body {
     }
 
     .task-management-table .col-actions {
-        width: 16%;
+        width: 18%;
     }
 
     .task-management-table th {
@@ -487,26 +582,18 @@ body {
 
 .description-button {
     width: max-content;
-    display: inline-block;
+    
     margin-top: 0.4rem;
-    padding: 0.35rem 0.65rem;
-    border: none;
-    border-radius: 7px;
+    padding: 0.25rem 0.35rem;
     background-color: #6b7280;
-    color: #ffffff;
-    font: inherit;
+    border-color: #6b7280;
     font-size: 0.8rem;
-    cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
     .description-button:hover {
         background-color: #4b5563;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        border-color: #4b5563;
     }
-
 /* ==================================================
    Beschreibungsoverlay
 ================================================== */
@@ -592,7 +679,6 @@ body {
 body.description-overlay-open {
     overflow: hidden;
 }
-
 /* ==================================================
    TaskView
 ================================================== */
@@ -610,10 +696,12 @@ body.description-overlay-open {
     border-radius: 10px;
     background-color: #f9fafb;
 }
+
 .task-block-details {
     margin-top: 1.5rem;
     margin-bottom: 0;
 }
+
 .task-block-details-header {
     display: flex;
     align-items: center;
@@ -633,21 +721,6 @@ body.description-overlay-open {
     color: #6b7280;
     font-size: 0.9rem;
 }
-
-.task-block-details-close {
-    display: inline-block;
-    padding: 0.45rem 0.75rem;
-    border-radius: 8px;
-    background-color: #6c757d;
-    color: #ffffff;
-    font-size: 0.9rem;
-    text-decoration: none;
-}
-
-    .task-block-details-close:hover {
-        background-color: #565e64;
-        color: #ffffff;
-    }
 
 .task-detail-row {
     display: flex;
@@ -700,17 +773,18 @@ body.description-overlay-open {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
-    padding: 0.5rem 0.8rem;
+    padding: 0.25rem 0.8rem;
+    border: 1px solid #6c757d;
     border-radius: 8px;
-    background-color: #6c757d;
+    background-color: green;
     color: #ffffff;
+    font-weight: 600;
     text-decoration: none;
     transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
     .period-navigation-button:hover {
-        background-color: #565e64;
+        background-color: forestgreen;
         color: #ffffff;
         transform: translateY(-1px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
@@ -767,6 +841,7 @@ body.description-overlay-open {
     appearance: none;
     transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
+
     .task-block:hover {
         color: #222;
         transform: translateY(-1px);
@@ -786,9 +861,10 @@ body.description-overlay-open {
     .task-block-selected:hover {
         transform: none;
     }
-    .task-block:last-child {
-        margin-bottom: 0;
-    }
+
+.task-block:last-child {
+    margin-bottom: 0;
+}
 
 .task-block-time,
 .task-block-status {
@@ -886,83 +962,6 @@ body.description-overlay-open {
 .block-continues-into-next {
     border-bottom: 3px dashed rgba(59, 130, 246, 0.7);
 }
-/* ==================================================
-   Buttons
-================================================== */
-
-.save-button,
-.cancel-button,
-.edit-button,
-.delete-button {
-    display: inline-block;
-    padding: 0.55rem 1rem;
-    border: none;
-    border-radius: 10px;
-    font: inherit;
-    font-size: 0.95rem;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.save-button {
-    background-color: #198754;
-    color: #ffffff;
-}
-
-    .save-button:hover {
-        background-color: #157347;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    }
-
-.cancel-button,
-.edit-button {
-    background-color: #6c757d;
-    color: #ffffff;
-}
-
-    .cancel-button:hover,
-    .edit-button:hover {
-        background-color: #565e64;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    }
-
-.delete-button {
-    background-color: #dc3545;
-    color: #ffffff;
-}
-
-    .delete-button:hover {
-        background-color: #bb2d3b;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    }
-
-.task-block-takeover-button {
-    display: inline-block;
-    padding: 0.55rem 1rem;
-    border: none;
-    border-radius: 10px;
-    background-color: #198754;
-    color: #ffffff;
-    font: inherit;
-    font-size: 0.95rem;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-    .task-block-takeover-button:hover {
-        background-color: #157347;
-        color: #ffffff;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    }
 /* ==================================================
    Responsive Design
 ================================================== */
@@ -1143,12 +1142,13 @@ body.description-overlay-open {
         .task-detail-description .task-detail-label {
             min-width: 0;
         }
+
     .task-block-details-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
-    .task-block-details-close {
-        align-self: flex-start;
+    .table-actions {
+        justify-content: flex-start;
     }
 }

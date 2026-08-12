@@ -40,6 +40,31 @@ namespace Schoofs_ATaskO.Services
             }
         }
 
+        public List<TaskItem> GetActiveTasks()
+        {
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                var tasks = _taskRepository
+                    .GetAllTasks()
+                    .Where(task => task.IsActive)
+                    .ToList();
+
+                if (tasks.Count == 0 &&
+                    !string.IsNullOrWhiteSpace(_taskRepository.ErrorMessage))
+                {
+                    ErrorMessage = _taskRepository.ErrorMessage;
+                }
+
+                return tasks;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+                return new List<TaskItem>();
+            }
+        }
         public List<TaskManagementViewModel> GetAllTaskManagementViewModels()
         {
             ErrorMessage = string.Empty;

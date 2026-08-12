@@ -12,7 +12,7 @@
             <h1>Aufgabenverwaltung</h1>
 
             <a asp-page="/Admin/Tasks/Create"
-               class="save-button">
+               class="action-button create-button">
                 Neue Aufgabe anlegen
             </a>
         </div>
@@ -120,15 +120,22 @@
 
                                 <td>
                                     <div class="table-actions">
+
+                                        <a asp-page="/Tasks/TaskView"
+                                           asp-route-id="@task.Id"
+                                           class="action-button details-button">
+                                            Details
+                                        </a>
+
                                         <a asp-page="Edit"
                                            asp-route-id="@task.Id"
-                                           class="btn btn-primary btn-sm">
+                                           class="action-button edit-button">
                                             Bearbeiten
                                         </a>
 
                                         <a asp-page="Delete"
                                            asp-route-id="@task.Id"
-                                           class="btn btn-danger btn-sm">
+                                           class="action-button delete-button">
                                             Löschen
                                         </a>
                                     </div>

@@ -8,10 +8,11 @@
     <div class="form-container wide-container">
         <div class="page-header">
             <h1>Benutzerverwaltung</h1>
+            
+                <a asp-page="./Create" class="action-button create-button">Neuen Benutzer anlegen</a>
+           
         </div>
-        <p class="mb-3">
-            <a asp-page="./Create" class="btn btn-success">Neuen Benutzer anlegen</a>
-        </p>
+        
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
@@ -53,8 +54,8 @@
                                 <td>@(user.CompletedTasks.HasValue ? user.CompletedTasks.Value.ToString() : "0")</td>
                                 <td>
                                     <div class="table-actions">
-                                        <a asp-page="./Edit" asp-route-id="@user.UserId" class="btn btn-primary btn-sm">Bearbeiten</a>
-                                        <a asp-page="./Delete" asp-route-id="@user.UserId" class="btn btn-danger btn-sm">Löschen</a>
+                                        <a asp-page="./Edit" asp-route-id="@user.UserId" class="action-button edit-button">Bearbeiten</a>
+                                        <a asp-page="./Delete" asp-route-id="@user.UserId" class="action-button delete-button">Löschen</a>
                                     </div>
                                 </td>
                             </tr>

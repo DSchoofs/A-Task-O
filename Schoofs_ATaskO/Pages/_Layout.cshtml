@@ -5,7 +5,7 @@
 
     if (User.Identity?.IsAuthenticated == true)
     {
-        tasks = TaskService.GetAllTasks();
+        tasks = TaskService.GetActiveTasks();
     }
 }
 
@@ -57,7 +57,8 @@
                     }
                     @if (tasks.Count > 0)
                     {
-                        <div class="sidebar-section-title">Aufgaben</div>
+                        
+                        <div class="sidebar-divider" role="separator" aria-label="Aufgaben"></div>
 
                         @foreach (var task in tasks)
                         {
