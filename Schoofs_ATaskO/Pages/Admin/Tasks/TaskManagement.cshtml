@@ -1,5 +1,6 @@
 ﻿@page
 @model Schoofs_ATaskO.Pages.Admin.Tasks.TaskManagementModel
+@using System.Linq
 
 @{
     ViewData["Title"] = "Aufgabenverwaltung";
@@ -32,119 +33,255 @@
         }
         else
         {
-            <div class="table-responsive">
-                <table class="table task-management-table table-striped table-hover table-bordered">
-                    <colgroup>
-                        <col class="col-name" />
-                        <col class="col-description" />
-                        <col class="col-interval" />
-                        <col class="col-status" />
-                        <col class="col-createdby" />
-                        <col class="col-createdat" />
-                        <col class="col-modifiedby" />
-                        <col class="col-modifiedat" />
-                        <col class="col-actions" />
-                    </colgroup>
+            <section class="task-management-section">
+                <h2 class="task-management-section-title">
+                    Aktive Aufgaben
+                </h2>
 
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Name</th>
-                            <th>Beschreibung</th>
-                            <th>Intervall</th>
-                            <th>Status</th>
-                            <th>Erstellt von</th>
-                            <th>Erstellt am</th>
-                            <th>Geändert von</th>
-                            <th>Geändert am</th>
-                            <th>Aktionen</th>
-                        </tr>
-                    </thead>
+                @if (Model.Tasks.Any(task => task.IsActive))
+                {
+                    <div class="table-responsive">
+                        <table class="table task-management-table table-striped table-hover table-bordered">
+                            <colgroup>
+                                <col class="col-name" />
+                                <col class="col-description" />
+                                <col class="col-interval" />
+                                <col class="col-status" />
+                                <col class="col-createdby" />
+                                <col class="col-createdat" />
+                                <col class="col-modifiedby" />
+                                <col class="col-modifiedat" />
+                                <col class="col-actions" />
+                            </colgroup>
 
-                    <tbody>
-                        @foreach (var task in Model.Tasks)
-                        {
-                            <tr>
-                                <td class="name-column">
-                                    <div class="name-box">
-                                        @task.Name
-                                    </div>
-                                </td>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Beschreibung</th>
+                                    <th>Intervall</th>
+                                    <th>Status</th>
+                                    <th>Erstellt von</th>
+                                    <th>Erstellt am</th>
+                                    <th>Geändert von</th>
+                                    <th>Geändert am</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
 
-                                <td class="description-column">
-                                    @if (string.IsNullOrWhiteSpace(task.Description))
-                                    {
-                                        <span class="description-preview-empty">
-                                            Keine Beschreibung
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="description-preview"
-                                              title="@task.Description">
-                                            @task.Description
-                                        </span>
+                            <tbody>
+                                @foreach (var task in Model.Tasks.Where(task => task.IsActive))
+                                {
+                                    <tr>
+                                        <td class="name-column">
+                                            <div class="name-box">
+                                                @task.Name
+                                            </div>
+                                        </td>
 
-                                        <button type="button"
-                                                class="description-button"
-                                                data-description-open
-                                                data-description-title="@task.Name"
-                                                data-description="@task.Description">
-                                            Anzeigen
-                                        </button>
-                                    }
-                                </td>
+                                        <td class="description-column">
+                                            @if (string.IsNullOrWhiteSpace(task.Description))
+                                            {
+                                                <span class="description-preview-empty">
+                                                    Keine Beschreibung
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="description-preview"
+                                                      title="@task.Description">
+                                                    @task.Description
+                                                </span>
 
-                                <td>
-                                    @task.Interval
-                                </td>
+                                                <button type="button"
+                                                        class="description-button"
+                                                        data-description-open
+                                                        data-description-title="@task.Name"
+                                                        data-description="@task.Description">
+                                                    Anzeigen
+                                                </button>
+                                            }
+                                        </td>
 
-                                <td>
-                                    @(task.IsActive ? "Aktiv" : "Inaktiv")
-                                </td>
+                                        <td>
+                                            @task.Interval
+                                        </td>
 
-                                <td>
-                                    @task.CreatedByUserName
-                                </td>
+                                        <td>
+                                            Aktiv
+                                        </td>
 
-                                <td>
-                                    @task.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
-                                </td>
+                                        <td>
+                                            @task.CreatedByUserName
+                                        </td>
 
-                                <td>
-                                    @task.ModifiedByUserName
-                                </td>
+                                        <td>
+                                            @task.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                        </td>
 
-                                <td>
-                                    @(task.ModifiedAt.HasValue ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm") : "Noch nicht geändert")
-                                </td>
+                                        <td>
+                                            @task.ModifiedByUserName
+                                        </td>
 
-                                <td>
-                                    <div class="table-actions">
+                                        <td>
+                                            @(task.ModifiedAt.HasValue ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm") : "Noch nicht geändert")
+                                        </td>
 
-                                        <a asp-page="/Tasks/TaskView"
-                                           asp-route-id="@task.Id"
-                                           class="action-button details-button">
-                                            Details
-                                        </a>
+                                        <td>
+                                            <div class="table-actions">
+                                                <a asp-page="/Tasks/TaskView"
+                                                   asp-route-id="@task.Id"
+                                                   class="action-button details-button">
+                                                    Details
+                                                </a>
 
-                                        <a asp-page="Edit"
-                                           asp-route-id="@task.Id"
-                                           class="action-button edit-button">
-                                            Bearbeiten
-                                        </a>
+                                                <a asp-page="Edit"
+                                                   asp-route-id="@task.Id"
+                                                   class="action-button edit-button">
+                                                    Bearbeiten
+                                                </a>
 
-                                        <a asp-page="Delete"
-                                           asp-route-id="@task.Id"
-                                           class="action-button delete-button">
-                                            Löschen
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                                                <a asp-page="Delete"
+                                                   asp-route-id="@task.Id"
+                                                   class="action-button delete-button">
+                                                    Löschen
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="empty-task-list-message">
+                        Keine aktiven Aufgaben vorhanden.
+                    </p>
+                }
+            </section>
+
+            @if (Model.Tasks.Any(task => !task.IsActive))
+            {
+                <section class="task-management-section">
+                    <h2 class="task-management-section-title">
+                        Inaktive Aufgaben
+                    </h2>
+
+                    <div class="table-responsive">
+                        <table class="table task-management-table table-striped table-hover table-bordered">
+                            <colgroup>
+                                <col class="col-name" />
+                                <col class="col-description" />
+                                <col class="col-interval" />
+                                <col class="col-status" />
+                                <col class="col-createdby" />
+                                <col class="col-createdat" />
+                                <col class="col-modifiedby" />
+                                <col class="col-modifiedat" />
+                                <col class="col-actions" />
+                            </colgroup>
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Beschreibung</th>
+                                    <th>Intervall</th>
+                                    <th>Status</th>
+                                    <th>Erstellt von</th>
+                                    <th>Erstellt am</th>
+                                    <th>Geändert von</th>
+                                    <th>Geändert am</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var task in Model.Tasks.Where(task => !task.IsActive))
+                                {
+                                    <tr>
+                                        <td class="name-column">
+                                            <div class="name-box">
+                                                @task.Name
+                                            </div>
+                                        </td>
+
+                                        <td class="description-column">
+                                            @if (string.IsNullOrWhiteSpace(task.Description))
+                                            {
+                                                <span class="description-preview-empty">
+                                                    Keine Beschreibung
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="description-preview"
+                                                      title="@task.Description">
+                                                    @task.Description
+                                                </span>
+
+                                                <button type="button"
+                                                        class="description-button"
+                                                        data-description-open
+                                                        data-description-title="@task.Name"
+                                                        data-description="@task.Description">
+                                                    Anzeigen
+                                                </button>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @task.Interval
+                                        </td>
+
+                                        <td>
+                                            Inaktiv
+                                        </td>
+
+                                        <td>
+                                            @task.CreatedByUserName
+                                        </td>
+
+                                        <td>
+                                            @task.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                        </td>
+
+                                        <td>
+                                            @task.ModifiedByUserName
+                                        </td>
+
+                                        <td>
+                                            @(task.ModifiedAt.HasValue ? task.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm") : "Noch nicht geändert")
+                                        </td>
+
+                                        <td>
+                                            <div class="table-actions">
+                                                <a asp-page="/Tasks/TaskView"
+                                                   asp-route-id="@task.Id"
+                                                   class="action-button details-button">
+                                                    Details
+                                                </a>
+
+                                                <a asp-page="Edit"
+                                                   asp-route-id="@task.Id"
+                                                   class="action-button edit-button">
+                                                    Bearbeiten
+                                                </a>
+
+                                                <a asp-page="Delete"
+                                                   asp-route-id="@task.Id"
+                                                   class="action-button delete-button">
+                                                    Löschen
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            }
         }
     </div>
 </div>
