@@ -227,5 +227,27 @@ namespace Schoofs_ATaskO.Services
 
             return $"{user.FirstName} {user.LastName}";
         }
+        public bool UpdateCompletedTasks(int userId, int change)
+        {
+            ErrorMessage = string.Empty;
+
+            try
+            {
+                var result = _userRepository.UpdateCompletedTasks( userId,change);
+
+                if (!result)
+                {
+                    ErrorMessage = !string.IsNullOrWhiteSpace(_userRepository.ErrorMessage) ? _userRepository.ErrorMessage : "Die Anzahl der erledigten Aufgaben konnte nicht aktualisiert werden.";
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+
+                return false;
+            }
+        }
     }
 }

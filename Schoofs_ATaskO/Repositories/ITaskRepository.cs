@@ -8,7 +8,7 @@ namespace Schoofs_ATaskO.Repositories
         TaskItem? GetTaskById(int id);
         bool AddTask(TaskItem task);
         bool UpdateTask(TaskItem task);
-        bool DeleteTaskById(int id);
+        bool DeleteTaskWithBlocksById(int id);
         string ErrorMessage { get; set; }
     }
 }

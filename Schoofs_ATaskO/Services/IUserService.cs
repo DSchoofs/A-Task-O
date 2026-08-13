@@ -14,5 +14,6 @@ namespace Schoofs_ATaskO.Services
         string ErrorMessage { get; }
         bool HasAdminUser();
         string GetUserDisplayName(int? userId);
+        bool UpdateCompletedTasks(int userId, int change);
     }
 }

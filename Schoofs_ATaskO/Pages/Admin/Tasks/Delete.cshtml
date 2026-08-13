@@ -19,7 +19,19 @@
         }
 
         <div class="warning-message">
-            Möchten Sie diese Aufgabe wirklich löschen?
+            <p>
+                Möchten Sie diese Aufgabe wirklich endgültig löschen?
+            </p>
+
+            <p>
+                Dabei werden auch alle zugehörigen Aufgabenblöcke dauerhaft
+                aus der Datenbank gelöscht.
+            </p>
+
+            <p>
+                Wenn Sie die Aufgabe und ihre Blockhistorie behalten möchten,
+                deaktivieren Sie sie stattdessen über die Bearbeiten-Seite.
+            </p>
         </div>
 
         <div class="table-responsive">
@@ -33,9 +45,7 @@
                     <tr>
                         <th>Beschreibung</th>
                         <td>
-                            @(string.IsNullOrWhiteSpace(Model.Input.Description)
-                                ? "Keine Beschreibung"
-                                : Model.Input.Description)
+                            @(string.IsNullOrWhiteSpace(Model.Input.Description) ? "Keine Beschreibung" : Model.Input.Description)
                         </td>
                     </tr>
 
@@ -71,11 +81,7 @@
                     <tr>
                         <th>Geändert am</th>
                         <td>
-                            @(Model.Input.ModifiedAt.HasValue
-                                ? Model.Input.ModifiedAt.Value
-                                    .ToLocalTime()
-                                    .ToString("dd.MM.yyyy HH:mm")
-                                : "Noch nicht geändert")
+                            @(Model.Input.ModifiedAt.HasValue ? Model.Input.ModifiedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm") : "Noch nicht geändert")
                         </td>
                     </tr>
                 </tbody>

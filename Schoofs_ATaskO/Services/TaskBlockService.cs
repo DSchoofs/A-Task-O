@@ -197,6 +197,21 @@ namespace Schoofs_ATaskO.Services
                 return false;
             }
 
+            var userUpdated = _userService.UpdateCompletedTasks(currentUserId.Value, 1);
+
+            if (!userUpdated)
+            {
+                block.Status = TaskBlockStatus.Assigned;
+                block.CompletedByUserId = null;
+                block.CompletedAt = null;
+
+                _taskBlockRepository.UpdateBlock(block);
+
+                ErrorMessage = !string.IsNullOrWhiteSpace(_userService.ErrorMessage) ? _userService.ErrorMessage : "Die Anzahl der erledigten Aufgaben konnte nicht aktualisiert werden.";
+
+                return false;
+            }
+
             return true;
         }
 
@@ -216,10 +231,7 @@ namespace Schoofs_ATaskO.Services
 
             if (block is null)
             {
-                ErrorMessage = !string.IsNullOrWhiteSpace(
-                    _taskBlockRepository.ErrorMessage)
-                    ? _taskBlockRepository.ErrorMessage
-                    : "Der Aufgabenblock wurde nicht gefunden.";
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock wurde nicht gefunden.";
 
                 return false;
             }
@@ -230,9 +242,9 @@ namespace Schoofs_ATaskO.Services
                 return false;
             }
 
-            if (block.AssignedByUserId != currentUserId.Value)
+            if (block.AssignedByUserId != currentUserId.Value && !_currentUserService.IsAdmin)
             {
-                ErrorMessage = "Nur der Benutzer, der den Block übernommen hat, darf ihn freigeben.";
+                ErrorMessage = "Nur der zugeordnete Benutzer oder ein Admin darf den Block freigeben.";
                 return false;
             }
 
@@ -246,12 +258,137 @@ namespace Schoofs_ATaskO.Services
 
             if (!updated)
             {
-                ErrorMessage = !string.IsNullOrWhiteSpace(
-                    _taskBlockRepository.ErrorMessage)
-                    ? _taskBlockRepository.ErrorMessage
-                    : "Der Aufgabenblock konnte nicht freigegeben werden.";
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock konnte nicht freigegeben werden.";
 
                 return false;
+            }
+
+            return true;
+        }
+        public bool ReopenBlock(int blockId)
+        {
+            ErrorMessage = string.Empty;
+
+            var currentUserId = _currentUserService.UserId;
+
+            if (!currentUserId.HasValue)
+            {
+                ErrorMessage = "Es konnte kein angemeldeter Benutzer ermittelt werden.";
+                return false;
+            }
+
+            var block = _taskBlockRepository.GetBlockById(blockId);
+
+            if (block is null)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock wurde nicht gefunden.";
+
+                return false;
+            }
+
+            if (block.Status != TaskBlockStatus.Completed)
+            {
+                ErrorMessage = "Nur erledigte Aufgabenblöcke können wieder geöffnet werden.";
+                return false;
+            }
+
+            var isOwner = block.CompletedByUserId == currentUserId.Value;
+
+            if (!isOwner && !_currentUserService.IsAdmin)
+            {
+                ErrorMessage = "Nur der zuständige Benutzer oder ein Admin darf den Block wieder öffnen.";
+                return false;
+            }
+
+            var completedByUserId = block.CompletedByUserId;
+            var completedAt = block.CompletedAt;
+
+            block.Status = TaskBlockStatus.Assigned;
+            block.CompletedByUserId = null;
+            block.CompletedAt = null;
+
+            var updated = _taskBlockRepository.UpdateBlock(block);
+
+            if (!updated)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock konnte nicht wieder geöffnet werden.";
+
+                return false;
+            }
+
+            if (completedByUserId.HasValue)
+            {
+                var userUpdated = _userService.UpdateCompletedTasks(completedByUserId.Value, -1);
+
+                if (!userUpdated)
+                {
+                    block.Status = TaskBlockStatus.Completed;
+                    block.CompletedByUserId = completedByUserId;
+                    block.CompletedAt = completedAt;
+
+                    _taskBlockRepository.UpdateBlock(block);
+
+                    ErrorMessage = !string.IsNullOrWhiteSpace(_userService.ErrorMessage) ? _userService.ErrorMessage : "Die Anzahl der erledigten Aufgaben konnte nicht aktualisiert werden.";
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        public bool AdminReleaseBlock(int blockId)
+        {
+            ErrorMessage = string.Empty;
+
+            if (!_currentUserService.IsAdmin)
+            {
+                ErrorMessage = "Nur Admins dürfen fremde Aufgabenblöcke freigeben.";
+                return false;
+            }
+
+            var block = _taskBlockRepository.GetBlockById(blockId);
+
+            if (block is null)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock wurde nicht gefunden.";
+
+                return false;
+            }
+
+            if (block.Status != TaskBlockStatus.Assigned &&
+                block.Status != TaskBlockStatus.Completed)
+            {
+                ErrorMessage = "Nur übernommene oder erledigte Aufgabenblöcke können freigegeben werden.";
+                return false;
+            }
+
+            var completedByUserId = block.CompletedByUserId;
+
+            block.Status = TaskBlockStatus.Free;
+            block.AssignedByUserId = null;
+            block.AssignedAt = null;
+            block.CompletedByUserId = null;
+            block.CompletedAt = null;
+
+            var updated = _taskBlockRepository.UpdateBlock(block);
+
+            if (!updated)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockRepository.ErrorMessage) ? _taskBlockRepository.ErrorMessage : "Der Aufgabenblock konnte nicht freigegeben werden.";
+
+                return false;
+            }
+
+            if (completedByUserId.HasValue)
+            {
+                var userUpdated = _userService.UpdateCompletedTasks(completedByUserId.Value, -1);
+
+                if (!userUpdated)
+                {
+                    ErrorMessage = !string.IsNullOrWhiteSpace(_userService.ErrorMessage) ? _userService.ErrorMessage : "Die Anzahl der erledigten Aufgaben konnte nicht aktualisiert werden.";
+
+                    return false;
+                }
             }
 
             return true;
@@ -320,7 +457,9 @@ namespace Schoofs_ATaskO.Services
                     IsOverdue = isOverdue,
                     CanBeTakenOver = block.Status == TaskBlockStatus.Free,
                     CanBeCompleted = block.Status == TaskBlockStatus.Assigned && block.AssignedByUserId == currentUserId,
-                    CanBeReleased = block.Status == TaskBlockStatus.Assigned && block.AssignedByUserId.HasValue && block.AssignedByUserId.Value == currentUserId,
+                    CanBeReleased = block.Status == TaskBlockStatus.Assigned && (block.AssignedByUserId == currentUserId || _currentUserService.IsAdmin),
+                    CanBeReopened = block.Status == TaskBlockStatus.Completed && (block.CompletedByUserId == currentUserId || _currentUserService.IsAdmin),
+                    CanBeAdminReleased = block.Status == TaskBlockStatus.Completed && _currentUserService.IsAdmin,
                     IsSelected = false,
                     ContinuesFromPreviousPeriod = continuesFromPreviousPeriod,
                     ContinuesIntoNextPeriod = continuesIntoNextPeriod

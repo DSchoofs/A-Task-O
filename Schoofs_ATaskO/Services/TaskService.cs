@@ -161,17 +161,20 @@ namespace Schoofs_ATaskO.Services
             return result;
         }
 
-        public bool DeleteTaskById(int id)
+        public bool DeleteTaskWithBlocksById(int id)
         {
             ErrorMessage = string.Empty;
 
             try
             {
-                var result = _taskRepository.DeleteTaskById(id);
+                var result = _taskRepository.DeleteTaskWithBlocksById(id);
 
                 if (!result)
                 {
-                    ErrorMessage = _taskRepository.ErrorMessage;
+                    ErrorMessage = !string.IsNullOrWhiteSpace(
+                        _taskRepository.ErrorMessage)
+                        ? _taskRepository.ErrorMessage
+                        : "Die Aufgabe konnte nicht gelöscht werden.";
                 }
 
                 return result;
@@ -179,6 +182,7 @@ namespace Schoofs_ATaskO.Services
             catch (Exception ex)
             {
                 ErrorMessage = $"Unexpected Error: {ex.Message}";
+
                 return false;
             }
         }

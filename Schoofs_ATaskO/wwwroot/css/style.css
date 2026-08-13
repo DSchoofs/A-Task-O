@@ -386,15 +386,15 @@ body {
     }
 
 .details-button,
-.edit-button,
-.delete-button {
+.edit-button 
+{
     background-color: #6c757d;
     border-color: #6c757d;
 }
 
     .details-button:hover,
-    .edit-button:hover,
-    .delete-button:hover {
+    .edit-button:hover
+    {
         background-color: #565e64;
         border-color: #565e64;
     }
@@ -429,6 +429,18 @@ body {
     .create-button:hover {
         background-color: #157347;
         border-color: #157347;
+    }
+
+
+.delete-button {
+    background-color: darkred;
+    border-color: #6c757d;
+}
+
+    
+    .delete-button:hover {
+        background-color: #a80505;
+        border-color: #565e64;
     }
 /* ==================================================
    Tabellen allgemein

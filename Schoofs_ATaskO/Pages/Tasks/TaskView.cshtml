@@ -149,8 +149,9 @@
                                     data-note="@block.Note"
                                     data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
                                     data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()"
-                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()">
-
+                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()"
+                                    data-can-be-reopened="@block.CanBeReopened.ToString().ToLowerInvariant()"
+                                    data-can-be-admin-released="@block.CanBeAdminReleased.ToString().ToLowerInvariant()">
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -208,7 +209,9 @@
                                     data-note="@block.Note"
                                     data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
                                     data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()"
-                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()">
+                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()"
+                                    data-can-be-reopened="@block.CanBeReopened.ToString().ToLowerInvariant()"
+                                    data-can-be-admin-released="@block.CanBeAdminReleased.ToString().ToLowerInvariant()">
 
                                 <span class="task-block-time">
                                     @block.DisplayTime
@@ -267,8 +270,9 @@
                                     data-note="@block.Note"
                                     data-can-be-taken-over="@block.CanBeTakenOver.ToString().ToLowerInvariant()"
                                     data-can-be-completed="@block.CanBeCompleted.ToString().ToLowerInvariant()"
-                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()">
-
+                                    data-can-be-released="@block.CanBeReleased.ToString().ToLowerInvariant()"
+                                    data-can-be-reopened="@block.CanBeReopened.ToString().ToLowerInvariant()"
+                                    data-can-be-admin-released="@block.CanBeAdminReleased.ToString().ToLowerInvariant()">
                                 <span class="task-block-time">
                                     @block.DisplayTime
                                 </span>
@@ -430,6 +434,51 @@
                             Block freigeben
                         </button>
                     </form>
+                    <form method="post"
+                          asp-page-handler="Reopen"
+                          id="reopenBlockForm"
+                          hidden>
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.TaskView.TaskId" />
+
+                        <input type="hidden"
+                               name="blockId"
+                               id="reopenedBlockId" />
+
+                        <input type="hidden"
+                               name="focusDate"
+                               value="@Model.TaskView.FocusDate.ToString("yyyy-MM-dd")" />
+
+                        <button type="submit"
+                                class="save-button">
+                            Erledigten Block wieder öffnen
+                        </button>
+                    </form>
+
+                    <form method="post"
+                          asp-page-handler="AdminRelease"
+                          id="adminReleaseBlockForm"
+                          hidden>
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.TaskView.TaskId" />
+
+                        <input type="hidden"
+                               name="blockId"
+                               id="adminReleasedBlockId" />
+
+                        <input type="hidden"
+                               name="focusDate"
+                               value="@Model.TaskView.FocusDate.ToString("yyyy-MM-dd")" />
+
+                        <button type="submit"
+                                class="delete-button">
+                            Block als frei zurücksetzen
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -474,12 +523,19 @@
                        class="edit-button">
                         Aufgabe bearbeiten
                     </a>
-                }
 
+                    <a asp-page="/Admin/Tasks/TaskManagement"
+                       class="cancel-button">
+                        zur Aufgabenverwaltung
+                    </a>
+                }
+                else
+                {
                 <a asp-page="/Index"
                    class="cancel-button">
                     Zurück zum Dashboard
                 </a>
+                }
             </div>
         }
     </div>
@@ -528,10 +584,14 @@
         const takeoverForm = document.getElementById("takeOverBlockForm");
         const completeForm = document.getElementById("completeBlockForm");
         const releaseForm = document.getElementById("releaseBlockForm");
+        const reopenForm = document.getElementById("reopenBlockForm");
+        const adminReleaseForm = document.getElementById("adminReleaseBlockForm");
 
         const selectedBlockId = document.getElementById("selectedBlockId");
         const completedBlockId = document.getElementById("completedBlockId");
         const releasedBlockId = document.getElementById("releasedBlockId");
+        const reopenedBlockId = document.getElementById("reopenedBlockId");
+        const adminReleasedBlockId = document.getElementById("adminReleasedBlockId");
 
         const displayTime = document.getElementById("selectedBlockDisplayTime");
         const status = document.getElementById("selectedBlockStatus");
@@ -565,6 +625,8 @@
                 selectedBlockId.value = block.dataset.blockId;
                 completedBlockId.value = block.dataset.blockId;
                 releasedBlockId.value = block.dataset.blockId;
+                reopenedBlockId.value = block.dataset.blockId;
+                adminReleasedBlockId.value = block.dataset.blockId;
 
                 if (block.dataset.assignedUser) {
                     assignedUser.textContent = block.dataset.assignedUser;
@@ -617,15 +679,15 @@
                 completeForm.hidden =
                     block.dataset.canBeCompleted !== "true";
 
-                releaseForm.hidden =
-                    block.dataset.canBeReleased !== "true";
+                releaseForm.hidden = block.dataset.canBeReleased !== "true";
+
+                reopenForm.hidden = block.dataset.canBeReopened !== "true";
+
+                adminReleaseForm.hidden = block.dataset.canBeAdminReleased !== "true";
 
                 details.hidden = false;
 
-                details.scrollIntoView({
-                    behavior: "smooth",
-                    block: "nearest"
-                });
+                details.scrollIntoView({behavior: "smooth",block: "nearest"});
             });
         });
 

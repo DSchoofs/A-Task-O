@@ -136,16 +136,37 @@ namespace Schoofs_ATaskO.Repositories
             return false;
         }
 
-        public bool DeleteTaskById(int id)
+        public bool DeleteTaskWithBlocksById(int id)
         {
             try
             {
-                sqlcmd = "DELETE FROM TaskItems WHERE Id = @Id";
+                sqlcmd = "DELETE FROM TaskBlocks WHERE TaskItemId = @Id";
+
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var rowsAffected = conn.Execute(sqlcmd, new { Id = id });
-                    return rowsAffected > 0;
+
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        conn.Execute(sqlcmd,new { Id = id },transaction);
+
+                        sqlcmd = "DELETE FROM TaskItems WHERE Id = @Id";
+
+                        var rowsAffected = conn.Execute(sqlcmd,new { Id = id },transaction);
+
+                        if (rowsAffected == 0)
+                        {
+                            transaction.Rollback();
+
+                            ErrorMessage = "Die Aufgabe wurde nicht gefunden.";
+
+                            return false;
+                        }
+
+                        transaction.Commit();
+
+                        return true;
+                    }
                 }
             }
             catch (SqlException sqlex)
@@ -156,6 +177,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
+
             return false;
         }
     }

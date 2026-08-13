@@ -15,7 +15,7 @@ public interface ITaskService
 
     bool UpdateTask(TaskEditViewModel viewModel);
 
-    bool DeleteTaskById(int id);
+    bool DeleteTaskWithBlocksById(int id);
 
     string ErrorMessage { get; }
 }

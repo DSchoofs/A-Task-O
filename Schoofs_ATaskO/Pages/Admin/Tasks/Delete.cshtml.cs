@@ -54,7 +54,7 @@ public class DeleteModel : PageModel
 
     public IActionResult OnPost()
     {
-        var success = _taskService.DeleteTaskById(Input.Id);
+        var success = _taskService.DeleteTaskWithBlocksById(Input.Id);
 
         if (!success)
         {

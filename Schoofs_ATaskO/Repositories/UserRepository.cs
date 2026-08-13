@@ -213,6 +213,32 @@ namespace Schoofs_ATaskO.Repositories
 
             return false;
         }
+        public bool UpdateCompletedTasks(int userId, int change)
+        {
+            try
+            {
+                sqlcmd = "UPDATE Users SET CompletedTasks = CASE WHEN ISNULL(CompletedTasks, 0) + @Change < 0 THEN 0 ELSE ISNULL(CompletedTasks, 0) + @Change END WHERE UserId = @UserId";
+
+                using (var conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    var rowsAffected = conn.Execute(sqlcmd, new{ UserId = userId, Change = change});
+
+                    return rowsAffected > 0;
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                ErrorMessage = $"SQL Error: {sqlex.Message}";
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Unexpected Error: {ex.Message}";
+            }
+
+            return false;
+        }
     }
 
 }

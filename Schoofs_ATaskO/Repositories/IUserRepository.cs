@@ -13,5 +13,6 @@ namespace Schoofs_ATaskO.Repositories
         User? GetUserByEmail(string email);
         bool HasAdminUser();
         bool UpdateLastLogin(int userId, DateTime lastLogin);
+        bool UpdateCompletedTasks(int userId, int change);
     }
 }

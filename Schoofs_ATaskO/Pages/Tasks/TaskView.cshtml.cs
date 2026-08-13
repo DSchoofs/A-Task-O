@@ -52,6 +52,17 @@ namespace Schoofs_ATaskO.Pages.Tasks
 
         public IActionResult OnPostTakeOver(int id, int blockId, DateTime? focusDate)   
         {
+            var taskItem = _taskService.GetTaskById(id);
+
+            if (taskItem is null)
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            if (!taskItem.IsActive && !User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
             var selectedDate = focusDate ?? DateTime.Today;
 
             var success = _taskBlockService.TakeOverBlock(blockId);
@@ -70,6 +81,17 @@ namespace Schoofs_ATaskO.Pages.Tasks
 
         public IActionResult OnPostComplete(int id, int blockId, DateTime? focusDate)
         {
+            var taskItem = _taskService.GetTaskById(id);
+
+            if (taskItem is null)
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            if (!taskItem.IsActive && !User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
             var selectedDate = focusDate ?? DateTime.Today;
 
             var success = _taskBlockService.CompleteBlock(blockId);
@@ -88,6 +110,17 @@ namespace Schoofs_ATaskO.Pages.Tasks
 
         public IActionResult OnPostRelease(int id, int blockId, DateTime? focusDate)
         {
+            var taskItem = _taskService.GetTaskById(id);
+
+            if (taskItem is null)
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            if (!taskItem.IsActive && !User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
             var selectedDate = focusDate ?? DateTime.Today;
 
             var success = _taskBlockService.ReleaseBlock(blockId);
@@ -102,6 +135,64 @@ namespace Schoofs_ATaskO.Pages.Tasks
             }
 
             return RedirectToPage(new { id, focusDate = selectedDate });
+        }
+        public IActionResult OnPostReopen(int id, int blockId, DateTime? focusDate)
+        {
+            var taskItem = _taskService.GetTaskById(id);
+
+            if (taskItem is null)
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            if (!taskItem.IsActive && !User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            var selectedDate = focusDate ?? DateTime.Today;
+
+            var success = _taskBlockService.ReopenBlock(blockId);
+
+            if (!success)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockService.ErrorMessage) ? _taskBlockService.ErrorMessage : "Der Aufgabenblock konnte nicht wieder geöffnet werden.";
+
+                TaskView = _taskBlockService.GetTaskView(id, selectedDate, blockId);
+
+                return Page();
+            }
+
+            return RedirectToPage(new { id, focusDate = selectedDate, selectedBlockId = blockId });
+        }
+        public IActionResult OnPostAdminRelease(int id, int blockId, DateTime? focusDate)
+        {
+            var taskItem = _taskService.GetTaskById(id);
+
+            if (taskItem is null)
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            if (!taskItem.IsActive && !User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Account/AccessDenied");
+            }
+
+            var selectedDate = focusDate ?? DateTime.Today;
+
+            var success = _taskBlockService.AdminReleaseBlock(blockId);
+
+            if (!success)
+            {
+                ErrorMessage = !string.IsNullOrWhiteSpace(_taskBlockService.ErrorMessage) ? _taskBlockService.ErrorMessage : "Der Aufgabenblock konnte nicht als frei gespeichert werden.";
+
+                TaskView = _taskBlockService.GetTaskView(id, selectedDate, blockId);
+
+                return Page();
+            }
+
+            return RedirectToPage( new { id, focusDate = selectedDate, selectedBlockId = blockId });
         }
     }
 }
