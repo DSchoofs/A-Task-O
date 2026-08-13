@@ -1,17 +1,78 @@
-﻿using Schoofs_ATaskO.Models;
+﻿using Microsoft.Extensions.Options;
+using Schoofs_ATaskO.Models;
+using Schoofs_ATaskO.Settings;
 using Schoofs_ATaskO.ViewModels;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Schoofs_ATaskO.Services
 {
     public class SetupService : ISetupService
     {
         private readonly IUserService _userService;
+        private readonly SecuritySettings _securitySettings;
+        private readonly string _securityFilePath;
 
         public string ErrorMessage { get; private set; } = string.Empty;
 
-        public SetupService(IUserService userService)
+        public SetupService(IUserService userService, IOptions<SecuritySettings> securityOptions, IHostEnvironment environment)
         {
             _userService = userService;
+            _securitySettings = securityOptions.Value;
+
+            _securityFilePath = Path.Combine(environment.ContentRootPath, "App_Data", "security.json");
+        }
+
+        public bool HasPasswordPepper()
+        {
+            return !string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper);
+        }
+
+        public bool CreatePasswordPepper()
+        {
+            ErrorMessage = string.Empty;
+
+            if (HasPasswordPepper())
+            {
+                ErrorMessage = "Es ist bereits ein PasswordPepper konfiguriert.";
+
+                return false;
+            }
+
+            try
+            {
+                var pepper = Convert.ToBase64String(
+                    RandomNumberGenerator.GetBytes(32));
+
+                var securityConfiguration = new
+                {
+                    Security = new {PasswordPepper = pepper}
+                };
+
+                var json = JsonSerializer.Serialize(securityConfiguration, new JsonSerializerOptions { WriteIndented = true });
+
+                var directory = Path.GetDirectoryName(
+                    _securityFilePath);
+
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    ErrorMessage ="Der Ordner für die Security-Konfiguration konnte nicht bestimmt werden.";
+
+                    return false;
+                }
+
+                Directory.CreateDirectory(directory);
+
+                File.WriteAllText(_securityFilePath,json);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Der PasswordPepper konnte nicht gespeichert werden: {ex.Message}";
+
+                return false;
+            }
         }
 
         public bool HasAdminUser()
@@ -40,6 +101,7 @@ namespace Schoofs_ATaskO.Services
             if (HasAdminUser())
             {
                 ErrorMessage = "Es existiert bereits ein Administrator.";
+
                 return false;
             }
 
