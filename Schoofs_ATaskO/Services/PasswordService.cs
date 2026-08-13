@@ -12,11 +12,6 @@ namespace Schoofs_ATaskO.Services
         public PasswordService(IOptions<SecuritySettings> securityOptions)
         {
             _securitySettings = securityOptions.Value;
-
-            if (string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper))
-            {
-                throw new InvalidOperationException("PasswordPepper ist nicht konfiguriert.");
-            }
         }
 
         public string GenerateSalt()
@@ -36,7 +31,13 @@ namespace Schoofs_ATaskO.Services
                 throw new ArgumentException("Der Salt darf nicht leer sein.", nameof(saltBase64));
             }
 
+            if (string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper))
+            {
+                throw new InvalidOperationException("PasswordPepper ist nicht konfiguriert.");
+            }
+
             var saltBytes = Convert.FromBase64String(saltBase64);
+
             var passwordWithPepper = password + _securitySettings.PasswordPepper;
 
             var hashBytes = KeyDerivation.Pbkdf2(
@@ -59,6 +60,7 @@ namespace Schoofs_ATaskO.Services
             var computedHashBase64 = HashPassword(password, saltBase64);
 
             var expectedHashBytes = Convert.FromBase64String(expectedHashBase64);
+
             var computedHashBytes = Convert.FromBase64String(computedHashBase64);
 
             return CryptographicOperations.FixedTimeEquals(expectedHashBytes, computedHashBytes);

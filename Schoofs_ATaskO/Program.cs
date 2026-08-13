@@ -15,15 +15,13 @@ namespace Schoofs_ATaskO
             //Razor Pages registrieren (macht es erst zu einem Razor Projekt)
             builder.Services.AddRazorPages();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("ATaskO")
-                ?? throw new InvalidOperationException("Connection string 'ATaskO' not found.")));
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ATaskO") ?? throw new InvalidOperationException("Connection string 'ATaskO' not found.")));
 
-            builder.Services
-                .AddOptions<SecuritySettings>()
-                .Bind(builder.Configuration.GetSection(SecuritySettings.SectionName))
-                .ValidateDataAnnotations()
-                .ValidateOnStart();
+            var securityFilePath = Path.Combine(AppContext.BaseDirectory, "App_Data", "security.json");
+
+            builder.Configuration.AddJsonFile(securityFilePath, optional: true, reloadOnChange: false);
+
+            builder.Services.AddOptions<SecuritySettings>().Bind(builder.Configuration.GetSection(SecuritySettings.SectionName)).ValidateDataAnnotations();
 
             // Basis für die Authentifizierung und Autorisierung registrieren, damit man sich einloggen kann
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -33,6 +31,7 @@ namespace Schoofs_ATaskO
                 options.LogoutPath = "/Account/Logout";
                 options.AccessDeniedPath = "/Account/AccessDenied";
             });
+
             builder.Services.AddAuthorization();
             builder.Services.AddHttpContextAccessor();
             // Repos registrieren, damit sie in den Razor Pages verwendet werden können
