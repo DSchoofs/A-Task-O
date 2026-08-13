@@ -17,7 +17,7 @@ namespace Schoofs_ATaskO
 
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ATaskO") ?? throw new InvalidOperationException("Connection string 'ATaskO' not found.")));
 
-            var securityFilePath = Path.Combine(AppContext.BaseDirectory, "App_Data", "security.json");
+            var securityFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","security.json");
 
             builder.Configuration.AddJsonFile(securityFilePath, optional: true, reloadOnChange: false);
 
