@@ -21,6 +21,11 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         public IActionResult OnGet()
         {
+            if (!_setupService.HasPasswordPepper())
+            {
+                return RedirectToPage("/Setup/Pepper");
+            }
+
             if (!_setupService.IsInitialSetupRequired())
             {
                 return RedirectToPage("/Account/Login");
@@ -31,6 +36,11 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         public IActionResult OnPost()
         {
+            if (!_setupService.HasPasswordPepper())
+            {
+                return RedirectToPage("/Setup/Pepper");
+            }
+
             if (!_setupService.IsInitialSetupRequired())
             {
                 return RedirectToPage("/Account/Login");

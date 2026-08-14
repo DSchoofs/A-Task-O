@@ -18,10 +18,7 @@ namespace Schoofs_ATaskO.Repositories
             _securitySettings = securityOptions.Value;
             _configuration = configuration;
             _connectionString = configuration.GetConnectionString("ATaskO")!;
-            if (string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper))
-            {
-                throw new InvalidOperationException("PasswordPepper ist nicht konfiguriert.");
-            }
+
         }
 
         public List<User> GetAllUsers()
@@ -223,7 +220,7 @@ namespace Schoofs_ATaskO.Repositories
                 {
                     conn.Open();
 
-                    var rowsAffected = conn.Execute(sqlcmd, new{ UserId = userId, Change = change});
+                    var rowsAffected = conn.Execute(sqlcmd, new { UserId = userId, Change = change });
 
                     return rowsAffected > 0;
                 }

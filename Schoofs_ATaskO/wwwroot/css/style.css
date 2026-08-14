@@ -223,7 +223,77 @@ body {
     background-color: #fff3cd;
     color: #664d03;
 }
+/* ==================================================
+   Security-Setup
+================================================== */
 
+.security-setup-container {
+    max-width: 760px;
+}
+
+.security-setup-intro {
+    margin: 0 0 1.5rem;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.security-setup-container .page-header {
+    margin-bottom: 0.75rem;
+}
+
+    .security-setup-container .page-header h1 {
+        color: #1f2937;
+    }
+
+.success-message {
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #badbcc;
+    border-radius: 10px;
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.pepper-field {
+    margin-top: 1.25rem;
+}
+
+.pepper-input-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+}
+
+    .pepper-input-row .form-control {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-family: Consolas, "Courier New", monospace;
+        letter-spacing: 0.04em;
+    }
+
+    .pepper-input-row .details-button {
+        flex: 0 0 auto;
+        min-width: 100px;
+    }
+
+.pepper-help {
+    display: block;
+    margin-top: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+    .pepper-input-row {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+        .pepper-input-row .details-button {
+            width: 100%;
+        }
+}
 /* ==================================================
    Formulare
 ================================================== */
