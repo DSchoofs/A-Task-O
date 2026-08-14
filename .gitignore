@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Lokale Security-Konfiguration
 **/App_Data/security.json
+**/App_Data/security-backup.json

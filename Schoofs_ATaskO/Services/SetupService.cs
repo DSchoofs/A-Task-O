@@ -28,35 +28,56 @@ namespace Schoofs_ATaskO.Services
             return !string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper);
         }
 
-        public bool CreatePasswordPepper()
+        public string GeneratePasswordPepper()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        }
+
+        public bool CreatePasswordPepper(string pepper)
         {
             ErrorMessage = string.Empty;
 
             if (HasPasswordPepper())
             {
-                ErrorMessage = "Es ist bereits ein PasswordPepper konfiguriert.";
+                ErrorMessage =
+                    "Es ist bereits ein PasswordPepper konfiguriert.";
+
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(pepper))
+            {
+                ErrorMessage =
+                    "Der PasswordPepper darf nicht leer sein.";
+
+                return false;
+            }
+
+            if (pepper.Length < 12)
+            {
+                ErrorMessage =
+                    "Der persönliche PasswordPepper muss mindestens 12 Zeichen lang sein.";
 
                 return false;
             }
 
             try
             {
-                var pepper = Convert.ToBase64String(
-                    RandomNumberGenerator.GetBytes(32));
-
                 var securityConfiguration = new
                 {
-                    Security = new {PasswordPepper = pepper}
+                    Security = new
+                    {
+                        PasswordPepper = pepper
+                    }
                 };
 
-                var json = JsonSerializer.Serialize(securityConfiguration, new JsonSerializerOptions { WriteIndented = true });
+                var json = JsonSerializer.Serialize(securityConfiguration, new JsonSerializerOptions{ WriteIndented = true });
 
-                var directory = Path.GetDirectoryName(
-                    _securityFilePath);
+                var directory = Path.GetDirectoryName(_securityFilePath);
 
                 if (string.IsNullOrWhiteSpace(directory))
                 {
-                    ErrorMessage ="Der Ordner für die Security-Konfiguration konnte nicht bestimmt werden.";
+                    ErrorMessage = "Der Ordner für die Security-Konfiguration konnte nicht bestimmt werden.";
 
                     return false;
                 }

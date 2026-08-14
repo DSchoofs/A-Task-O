@@ -1,0 +1,102 @@
+﻿@page
+@model Schoofs_ATaskO.Pages.Setup.PepperModel
+
+@{
+    ViewData["Title"] = "Security einrichten";
+}
+
+<div class="form-container security-setup-container">
+    <div class="page-header">
+        <h1>Security einrichten</h1>
+    </div>
+
+    <p class="security-setup-intro">
+        Für die Passwortsicherheit wird ein PasswordPepper benötigt.
+        Es wurde automatisch ein zufälliger Wert erzeugt.
+        Sie können ihn übernehmen oder durch einen eigenen Wert ersetzen.
+    </p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="error-message">
+            @Model.ErrorMessage
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+    {
+        <div class="success-message">
+            @Model.SuccessMessage
+        </div>
+    }
+
+    <form method="post">
+        <div class="pepper-field">
+            <label asp-for="Pepper" class="form-label">
+                PasswordPepper
+            </label>
+
+            <div class="pepper-input-row">
+                <input asp-for="Pepper" id="pepperInput" type="password" class="form-control" value="@Model.Pepper" autocomplete="new-password" spellcheck="false" />
+
+                <button type="button" id="showPepperButton" class="details-button" aria-label="PasswordPepper anzeigen"> Anzeigen  </button>
+            </div>
+
+            <small class="pepper-help">
+                Der automatisch erzeugte Wert ist bereits sicher.
+                Ein eigener Wert muss mindestens 12 Zeichen lang sein.
+                Empfohlen werden mindestens 15 Zeichen.
+            </small>
+            <p class="warning-message">
+                Nach dem Speichern muss die Anwendung aus Sicherheitsgründen
+                einmal beendet und neu gestartet werden.
+            </p>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="save-button">
+                PasswordPepper speichern
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        const pepperInput =
+            document.getElementById("pepperInput");
+
+        const showPepperButton =
+            document.getElementById("showPepperButton");
+
+        function showPepper() {
+            pepperInput.type = "text";
+        }
+
+        function hidePepper() {
+            pepperInput.type = "password";
+        }
+
+        showPepperButton.addEventListener(
+            "pointerdown",
+            showPepper);
+
+        showPepperButton.addEventListener(
+            "pointerup",
+            hidePepper);
+
+        showPepperButton.addEventListener(
+            "pointercancel",
+            hidePepper);
+
+        showPepperButton.addEventListener(
+            "pointerleave",
+            hidePepper);
+
+        showPepperButton.addEventListener(
+            "blur",
+            hidePepper);
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+}

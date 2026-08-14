@@ -5,7 +5,8 @@ namespace Schoofs_ATaskO.Services
     public interface ISetupService
     {
         bool HasPasswordPepper();
-        bool CreatePasswordPepper();
+        string GeneratePasswordPepper();
+        bool CreatePasswordPepper(string pepper);
         bool HasAdminUser();
         bool IsInitialSetupRequired();
         bool CreateInitialAdmin(InitialAdminViewModel model);
