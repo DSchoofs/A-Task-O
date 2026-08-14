@@ -41,7 +41,6 @@ namespace Schoofs_ATaskO
                 builder.Services.AddScoped<ISetupService, SetupService>();
                 builder.Services.AddScoped<IUserRepository, UserRepository>();
                 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-                builder.Services.AddScoped<IEntryRepository, EntryRepository>();
                 builder.Services.AddScoped<IPasswordService, PasswordService>();
                 builder.Services.AddScoped<IUserService, UserService>();
                 builder.Services.AddScoped<ITaskService, TaskService>();
