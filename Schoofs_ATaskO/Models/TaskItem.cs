@@ -31,4 +31,6 @@ public class TaskItem
 
     public ICollection<TaskBlock> TaskBlocks { get; set; } = new List<TaskBlock>();
     public TaskWeekMode WeekMode { get; set; } = TaskWeekMode.Weekdays;
+    public User? CreatedByUser { get; set; }
+    public User? ModifiedByUser { get; set; }
 }

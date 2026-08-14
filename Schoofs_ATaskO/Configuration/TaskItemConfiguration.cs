@@ -9,28 +9,22 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
 
         builder.HasKey(t => t.Id);
 
-        builder.Property(t => t.Name)
-            .IsRequired()
-            .HasMaxLength(200);
+        builder.Property(t => t.Name).IsRequired().HasMaxLength(200);
 
-        builder.Property(t => t.Description)
-            .HasMaxLength(2000);
+        builder.Property(t => t.Description).HasMaxLength(2000);
 
-        builder.Property(t => t.Interval)
-            .IsRequired();
+        builder.Property(t => t.Interval).IsRequired();
 
-        builder.Property(t => t.IsActive)
-            .IsRequired();
+        builder.Property(t => t.IsActive).IsRequired();
 
-        builder.Property(t => t.CreatedAt)
-            .IsRequired();
+        builder.Property(t => t.CreatedAt).IsRequired();
 
-        builder.HasMany(t => t.TaskBlocks)
-            .WithOne(b => b.TaskItem)
-            .HasForeignKey(b => b.TaskItemId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(t => t.TaskBlocks).WithOne(b => b.TaskItem).HasForeignKey(b => b.TaskItemId).OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(task => task.WeekMode)
-            .IsRequired();
+        builder.Property(task => task.WeekMode).IsRequired();
+
+        builder.HasOne(task => task.CreatedByUser).WithMany(user => user.CreatedTaskItems).HasForeignKey(task => task.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(task => task.ModifiedByUser).WithMany(user => user.ModifiedTaskItems).HasForeignKey(task => task.ModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
     }
 }
