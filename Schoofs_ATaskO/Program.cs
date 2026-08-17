@@ -13,10 +13,19 @@ namespace Schoofs_ATaskO
 
             var builder = WebApplication.CreateBuilder(args);
 
-            //Razor Pages registrieren (macht es erst zu einem Razor Projekt)
+            var databaseFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","database.json");
+
+            builder.Configuration.AddJsonFile(databaseFilePath, optional: true, reloadOnChange: false);
+            
             builder.Services.AddRazorPages();
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ATaskO") ?? throw new InvalidOperationException("Connection string 'ATaskO' not found.")));
+            var configuredConnectionString = builder.Configuration.GetConnectionString("ATaskO");
+
+            var bootstrapConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;TrustServerCertificate=True;";
+
+            var applicationConnectionString = string.IsNullOrWhiteSpace(configuredConnectionString) ? bootstrapConnectionString : configuredConnectionString;
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(applicationConnectionString));
 
             var securityFilePath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "security.json");
 
@@ -45,6 +54,9 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped<ITaskBlockRepository, TaskBlockRepository>();
             builder.Services.AddScoped<ITaskBlockService, TaskBlockService>();
+            builder.Services.AddScoped<IDatabaseSetupService, DatabaseSetupService>();
+            builder.Services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            builder.Services.AddScoped<IDatabaseConfigurationStorage, DatabaseConfigurationStorage>();
 
             var app = builder.Build();
 
@@ -64,18 +76,22 @@ namespace Schoofs_ATaskO
                 var allowedPaths = new[]
                 {
                     "/setup/pepper",
+                    "/setup/database",
                     "/setup/initialadmin",
                     "/css",
                     "/js",
                     "/lib",
                     "/favicon.ico",
                     "/account/accessdenied"
-            };
+                };
 
                 var isAllowedPath = allowedPaths.Any(allowedPath => path.StartsWith(allowedPath));
 
                 var setupService = context.RequestServices.GetRequiredService<ISetupService>();
+                var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
+                var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
 
+                // 1. Pepper prüfen
                 if (!setupService.HasPasswordPepper())
                 {
                     if (!path.StartsWith("/setup/pepper"))
@@ -88,9 +104,51 @@ namespace Schoofs_ATaskO
                     return;
                 }
 
-                if (!isAllowedPath && setupService.IsInitialSetupRequired())
+                // 2. Datenbank prüfen
+                var connectionString = configuration.GetConnectionString("ATaskO");
+                var isDatabaseReady = false;
+
+                if (!string.IsNullOrWhiteSpace(connectionString))
                 {
-                    context.Response.Redirect("/Setup/InitialAdmin");
+                    try
+                    {
+                        var canConnect = await dbContext.Database.CanConnectAsync();
+                        if (canConnect)
+                        {
+                            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+                            isDatabaseReady = !pendingMigrations.Any();
+                        }
+                    }
+                    catch
+                    {
+                        isDatabaseReady = false;
+                    }
+                }
+
+                if (!isDatabaseReady)
+                {
+                    if (!path.StartsWith("/setup/database"))
+                    {
+                        context.Response.Redirect("/Setup/Database");
+                        return;
+                    }
+
+                    await next();
+                    return;
+                }
+
+                // 3. Admin prüfen (nur wenn Datenbank bereit ist)
+                var adminExists = await dbContext.Users.AnyAsync(u => u.IsAdmin);
+
+                if (!adminExists)
+                {
+                    if (!path.StartsWith("/setup/initialadmin"))
+                    {
+                        context.Response.Redirect("/Setup/InitialAdmin");
+                        return;
+                    }
+
+                    await next();
                     return;
                 }
 

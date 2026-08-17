@@ -295,6 +295,162 @@ body {
         }
 }
 /* ==================================================
+   Datenbank-Setup
+================================================== */
+
+.setup-status-container,
+.setup-action-container,
+.database-configuration-mode,
+.database-configuration-section,
+.database-download-information,
+.setup-information {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background-color: #f9fafb;
+}
+
+    .setup-status-container h2,
+    .setup-action-container h2,
+    .database-configuration-mode h2,
+    .database-configuration-section h2,
+    .database-download-information h2 {
+        margin: 0 0 1rem;
+        color: #1f2937;
+        font-size: 1.05rem;
+    }
+
+    .setup-action-container p,
+    .database-configuration-section p,
+    .database-download-information p {
+        margin: 0 0 1rem;
+        color: #4b5563;
+        line-height: 1.5;
+    }
+
+.setup-status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.setup-status-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #374151;
+}
+
+.setup-status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.setup-status-success {
+    background-color: #198754;
+}
+
+.setup-status-error {
+    background-color: #dc3545;
+}
+
+.configuration-option {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+    .configuration-option:last-child {
+        margin-bottom: 0;
+    }
+
+    .configuration-option input {
+        width: 1.1rem;
+        height: 1.1rem;
+        margin: 0;
+    }
+
+.database-configuration-section[hidden],
+.database-credentials[hidden] {
+    display: none;
+}
+
+.setup-information {
+    margin-top: 1rem;
+    background-color: #ffffff;
+}
+
+.database-credentials {
+    margin-top: 1rem;
+}
+
+.form-table-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+    .form-table-row .form-label-cell {
+        flex: 0 0 180px;
+        width: auto;
+        padding: 0.65rem 0;
+    }
+
+    .form-table-row .form-input-cell {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 0;
+    }
+
+.database-download-information {
+    background-color: #fffaf0;
+    border-color: #f1d28a;
+}
+
+    .database-download-information p {
+        margin-bottom: 1rem;
+    }
+
+.validation-message {
+    display: block;
+    margin-top: 0.35rem;
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 600px) {
+    .form-table-row {
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+        .form-table-row .form-label-cell {
+            flex-basis: auto;
+            width: 100%;
+            padding: 0;
+        }
+
+        .form-table-row .form-input-cell {
+            width: 100%;
+        }
+
+    .configuration-option {
+        align-items: flex-start;
+    }
+}
+/* ==================================================
    Formulare
 ================================================== */
 

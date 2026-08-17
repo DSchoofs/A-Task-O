@@ -367,3 +367,4 @@ FodyWeavers.xsd
 **/App_Data/security-backup.json
 build-log.txt
 startup-log.txt
+**/App_Data/database.json
