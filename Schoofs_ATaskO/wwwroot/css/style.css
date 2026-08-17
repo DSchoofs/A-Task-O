@@ -185,6 +185,7 @@ body {
     border-radius: 14px;
     background-color: #ffffff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .wide-container {
@@ -222,6 +223,59 @@ body {
     border-radius: 10px;
     background-color: #fff3cd;
     color: #664d03;
+}
+.database-setup-layout {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+.database-setup-form {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.database-setup-status {
+    flex: 0 0 320px;
+    width: 320px;
+    position: sticky;
+    top: 1.5rem;
+}
+
+    .database-setup-status .setup-status-container {
+        margin-top: 0;
+        background-color: #ffffff;
+    }
+
+    .database-setup-status .setup-status-list {
+        gap: 1rem;
+    }
+
+    .database-setup-status .setup-status-row {
+        align-items: flex-start;
+    }
+.setup-status-message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #c58b00;
+    background-color: #fff8e1;
+    color: #5f4700;
+}
+@media (max-width: 1000px) {
+    .database-setup-layout {
+        flex-direction: column;
+    }
+
+    .database-setup-form,
+    .database-setup-status {
+        width: 100%;
+        flex-basis: auto;
+    }
+
+    .database-setup-status {
+        position: static;
+    }
 }
 /* ==================================================
    Security-Setup

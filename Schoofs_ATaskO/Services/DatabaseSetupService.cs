@@ -21,22 +21,38 @@ namespace Schoofs_ATaskO.Services
         {
             ErrorMessage = string.Empty;
 
-            var repositoryStatus = await _databaseRepository.GetStatusAsync();
+            var repositoryStatus =
+                await _databaseRepository.GetStatusAsync();
 
-            if (!string.IsNullOrWhiteSpace(_databaseRepository.ErrorMessage))
+            if (!string.IsNullOrWhiteSpace(
+                _databaseRepository.ErrorMessage))
             {
-                ErrorMessage = _databaseRepository.ErrorMessage;
+                ErrorMessage =
+                    _databaseRepository.ErrorMessage;
             }
 
             var status = new DatabaseSetupStatus
             {
-                HasConnectionString = repositoryStatus.HasConnectionString,
+                ConfigurationFileExists =
+                    repositoryStatus.ConfigurationFileExists,
 
-                IsServerReachable = repositoryStatus.IsServerReachable,
+                ConfigurationIsValid =
+                    repositoryStatus.ConfigurationIsValid,
 
-                IsDatabaseReachable = repositoryStatus.IsDatabaseReachable,
+                HasConnectionString =
+                    repositoryStatus.HasConnectionString,
 
-                HasPendingMigrations = repositoryStatus.HasPendingMigrations
+                IsServerReachable =
+                    repositoryStatus.IsServerReachable,
+
+                IsDatabaseReachable =
+                    repositoryStatus.IsDatabaseReachable,
+
+                HasPendingMigrations =
+                    repositoryStatus.HasPendingMigrations,
+
+                StatusMessage =
+                    repositoryStatus.StatusMessage
             };
 
             return status;

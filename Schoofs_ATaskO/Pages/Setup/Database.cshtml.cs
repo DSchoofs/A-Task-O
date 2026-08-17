@@ -13,19 +13,12 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         [BindProperty]
         public DatabaseConfigurationViewModel Configuration { get; set; } = new();
-
         public DatabaseSetupStatus Status { get; private set; } = new();
-
         public string? Message { get; private set; }
-
         public bool? IsSuccess { get; private set; }
-
         public bool ConnectionTestSuccessful { get; private set; }
-
         public bool ConfigurationSaved { get; private set; }
-
         public bool RequiresRestart { get; private set; }
-
         public DatabaseModel(IDatabaseSetupService databaseSetupService, ILogger<DatabaseModel> logger)
         {
             _databaseSetupService = databaseSetupService;
@@ -34,7 +27,16 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Status = await _databaseSetupService.GetStatusAsync();
+            var start = DateTime.UtcNow;
+
+            Status =
+                await _databaseSetupService.GetStatusAsync();
+
+            var elapsed =
+                DateTime.UtcNow - start;
+
+            Console.WriteLine(
+                $"Database status check: {elapsed.TotalMilliseconds} ms");
 
             return Page();
         }
