@@ -4,383 +4,455 @@
 @{
     Layout = "_SetupLayout";
     ViewData["Title"] = "Datenbank einrichten";
+    var showConfigurationForm =
+        !Model.Status.ConfigurationFileExists ||
+        !Model.Status.ConfigurationIsValid ||
+        !Model.Status.HasConnectionString ||
+        !Model.Status.IsServerReachable ||
+        !Model.Status.IsDatabaseReachable;
 }
 
 <div class="page-container">
     <div class="database-setup-layout">
 
         <div class="form-container security-setup-container database-setup-form">
-            <div class="page-header">
-                <h1>Datenbank einrichten</h1>
-            </div>
-
-            <p class="security-setup-intro">
-                ATaskO verwendet eine SQL-Server-Datenbank mit dem festen Namen
-                <strong>ATaskO</strong>. Wählen Sie zunächst die gewünschte
-                Konfiguration aus und testen Sie die Verbindung.
-            </p>
-
-            @if (!string.IsNullOrWhiteSpace(Model.Message))
-            {
-                <div class="@(Model.IsSuccess == true
-                                        ? "success-message"
-                                        : "error-message")">
-                    @Model.Message
-                </div>
-            }
-
             @if (Model.RequiresRestart)
             {
+                <div class="page-header">
+                    <h1>Datenbankkonfiguration gespeichert</h1>
+                </div>
+
                 <div class="warning-message">
                     <strong>Neustart erforderlich</strong>
 
                     <p>
-                        Die Datenbankkonfiguration wurde gespeichert.
-                        Bitte beenden und starten Sie die Anwendung neu,
-                        damit die neue Verbindung verwendet wird.
+                        Die Datenbankkonfiguration wurde erfolgreich gespeichert.
+                        Bitte beenden Sie die Anwendung vollständig und starten Sie sie
+                        anschließend erneut.
+                    </p>
+
+                    <p>
+                        Nach dem Neustart wird die gespeicherte Konfiguration geladen.
+                        Danach können Sie die Datenbankmigrationen anwenden.
                     </p>
                 </div>
             }
-
-            <form method="post">
-                <div class="database-configuration-mode">
-                    <h2>Verbindungsart</h2>
-
-                    <label class="configuration-option">
-                        <input asp-for="Configuration.UseDefaultConfiguration"
-                               type="radio"
-                               value="true"
-                               id="useDefaultConfiguration" />
-
-                        <span>
-                            Lokale Standardkonfiguration
-                        </span>
-                    </label>
-
-                    <label class="configuration-option">
-                        <input asp-for="Configuration.UseDefaultConfiguration"
-                               type="radio"
-                               value="false"
-                               id="useAdvancedConfiguration" />
-
-                        <span>
-                            Erweiterte Konfiguration
-                        </span>
-                    </label>
-                </div>
-
-                <div id="defaultConfiguration"
-                     class="database-configuration-section">
-
-                    <h2>Lokale Standardkonfiguration</h2>
-
-                    <p>
-                        Es wird die lokale Standardinstanz
-                        <strong>(localdb)\MSSQLLocalDB</strong>
-                        mit Windows-Authentifizierung verwendet.
-                    </p>
-
-                    <div class="setup-information">
-                        <div class="task-detail-row">
-                            <span class="task-detail-label">
-                                Server:
-                            </span>
-
-                            <span>
-                                (localdb)\MSSQLLocalDB
-                            </span>
-                        </div>
-
-                        <div class="task-detail-row">
-                            <span class="task-detail-label">
-                                Datenbank:
-                            </span>
-
-                            <span>
-                                ATaskO
-                            </span>
-                        </div>
-
-                        <div class="task-detail-row">
-                            <span class="task-detail-label">
-                                Authentifizierung:
-                            </span>
-
-                            <span>
-                                Windows-Authentifizierung
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="advancedConfiguration"
-                     class="database-configuration-section"
-                     hidden>
-
-                    <h2>Erweiterte Konfiguration</h2>
-
-                    <div class="form-table">
-                        <div class="form-table-row">
-                            <label asp-for="Configuration.ServerName"
-                                   class="form-label-cell">
-                                Server oder Instanz
-                            </label>
-
-                            <div class="form-input-cell">
-                                <input asp-for="Configuration.ServerName"
-                                       class="form-control" />
-
-                                <span asp-validation-for="Configuration.ServerName"
-                                      class="validation-message">
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="form-table-row">
-                            <label asp-for="Configuration.AuthenticationMode"
-                                   class="form-label-cell">
-                                Authentifizierung
-                            </label>
-
-                            <div class="form-input-cell">
-                                <select asp-for="Configuration.AuthenticationMode"
-                                        id="authenticationMode"
-                                        class="form-select">
-                                    <option value="Windows">
-                                        Windows-Authentifizierung
-                                    </option>
-
-                                    <option value="SqlServer">
-                                        SQL-Server-Authentifizierung
-                                    </option>
-                                </select>
-
-                                <span asp-validation-for="Configuration.AuthenticationMode"
-                                      class="validation-message">
-                                </span>
-                            </div>
-                        </div>
-
-                        <div id="sqlServerCredentials"
-                             class="database-credentials"
-                             hidden>
-
-                            <div class="form-table-row">
-                                <label asp-for="Configuration.Username"
-                                       class="form-label-cell">
-                                    Benutzername
-                                </label>
-
-                                <div class="form-input-cell">
-                                    <input asp-for="Configuration.Username"
-                                           class="form-control" />
-
-                                    <span asp-validation-for="Configuration.Username"
-                                          class="validation-message">
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="form-table-row">
-                                <label asp-for="Configuration.Password"
-                                       class="form-label-cell">
-                                    Passwort
-                                </label>
-
-                                <div class="form-input-cell">
-                                    <input asp-for="Configuration.Password"
-                                           type="password"
-                                           class="form-control"
-                                           autocomplete="new-password" />
-
-                                    <span asp-validation-for="Configuration.Password"
-                                          class="validation-message">
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="setup-information">
-                        <div class="task-detail-row">
-                            <span class="task-detail-label">
-                                Datenbankname:
-                            </span>
-
-                            <span>
-                                ATaskO
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit"
-                            asp-page-handler="TestConnection"
-                            class="details-button">
-                        Verbindung testen
-                    </button>
-
-                    <button type="submit"
-                            asp-page-handler="SaveConfiguration"
-                            class="save-button">
-                        Konfiguration speichern
-                    </button>
-                </div>
-            </form>
-
-            <div class="database-download-information">
-                <h2>Kein SQL Server vorhanden?</h2>
-
-                <p>
-                    Wenn weder eine SQL-Server-Instanz im Netzwerk noch eine
-                    lokale SQL-Server-Instanz vorhanden ist, installieren Sie
-                    bitte zunächst eine geeignete SQL-Server-Version.
-                </p>
-
-                <a href="https://www.microsoft.com/sql-server/sql-server-downloads"
-                   target="_blank"
-                   rel="noopener noreferrer"
-                   class="details-button">
-                    SQL Server bei Microsoft herunterladen
-                </a>
-            </div>
-
-            @if (Model.Status.HasConnectionString &&
-                 Model.Status.IsServerReachable &&
-                 Model.Status.IsDatabaseReachable &&
-                 Model.Status.HasPendingMigrations &&
-                 !Model.RequiresRestart)
+            else
             {
-                <div class="setup-action-container">
-                    <h2>Datenbankmigration</h2>
+                @if (showConfigurationForm)
+                {
+                    <div class="page-header">
+                        <h1>Datenbank einrichten</h1>
+                    </div>
 
-                    <p>
-                        Die Verbindung wurde erfolgreich hergestellt.
-                        Es stehen noch Migrationen aus.
+                    <p class="security-setup-intro">
+                        ATaskO verwendet eine SQL-Server-Datenbank mit dem festen Namen
+                        <strong>ATaskO</strong>. Wählen Sie zunächst die gewünschte
+                        Konfiguration aus und testen Sie die Verbindung.
                     </p>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Message))
+                    {
+                        <div class="@(Model.IsSuccess == true
+                                                                                        ? "success-message"
+                                                                                        : "error-message")">
+                            @Model.Message
+                        </div>
+                    }
+
+                    @if (Model.RequiresRestart)
+                    {
+                        <div class="warning-message">
+                            <strong>Neustart erforderlich</strong>
+
+                            <p>
+                                Die Datenbankkonfiguration wurde gespeichert.
+                                Bitte beenden und starten Sie die Anwendung neu,
+                                damit die neue Verbindung verwendet wird.
+                            </p>
+                        </div>
+                    }
 
                     <form method="post">
-                        <button type="submit"
-                                asp-page-handler="Migrate"
-                                class="save-button">
-                            Migrationen anwenden
-                        </button>
+                        <div class="database-configuration-mode">
+                            <h2>Verbindungsart</h2>
+
+                            <label class="configuration-option">
+                                <input asp-for="Configuration.UseDefaultConfiguration"
+                                type="radio"
+                                value="true"
+                                id="useDefaultConfiguration" />
+
+                                <span>
+                                    Lokale Standardkonfiguration
+                                </span>
+                            </label>
+
+                            <label class="configuration-option">
+                                <input asp-for="Configuration.UseDefaultConfiguration"
+                                type="radio"
+                                value="false"
+                                id="useAdvancedConfiguration" />
+
+                                <span>
+                                    Erweiterte Konfiguration
+                                </span>
+                            </label>
+                        </div>
+
+                        <div id="defaultConfiguration"
+                        class="database-configuration-section">
+
+                            <h2>Lokale Standardkonfiguration</h2>
+
+                            <p>
+                                Es wird die lokale Standardinstanz
+                                <strong>(localdb)\MSSQLLocalDB</strong>
+                                mit Windows-Authentifizierung verwendet.
+                            </p>
+
+                            <div class="setup-information">
+                                <div class="task-detail-row">
+                                    <span class="task-detail-label">
+                                        Server:
+                                    </span>
+
+                                    <span>
+                                        (localdb)\MSSQLLocalDB
+                                    </span>
+                                </div>
+
+                                <div class="task-detail-row">
+                                    <span class="task-detail-label">
+                                        Datenbank:
+                                    </span>
+
+                                    <span>
+                                        ATaskO
+                                    </span>
+                                </div>
+
+                                <div class="task-detail-row">
+                                    <span class="task-detail-label">
+                                        Authentifizierung:
+                                    </span>
+
+                                    <span>
+                                        Windows-Authentifizierung
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="advancedConfiguration"
+                        class="database-configuration-section"
+                        hidden>
+
+                            <h2>Erweiterte Konfiguration</h2>
+
+                            <div class="form-table">
+                                <div class="form-table-row">
+                                    <label asp-for="Configuration.ServerName"
+                                    class="form-label-cell">
+                                        Server oder Instanz
+                                    </label>
+
+                                    <div class="form-input-cell">
+                                        <input asp-for="Configuration.ServerName"
+                                        class="form-control" />
+
+                                        <span asp-validation-for="Configuration.ServerName"
+                                        class="validation-message">
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="form-table-row">
+                                    <label asp-for="Configuration.AuthenticationMode"
+                                    class="form-label-cell">
+                                        Authentifizierung
+                                    </label>
+
+                                    <div class="form-input-cell">
+                                        <select asp-for="Configuration.AuthenticationMode"
+                                        id="authenticationMode"
+                                        class="form-select">
+                                            <option value="Windows">
+                                                Windows-Authentifizierung
+                                            </option>
+
+                                            <option value="SqlServer">
+                                                SQL-Server-Authentifizierung
+                                            </option>
+                                        </select>
+
+                                        <span asp-validation-for="Configuration.AuthenticationMode"
+                                        class="validation-message">
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div id="sqlServerCredentials"
+                                class="database-credentials"
+                                hidden>
+
+                                    <div class="form-table-row">
+                                        <label asp-for="Configuration.Username"
+                                        class="form-label-cell">
+                                            Benutzername
+                                        </label>
+
+                                        <div class="form-input-cell">
+                                            <input asp-for="Configuration.Username"
+                                            class="form-control" />
+
+                                            <span asp-validation-for="Configuration.Username"
+                                            class="validation-message">
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-table-row">
+                                        <label asp-for="Configuration.Password"
+                                        class="form-label-cell">
+                                            Passwort
+                                        </label>
+
+                                        <div class="form-input-cell">
+                                            <input asp-for="Configuration.Password"
+                                            type="password"
+                                            class="form-control"
+                                            autocomplete="new-password" />
+
+                                            <span asp-validation-for="Configuration.Password"
+                                            class="validation-message">
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="setup-information">
+                                <div class="task-detail-row">
+                                    <span class="task-detail-label">
+                                        Datenbankname:
+                                    </span>
+
+                                    <span>
+                                        ATaskO
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit"
+                                    asp-page-handler="TestConnection"
+                                    class="details-button">
+                                Verbindung testen
+                            </button>
+
+                            @if (Model.ConnectionTestSuccessful)
+                            {
+                                <button type="submit"
+                                        asp-page-handler="SaveConfiguration"
+                                        class="save-button">
+                                    Konfiguration speichern
+                                </button>
+                            }
+                        </div>
                     </form>
-                </div>
-            }
+                }
+                @if (!Model.LocalSqlServerAvailable)
+                {
+                    <div class="database-download-information">
+                        <h2>Keine lokale SQL-Instanz verfügbar?</h2>
 
-            @if (Model.Status.IsFullyReady &&
-                 !Model.RequiresRestart)
-            {
-                <div class="success-message">
-                    Die Datenbank ist vollständig eingerichtet.
-                    Alle Migrationen wurden angewendet.
-                </div>
-            }
+                        <p>
+                            Die lokale Standardinstanz
+                            <strong>(localdb)\MSSQLLocalDB</strong>
+                            konnte nicht erreicht werden.
+                        </p>
 
-            <div class="form-actions">
-                <a asp-page="/Setup/Pepper"
-                   class="cancel-button">
-                    Zurück
-                </a>
+                        <p>
+                            Sie können eine erreichbare SQL-Server-Instanz über die
+                            erweiterte Konfiguration angeben oder eine geeignete
+                            SQL-Server-Version installieren.
+                        </p>
+
+                        <a href="https://www.microsoft.com/sql-server/sql-server-downloads"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="details-button">
+                            SQL Server bei Microsoft herunterladen
+                        </a>
+                    </div>
+                }
+
+                @if (Model.Status.HasConnectionString &&
+                                                 Model.Status.IsServerReachable &&
+                                                 Model.Status.IsDatabaseReachable &&
+                                                 Model.Status.HasPendingMigrations &&
+                                                 !Model.RequiresRestart)
+                {
+                    <div class="setup-action-container">
+                        <h2>Datenbankmigration</h2>
+
+                        <p>
+                            Die Verbindung wurde erfolgreich hergestellt.
+                            Es stehen noch Migrationen aus.
+                        </p>
+
+                        <form method="post">
+                            <button type="submit"
+                                    asp-page-handler="Migrate"
+                                    class="save-button">
+                                Migrationen anwenden
+                            </button>
+                        </form>
+                    </div>
+                }
 
                 @if (Model.Status.IsFullyReady &&
-                     !Model.RequiresRestart)
+                                                 !Model.RequiresRestart)
                 {
-                    <a asp-page="/Setup/InitialAdmin"
-                       class="save-button">
-                        Weiter
-                    </a>
+                    <div class="success-message">
+                        Die Datenbank ist vollständig eingerichtet.
+                        Alle Migrationen wurden angewendet.
+                    </div>
                 }
-            </div>
+
+                <div class="form-actions">
+                    <a asp-page="/Setup/Pepper"
+                       class="cancel-button">
+                        Zurück
+                    </a>
+
+                    @if (Model.Status.IsFullyReady &&
+                                                         !Model.RequiresRestart)
+                    {
+                        <a asp-page="/Setup/InitialAdmin"
+                           class="save-button">
+                            Weiter
+                        </a>
+                    }
+                </div>
+            }
         </div>
 
         <aside class="form-container database-setup-status">
             <div class="setup-status-container">
                 <h2>Datenbankstatus</h2>
 
+                <div class="setup-status-row">
+                    <span class="setup-status-icon
+                        @(Model.LocalSqlServerAvailable
+                            ? "setup-status-success"
+                            : "setup-status-error")">
+                        @(Model.LocalSqlServerAvailable
+                            ? "✓"
+                            : "✕")
+                    </span>
+
+                    <span>
+                        Lokale SQL-Instanz verfügbar
+                    </span>
+                </div>
                 <div class="setup-status-list">
                     <div class="setup-status-row">
                         <span class="setup-status-icon
-                            @(Model.Status.ConfigurationFileExists
+                            @(Model.RequiresRestart || Model.Status.ConfigurationFileExists
                                 ? "setup-status-success"
                                 : "setup-status-error")">
-                            @(Model.Status.ConfigurationFileExists ? "✓" : "✕")
+                            @(Model.RequiresRestart || Model.Status.ConfigurationFileExists
+                                ? "✓"
+                                : "✕")
                         </span>
 
                         <span>
                             Konfigurationsdatei vorhanden
                         </span>
                     </div>
-                    <div class="setup-status-row">
-                        <span class="setup-status-icon
-                            @(Model.Status.HasConnectionString
-                                ? "setup-status-success"
-                                : "setup-status-error")">
-                            @(Model.Status.HasConnectionString ? "✓" : "✕")
-                        </span>
 
-                        <span>
-                            Connection String vorhanden
-                        </span>
-                    </div>
-                    <div class="setup-status-row">
-                        <span class="setup-status-icon
-                            @(Model.Status.ConfigurationIsValid
-                                ? "setup-status-success"
-                                : "setup-status-error")">
-                            @(Model.Status.ConfigurationIsValid ? "✓" : "✕")
-                        </span>
+                    @if (Model.RequiresRestart)
+                    {
+                        <div class="setup-status-row">
+                            <span class="setup-status-icon setup-status-neutral">
+                                –
+                            </span>
 
-                        <span>
-                            Konfiguration gültig
-                        </span>
-                    </div>
+                            <span>
+                                Weitere Prüfungen nach Neustart
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="setup-status-row">
+                            <span class="setup-status-icon
+                                @(Model.Status.HasConnectionString
+                                    ? "setup-status-success"
+                                    : "setup-status-error")">
+                                @(Model.Status.HasConnectionString ? "✓" : "✕")
+                            </span>
 
-                    
+                            <span>
+                                Connection String vorhanden
+                            </span>
+                        </div>
+                        <div class="setup-status-row">
+                            <span class="setup-status-icon
+                                @(Model.Status.ConfigurationIsValid
+                                    ? "setup-status-success"
+                                    : "setup-status-error")">
+                                @(Model.Status.ConfigurationIsValid ? "✓" : "✕")
+                            </span>
 
-                    <div class="setup-status-row">
-                        <span class="setup-status-icon
-                            @(Model.Status.IsServerReachable
-                                ? "setup-status-success"
-                                : "setup-status-error")">
-                            @(Model.Status.IsServerReachable ? "✓" : "✕")
-                        </span>
+                            <span>
+                                Gespeicherte Konfiguration verwendbar
+                            </span>
+                        </div>
 
-                        <span>
-                            SQL-Server erreichbar
-                        </span>
-                    </div>
+                        <div class="setup-status-row">
+                            <span class="setup-status-icon
+                                @(Model.Status.IsDatabaseReachable
+                                    ? "setup-status-success"
+                                    : "setup-status-error")">
+                                @(Model.Status.IsDatabaseReachable ? "✓" : "✕")
+                            </span>
 
-                    <div class="setup-status-row">
-                        <span class="setup-status-icon
-                            @(Model.Status.IsDatabaseReachable
-                                ? "setup-status-success"
-                                : "setup-status-error")">
-                            @(Model.Status.IsDatabaseReachable ? "✓" : "✕")
-                        </span>
+                            <span>
+                                Datenbank ATaskO erreichbar
+                            </span>
+                        </div>
 
-                        <span>
-                            Datenbank ATaskO erreichbar
-                        </span>
-                    </div>
+                        <div class="setup-status-row">
+                            @if (Model.Status.HasPendingMigrations)
+                            {
+                                <span class="setup-status-icon setup-status-error">
+                                    ✕
+                                </span>
 
-                    <div class="setup-status-row">
-                        <span class="setup-status-icon
-                            @(!Model.Status.HasPendingMigrations
-                                ? "setup-status-success"
-                                : "setup-status-error")">
-                            @(!Model.Status.HasPendingMigrations ? "✓" : "✕")
-                        </span>
+                                <span>
+                                    Migrationen stehen aus
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="setup-status-icon setup-status-success">
+                                    ✓
+                                </span>
 
-                        <span>
-                            Alle Migrationen angewendet
-                        </span>
-                    </div>
+                                <span>
+                                    Alle Migrationen angewendet
+                                </span>
+                            }
+                        </div>
+                    }
                 </div>
 
-                @if (!string.IsNullOrWhiteSpace(Model.Status.StatusMessage))
+                @if (!Model.RequiresRestart &&
+    !string.IsNullOrWhiteSpace(Model.Status.StatusMessage))
                 {
                     <p class="setup-status-message">
                         @Model.Status.StatusMessage

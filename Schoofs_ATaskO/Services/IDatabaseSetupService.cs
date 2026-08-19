@@ -7,6 +7,8 @@ namespace Schoofs_ATaskO.Services
     {
         Task<DatabaseSetupStatus> GetStatusAsync();
 
+        Task<bool> TestLocalSqlServerAsync();
+
         Task<bool> TestServerConnectionAsync(DatabaseConfigurationViewModel model);
 
         Task<bool> SaveConfigurationAsync(DatabaseConfigurationViewModel model);

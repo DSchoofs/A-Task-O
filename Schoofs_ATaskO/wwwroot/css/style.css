@@ -504,6 +504,10 @@ body {
         align-items: flex-start;
     }
 }
+.setup-status-neutral {
+    background-color: #6c757d;
+    color: #ffffff;
+}
 /* ==================================================
    Formulare
 ================================================== */

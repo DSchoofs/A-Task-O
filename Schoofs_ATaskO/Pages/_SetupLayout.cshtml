@@ -18,16 +18,7 @@
         </div>
 
         <div class="topbar-right">
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <form method="post" asp-page="/Account/Logout">
-                    <button type="submit" class="logout-button">Logout</button>
-                </form>
-            }
-            else
-            {
-                <a asp-page="/Account/Login" class="login-button">Login</a>
-            }
+            
         </div>
     </header>
 

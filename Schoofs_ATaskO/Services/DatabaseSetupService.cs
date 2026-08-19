@@ -57,7 +57,26 @@ namespace Schoofs_ATaskO.Services
 
             return status;
         }
+        public async Task<bool> TestLocalSqlServerAsync()
+        {
+            ErrorMessage = string.Empty;
 
+            var localConfiguration = new DatabaseConfigurationViewModel
+            {
+                UseDefaultConfiguration = true,
+                ServerName = @"(localdb)\MSSQLLocalDB",
+                AuthenticationMode = "Windows"
+            };
+
+            var result = await _databaseRepository.TestServerConnectionAsync(localConfiguration);
+
+            if (!result)
+            {
+                ErrorMessage = _databaseRepository.ErrorMessage;
+            }
+
+            return result;
+        }
         public async Task<bool> TestServerConnectionAsync(DatabaseConfigurationViewModel model)
         {
             ErrorMessage = string.Empty;
