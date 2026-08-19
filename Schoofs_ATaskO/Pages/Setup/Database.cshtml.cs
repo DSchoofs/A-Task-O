@@ -9,29 +9,20 @@ namespace Schoofs_ATaskO.Pages.Setup
     public class DatabaseModel : PageModel
     {
         private readonly IDatabaseSetupService _databaseSetupService;
-        private readonly ILogger<DatabaseModel> _logger;
 
         [BindProperty]
         public DatabaseConfigurationViewModel Configuration { get; set; } = new();
-
         public DatabaseSetupStatus Status { get; private set; } = new();
-
         public string? Message { get; private set; }
-
         public bool? IsSuccess { get; private set; }
-
         public bool ConnectionTestSuccessful { get; private set; }
-
         public bool ConfigurationSaved { get; private set; }
-
         public bool RequiresRestart { get; private set; }
-
         public bool LocalSqlServerAvailable { get; private set; }
-
+        
         public DatabaseModel(IDatabaseSetupService databaseSetupService, ILogger<DatabaseModel> logger)
         {
             _databaseSetupService = databaseSetupService;
-            _logger = logger;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -45,9 +36,7 @@ namespace Schoofs_ATaskO.Pages.Setup
         {
             await LoadPageStateAsync();
 
-            var testSuccessful =
-                await _databaseSetupService
-                    .TestServerConnectionAsync(Configuration);
+            var testSuccessful = await _databaseSetupService.TestServerConnectionAsync(Configuration);
 
             if (!testSuccessful)
             {
@@ -57,9 +46,8 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            Message =
-                "Die ausgewählte SQL-Server-Instanz ist erreichbar. " +
-                "Sie können die Konfiguration jetzt speichern.";
+            Message ="Die ausgewählte SQL-Server-Instanz ist erreichbar. " +
+                     "Sie können die Konfiguration jetzt speichern.";
 
             IsSuccess = true;
             ConnectionTestSuccessful = true;
@@ -71,9 +59,7 @@ namespace Schoofs_ATaskO.Pages.Setup
         {
             await LoadPageStateAsync();
 
-            var configurationSaved =
-                await _databaseSetupService
-                    .SaveConfigurationAsync(Configuration);
+            var configurationSaved = await _databaseSetupService.SaveConfigurationAsync(Configuration);
 
             if (!configurationSaved)
             {
@@ -83,13 +69,10 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            _logger.LogInformation(
-                "Database configuration was saved successfully.");
 
-            Message =
-                "Die Datenbankkonfiguration wurde erfolgreich gespeichert. " +
-                "Bitte beenden und starten Sie die Anwendung neu, damit die " +
-                "gespeicherte Verbindung verwendet werden kann.";
+            Message = "Die Datenbankkonfiguration wurde erfolgreich gespeichert. " +
+                      "Bitte beenden und starten Sie die Anwendung neu, damit die " +
+                      "gespeicherte Verbindung verwendet werden kann.";
 
             IsSuccess = true;
             ConnectionTestSuccessful = true;
@@ -127,8 +110,7 @@ namespace Schoofs_ATaskO.Pages.Setup
 
             if (!Status.HasPendingMigrations)
             {
-                Message =
-                    "Es sind keine ausstehenden Migrationen vorhanden.";
+                Message ="Es sind keine ausstehenden Migrationen vorhanden.";
 
                 IsSuccess = true;
 
@@ -137,9 +119,7 @@ namespace Schoofs_ATaskO.Pages.Setup
 
             try
             {
-                var migrationSuccessful =
-                    await _databaseSetupService
-                        .ApplyMigrationsAsync(Configuration);
+                var migrationSuccessful = await _databaseSetupService.ApplyMigrationsAsync(Configuration);
 
                 if (!migrationSuccessful)
                 {
@@ -149,45 +129,30 @@ namespace Schoofs_ATaskO.Pages.Setup
                     return Page();
                 }
 
-                _logger.LogInformation(
-                    "Database migration completed successfully.");
 
-                Message =
-                    "Die Datenbank wurde erfolgreich eingerichtet.";
+                Message ="Die Datenbank wurde erfolgreich eingerichtet.";
 
                 IsSuccess = true;
             }
             catch (Exception ex)
             {
-                _logger.LogError(
-                    ex,
-                    "Database migration failed.");
-
-                Message =
-                    $"Fehler beim Einrichten der Datenbank: {ex.Message}";
+                Message = $"Fehler beim Einrichten der Datenbank: {ex.Message}";
 
                 IsSuccess = false;
             }
 
-            Status =
-                await _databaseSetupService
-                    .GetStatusAsync();
+            Status = await _databaseSetupService.GetStatusAsync();
 
             return Page();
         }
 
         private async Task LoadPageStateAsync()
         {
-            LocalSqlServerAvailable =
-                await _databaseSetupService
-                    .TestLocalSqlServerAsync();
+            LocalSqlServerAvailable = await _databaseSetupService.TestLocalSqlServerAsync();
 
-            Status =
-                await _databaseSetupService
-                    .GetStatusAsync();
+            Status = await _databaseSetupService.GetStatusAsync();
 
-            ConfigurationSaved =
-                Status.ConfigurationFileExists;
+            ConfigurationSaved = Status.ConfigurationFileExists;
         }
     }
 }

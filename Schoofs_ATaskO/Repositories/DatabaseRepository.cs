@@ -10,16 +10,12 @@ namespace Schoofs_ATaskO.Repositories
     public class DatabaseRepository : IDatabaseRepository
     {
         private const string DatabaseName = "ATaskO";
-
-        private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _dbContext;
         private readonly IWebHostEnvironment _environment;
-
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public DatabaseRepository(IConfiguration configuration, ApplicationDbContext dbContext, IWebHostEnvironment environment)
+        public DatabaseRepository(ApplicationDbContext dbContext, IWebHostEnvironment environment)
         {
-            _configuration = configuration;
             _dbContext = dbContext;
             _environment = environment;
         }
@@ -122,11 +118,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             ErrorMessage = string.Empty;
 
-            var configurationFilePath =
-                Path.Combine(
-                    _environment.ContentRootPath,
-                    "App_Data",
-                    "database.json");
+            var configurationFilePath =Path.Combine(_environment.ContentRootPath,"App_Data","database.json");
 
             if (!File.Exists(configurationFilePath))
             {
@@ -138,8 +130,7 @@ namespace Schoofs_ATaskO.Repositories
                     IsServerReachable = false,
                     IsDatabaseReachable = false,
                     HasPendingMigrations = true,
-                    StatusMessage =
-                        "Es wurde noch keine Datenbankkonfiguration gespeichert."
+                    StatusMessage = "Es wurde noch keine Datenbankkonfiguration gespeichert."
                 };
             }
 
@@ -147,85 +138,57 @@ namespace Schoofs_ATaskO.Repositories
 
             try
             {
-                var configurationJson =
-                    await File.ReadAllTextAsync(
-                        configurationFilePath);
+                var configurationJson = await File.ReadAllTextAsync(configurationFilePath);
 
                 using var document =
                     JsonDocument.Parse(configurationJson);
 
-                if (!document.RootElement.TryGetProperty(
-                        "ConnectionStrings",
-                        out var connectionStringsElement) ||
-                    connectionStringsElement.ValueKind !=
-                        JsonValueKind.Object)
+                if (!document.RootElement.TryGetProperty("ConnectionStrings", out var connectionStringsElement) || connectionStringsElement.ValueKind != JsonValueKind.Object)
                 {
-                    return CreateInvalidConfigurationStatus(
-                        "Die database.json enthält keinen gültigen " +
-                        "Connection-Strings-Abschnitt.");
+                    return CreateInvalidConfigurationStatus("Die database.json enthält keinen gültigen Connection-Strings-Abschnitt.");
                 }
 
-                if (!connectionStringsElement.TryGetProperty(
-                        "ATaskO",
-                        out var connectionStringElement) ||
-                    connectionStringElement.ValueKind !=
-                        JsonValueKind.String)
+                if (!connectionStringsElement.TryGetProperty("ATaskO", out var connectionStringElement) || connectionStringElement.ValueKind !=JsonValueKind.String)
                 {
-                    return CreateInvalidConfigurationStatus(
-                        "Die database.json enthält keinen gültigen " +
-                        "Connection String für ATaskO.");
+                    return CreateInvalidConfigurationStatus("Die database.json enthält keinen gültigen Connection String für ATaskO.");
                 }
 
-                connectionString =
-                    connectionStringElement.GetString();
+                connectionString =connectionStringElement.GetString();
 
                 if (string.IsNullOrWhiteSpace(connectionString))
                 {
-                    return CreateInvalidConfigurationStatus(
-                        "Der Connection String in der database.json ist leer.");
+                    return CreateInvalidConfigurationStatus("Der Connection String in der database.json ist leer.");
                 }
             }
             catch (JsonException)
             {
-                return CreateInvalidConfigurationStatus(
-                    "Die database.json enthält ungültiges JSON.");
+                return CreateInvalidConfigurationStatus("Die database.json enthält ungültiges JSON.");
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    $"Die database.json konnte nicht gelesen werden: {ex.Message}";
+                ErrorMessage = $"Die database.json konnte nicht gelesen werden: {ex.Message}";
 
-                return CreateInvalidConfigurationStatus(
-                    "Die database.json konnte nicht gelesen werden.");
+                return CreateInvalidConfigurationStatus("Die database.json konnte nicht gelesen werden.");
             }
 
             SqlConnectionStringBuilder connectionStringBuilder;
 
             try
             {
-                connectionStringBuilder =
-                    new SqlConnectionStringBuilder(
-                        connectionString);
+                connectionStringBuilder = new SqlConnectionStringBuilder(connectionString);
             }
             catch (ArgumentException ex)
             {
-                ErrorMessage =
-                    $"Der Connection String ist ungültig: {ex.Message}";
+                ErrorMessage = $"Der Connection String ist ungültig: {ex.Message}";
 
-                return CreateInvalidConfigurationStatus(
-                    "Der Connection String ist syntaktisch ungültig.");
+                return CreateInvalidConfigurationStatus("Der Connection String ist syntaktisch ungültig.");
             }
 
-            var databaseName =
-                connectionStringBuilder.InitialCatalog;
+            var databaseName = connectionStringBuilder.InitialCatalog;
 
-            var serverConnectionString =
-                RemoveDatabaseName(
-                    connectionString);
+            var serverConnectionString = RemoveDatabaseName(connectionString);
 
-            var isServerReachable =
-                await TestServerConnectionAsync(
-                    serverConnectionString);
+            var isServerReachable = await TestServerConnectionAsync(serverConnectionString);
 
             if (!isServerReachable)
             {
@@ -237,8 +200,7 @@ namespace Schoofs_ATaskO.Repositories
                     IsServerReachable = false,
                     IsDatabaseReachable = false,
                     HasPendingMigrations = true,
-                    StatusMessage =
-                        "Der konfigurierte SQL-Server ist nicht erreichbar."
+                    StatusMessage = "Der konfigurierte SQL-Server ist nicht erreichbar."
                 };
             }
 
@@ -252,15 +214,11 @@ namespace Schoofs_ATaskO.Repositories
                     IsServerReachable = true,
                     IsDatabaseReachable = false,
                     HasPendingMigrations = true,
-                    StatusMessage =
-                        "Der SQL-Server ist erreichbar, aber es wurde kein " +
-                        "Datenbankname angegeben."
+                    StatusMessage = "Der SQL-Server ist erreichbar, aber es wurde kein Datenbankname angegeben."
                 };
             }
 
-            var isDatabaseReachable =
-                await TestStoredDatabaseConnectionAsync(
-                    connectionString);
+            var isDatabaseReachable = await TestStoredDatabaseConnectionAsync(connectionString);
 
             if (!isDatabaseReachable)
             {
@@ -272,9 +230,7 @@ namespace Schoofs_ATaskO.Repositories
                     IsServerReachable = true,
                     IsDatabaseReachable = false,
                     HasPendingMigrations = true,
-                    StatusMessage =
-                        $"Der SQL-Server ist erreichbar, aber die Datenbank " +
-                        $"'{databaseName}' ist nicht erreichbar."
+                    StatusMessage = $"Der SQL-Server ist erreichbar, aber die Datenbank '{databaseName}' ist nicht erreichbar."
                 };
             }
 
@@ -282,17 +238,13 @@ namespace Schoofs_ATaskO.Repositories
 
             try
             {
-                var pendingMigrations =
-                    await _dbContext.Database
-                        .GetPendingMigrationsAsync();
+                var pendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
 
-                hasPendingMigrations =
-                    pendingMigrations.Any();
+                hasPendingMigrations = pendingMigrations.Any();
             }
             catch (Exception ex)
             {
-                ErrorMessage =
-                    $"Die Migrationen konnten nicht geprüft werden: {ex.Message}";
+                ErrorMessage = $"Die Migrationen konnten nicht geprüft werden: {ex.Message}";
 
                 return new DatabaseRepositoryStatus
                 {
@@ -302,9 +254,7 @@ namespace Schoofs_ATaskO.Repositories
                     IsServerReachable = true,
                     IsDatabaseReachable = true,
                     HasPendingMigrations = true,
-                    StatusMessage =
-                        "Die Datenbank ist erreichbar, aber der " +
-                        "Migrationsstatus konnte nicht geprüft werden."
+                    StatusMessage = "Die Datenbank ist erreichbar, aber der Migrationsstatus konnte nicht geprüft werden."
                 };
             }
 
@@ -316,10 +266,7 @@ namespace Schoofs_ATaskO.Repositories
                 IsServerReachable = true,
                 IsDatabaseReachable = true,
                 HasPendingMigrations = hasPendingMigrations,
-                StatusMessage = hasPendingMigrations
-                    ? "Die Datenbank ist erreichbar, aber es stehen noch " +
-                      "Migrationen aus."
-                    : "Die Datenbank ist vollständig eingerichtet."
+                StatusMessage = hasPendingMigrations ? "Die Datenbank ist erreichbar, aber es stehen noch Migrationen aus." : "Die Datenbank ist vollständig eingerichtet."
             };
         }
         private async Task<bool> DoesDatabaseExistAsync(SqlConnection connection, string databaseName)
@@ -342,9 +289,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             try
             {
-                await using var connection =
-                    new SqlConnection(
-                        connectionString);
+                await using var connection = new SqlConnection(connectionString);
 
                 await connection.OpenAsync();
 
@@ -352,17 +297,13 @@ namespace Schoofs_ATaskO.Repositories
             }
             catch (SqlException ex)
             {
-                ErrorMessage =
-                    $"Die Datenbankverbindung konnte nicht geöffnet werden: " +
-                    $"{ex.Message}";
+                ErrorMessage = $"Die Datenbankverbindung konnte nicht geöffnet werden: {ex.Message}";
 
                 return false;
             }
             catch (InvalidOperationException ex)
             {
-                ErrorMessage =
-                    $"Der Datenbank-Connection-String ist ungültig: " +
-                    $"{ex.Message}";
+                ErrorMessage = $"Der Datenbank-Connection-String ist ungültig: {ex.Message}";
 
                 return false;
             }
@@ -374,8 +315,7 @@ namespace Schoofs_ATaskO.Repositories
                 return @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;TrustServerCertificate=True;";
             }
 
-            if (string.IsNullOrWhiteSpace(
-                model.ServerName))
+            if (string.IsNullOrWhiteSpace(model.ServerName))
             {
                 throw new InvalidOperationException("Bitte einen Server oder eine Instanz angeben.");
             }
@@ -434,18 +374,14 @@ namespace Schoofs_ATaskO.Repositories
         }
         private string RemoveDatabaseName(string connectionString)
         {
-            var builder =
-                new SqlConnectionStringBuilder(
-                    connectionString);
+            var builder = new SqlConnectionStringBuilder(connectionString);
 
             builder.Remove("Initial Catalog");
             builder.Remove("Database");
 
             return builder.ConnectionString;
         }
-        private static DatabaseRepositoryStatus
-    CreateInvalidConfigurationStatus(
-        string message)
+        private static DatabaseRepositoryStatus CreateInvalidConfigurationStatus(string message)
         {
             return new DatabaseRepositoryStatus
             {

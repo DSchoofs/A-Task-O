@@ -8,7 +8,6 @@ namespace Schoofs_ATaskO.Services
     {
         private readonly IDatabaseRepository _databaseRepository;
         private readonly IDatabaseConfigurationStorage _configurationStorage;
-
         public string ErrorMessage { get; private set; } = string.Empty;
 
         public DatabaseSetupService(IDatabaseRepository databaseRepository, IDatabaseConfigurationStorage configurationStorage)
@@ -21,38 +20,22 @@ namespace Schoofs_ATaskO.Services
         {
             ErrorMessage = string.Empty;
 
-            var repositoryStatus =
-                await _databaseRepository.GetStatusAsync();
+            var repositoryStatus = await _databaseRepository.GetStatusAsync();
 
-            if (!string.IsNullOrWhiteSpace(
-                _databaseRepository.ErrorMessage))
+            if (!string.IsNullOrWhiteSpace(_databaseRepository.ErrorMessage))
             {
-                ErrorMessage =
-                    _databaseRepository.ErrorMessage;
+                ErrorMessage = _databaseRepository.ErrorMessage;
             }
 
             var status = new DatabaseSetupStatus
             {
-                ConfigurationFileExists =
-                    repositoryStatus.ConfigurationFileExists,
-
-                ConfigurationIsValid =
-                    repositoryStatus.ConfigurationIsValid,
-
-                HasConnectionString =
-                    repositoryStatus.HasConnectionString,
-
-                IsServerReachable =
-                    repositoryStatus.IsServerReachable,
-
-                IsDatabaseReachable =
-                    repositoryStatus.IsDatabaseReachable,
-
-                HasPendingMigrations =
-                    repositoryStatus.HasPendingMigrations,
-
-                StatusMessage =
-                    repositoryStatus.StatusMessage
+                ConfigurationFileExists = repositoryStatus.ConfigurationFileExists,
+                ConfigurationIsValid = repositoryStatus.ConfigurationIsValid,
+                HasConnectionString = repositoryStatus.HasConnectionString,
+                IsServerReachable = repositoryStatus.IsServerReachable,
+                IsDatabaseReachable = repositoryStatus.IsDatabaseReachable,
+                HasPendingMigrations = repositoryStatus.HasPendingMigrations,
+                StatusMessage = repositoryStatus.StatusMessage
             };
 
             return status;
@@ -163,8 +146,7 @@ namespace Schoofs_ATaskO.Services
             return builder.ConnectionString;
         }
 
-        private string BuildServerConnectionString(
-            DatabaseConfigurationViewModel model)
+        private string BuildServerConnectionString(DatabaseConfigurationViewModel model)
         {
             if (model.UseDefaultConfiguration)
             {

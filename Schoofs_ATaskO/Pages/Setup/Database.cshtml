@@ -4,12 +4,9 @@
 @{
     Layout = "_SetupLayout";
     ViewData["Title"] = "Datenbank einrichten";
-    var showConfigurationForm =
-        !Model.Status.ConfigurationFileExists ||
-        !Model.Status.ConfigurationIsValid ||
-        !Model.Status.HasConnectionString ||
-        !Model.Status.IsServerReachable ||
-        !Model.Status.IsDatabaseReachable;
+    var showConfigurationForm = !Model.Status.ConfigurationFileExists || !Model.Status.ConfigurationIsValid ||
+                                !Model.Status.HasConnectionString || !Model.Status.IsServerReachable || 
+                                !Model.Status.IsDatabaseReachable;
 }
 
 <div class="page-container">
@@ -53,9 +50,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(Model.Message))
                     {
-                        <div class="@(Model.IsSuccess == true
-                                                                                        ? "success-message"
-                                                                                        : "error-message")">
+                        <div class="@(Model.IsSuccess == true ? "success-message" : "error-message")">
                             @Model.Message
                         </div>
                     }
@@ -78,10 +73,7 @@
                             <h2>Verbindungsart</h2>
 
                             <label class="configuration-option">
-                                <input asp-for="Configuration.UseDefaultConfiguration"
-                                type="radio"
-                                value="true"
-                                id="useDefaultConfiguration" />
+                                <input asp-for="Configuration.UseDefaultConfiguration" type="radio" value="true" id="useDefaultConfiguration" />
 
                                 <span>
                                     Lokale Standardkonfiguration
@@ -89,10 +81,7 @@
                             </label>
 
                             <label class="configuration-option">
-                                <input asp-for="Configuration.UseDefaultConfiguration"
-                                type="radio"
-                                value="false"
-                                id="useAdvancedConfiguration" />
+                                <input asp-for="Configuration.UseDefaultConfiguration" type="radio" value="false" id="useAdvancedConfiguration" />
 
                                 <span>
                                     Erweiterte Konfiguration
@@ -100,8 +89,7 @@
                             </label>
                         </div>
 
-                        <div id="defaultConfiguration"
-                        class="database-configuration-section">
+                        <div id="defaultConfiguration" class="database-configuration-section">
 
                             <h2>Lokale Standardkonfiguration</h2>
 
@@ -144,39 +132,30 @@
                             </div>
                         </div>
 
-                        <div id="advancedConfiguration"
-                        class="database-configuration-section"
-                        hidden>
+                        <div id="advancedConfiguration" class="database-configuration-section" hidden>
 
                             <h2>Erweiterte Konfiguration</h2>
 
                             <div class="form-table">
                                 <div class="form-table-row">
-                                    <label asp-for="Configuration.ServerName"
-                                    class="form-label-cell">
+                                    <label asp-for="Configuration.ServerName" class="form-label-cell">
                                         Server oder Instanz
                                     </label>
 
                                     <div class="form-input-cell">
-                                        <input asp-for="Configuration.ServerName"
-                                        class="form-control" />
+                                        <input asp-for="Configuration.ServerName" class="form-control" />
 
-                                        <span asp-validation-for="Configuration.ServerName"
-                                        class="validation-message">
-                                        </span>
+                                        <span asp-validation-for="Configuration.ServerName" class="validation-message"></span>
                                     </div>
                                 </div>
 
                                 <div class="form-table-row">
-                                    <label asp-for="Configuration.AuthenticationMode"
-                                    class="form-label-cell">
+                                    <label asp-for="Configuration.AuthenticationMode" class="form-label-cell">
                                         Authentifizierung
                                     </label>
 
                                     <div class="form-input-cell">
-                                        <select asp-for="Configuration.AuthenticationMode"
-                                        id="authenticationMode"
-                                        class="form-select">
+                                        <select asp-for="Configuration.AuthenticationMode" id="authenticationMode" class="form-select">
                                             <option value="Windows">
                                                 Windows-Authentifizierung
                                             </option>
@@ -186,50 +165,31 @@
                                             </option>
                                         </select>
 
-                                        <span asp-validation-for="Configuration.AuthenticationMode"
-                                        class="validation-message">
-                                        </span>
+                                        <span asp-validation-for="Configuration.AuthenticationMode" class="validation-message"></span>
                                     </div>
                                 </div>
 
-                                <div id="sqlServerCredentials"
-                                class="database-credentials"
-                                hidden>
+                                <div id="sqlServerCredentials" class="database-credentials" hidden>
 
                                     <div class="form-table-row">
-                                        <label asp-for="Configuration.Username"
-                                        class="form-label-cell">
-                                            Benutzername
-                                        </label>
+                                        <label asp-for="Configuration.Username" class="form-label-cell"> Benutzername </label>
 
                                         <div class="form-input-cell">
-                                            <input asp-for="Configuration.Username"
-                                            class="form-control" />
-
-                                            <span asp-validation-for="Configuration.Username"
-                                            class="validation-message">
-                                            </span>
+                                            <input asp-for="Configuration.Username"class="form-control" />
+                                            <span asp-validation-for="Configuration.Username" class="validation-message"></span>
                                         </div>
                                     </div>
 
                                     <div class="form-table-row">
-                                        <label asp-for="Configuration.Password"
-                                        class="form-label-cell">
-                                            Passwort
-                                        </label>
+                                        <label asp-for="Configuration.Password" class="form-label-cell"> Passwort </label>
 
                                         <div class="form-input-cell">
-                                            <input asp-for="Configuration.Password"
-                                            type="password"
-                                            class="form-control"
-                                            autocomplete="new-password" />
-
-                                            <span asp-validation-for="Configuration.Password"
-                                            class="validation-message">
-                                            </span>
+                                            <input asp-for="Configuration.Password" type="password" class="form-control" autocomplete="new-password" />
+                                            <span asp-validation-for="Configuration.Password" class="validation-message"></span>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
 
                             <div class="setup-information">
@@ -237,7 +197,6 @@
                                     <span class="task-detail-label">
                                         Datenbankname:
                                     </span>
-
                                     <span>
                                         ATaskO
                                     </span>
@@ -246,17 +205,13 @@
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit"
-                                    asp-page-handler="TestConnection"
-                                    class="details-button">
+                            <button type="submit" asp-page-handler="TestConnection" class="details-button">
                                 Verbindung testen
                             </button>
 
                             @if (Model.ConnectionTestSuccessful)
                             {
-                                <button type="submit"
-                                        asp-page-handler="SaveConfiguration"
-                                        class="save-button">
+                                <button type="submit" asp-page-handler="SaveConfiguration" class="save-button">
                                     Konfiguration speichern
                                 </button>
                             }
@@ -267,54 +222,41 @@
                 {
                     <div class="database-download-information">
                         <h2>Keine lokale SQL-Instanz verfügbar?</h2>
-
                         <p>
                             Die lokale Standardinstanz
                             <strong>(localdb)\MSSQLLocalDB</strong>
                             konnte nicht erreicht werden.
                         </p>
-
                         <p>
                             Sie können eine erreichbare SQL-Server-Instanz über die
                             erweiterte Konfiguration angeben oder eine geeignete
                             SQL-Server-Version installieren.
                         </p>
-
-                        <a href="https://www.microsoft.com/sql-server/sql-server-downloads"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="details-button">
+                        <a href="https://www.microsoft.com/sql-server/sql-server-downloads" target="_blank" rel="noopener noreferrer" class="details-button">
                             SQL Server bei Microsoft herunterladen
                         </a>
                     </div>
                 }
 
-                @if (Model.Status.HasConnectionString &&
-                                                 Model.Status.IsServerReachable &&
-                                                 Model.Status.IsDatabaseReachable &&
-                                                 Model.Status.HasPendingMigrations &&
-                                                 !Model.RequiresRestart)
+                @if (Model.Status.HasConnectionString && Model.Status.IsServerReachable &&
+                     Model.Status.IsDatabaseReachable && Model.Status.HasPendingMigrations && 
+                    !Model.RequiresRestart)
                 {
                     <div class="setup-action-container">
                         <h2>Datenbankmigration</h2>
-
                         <p>
                             Die Verbindung wurde erfolgreich hergestellt.
                             Es stehen noch Migrationen aus.
                         </p>
-
                         <form method="post">
-                            <button type="submit"
-                                    asp-page-handler="Migrate"
-                                    class="save-button">
+                            <button type="submit" asp-page-handler="Migrate" class="save-button">
                                 Migrationen anwenden
                             </button>
                         </form>
                     </div>
                 }
 
-                @if (Model.Status.IsFullyReady &&
-                                                 !Model.RequiresRestart)
+                @if (Model.Status.IsFullyReady && !Model.RequiresRestart)
                 {
                     <div class="success-message">
                         Die Datenbank ist vollständig eingerichtet.
@@ -323,18 +265,11 @@
                 }
 
                 <div class="form-actions">
-                    <a asp-page="/Setup/Pepper"
-                       class="cancel-button">
-                        Zurück
-                    </a>
+                    <a asp-page="/Setup/Pepper" class="cancel-button"> Zurück </a>
 
-                    @if (Model.Status.IsFullyReady &&
-                                                         !Model.RequiresRestart)
+                    @if (Model.Status.IsFullyReady && !Model.RequiresRestart)
                     {
-                        <a asp-page="/Setup/InitialAdmin"
-                           class="save-button">
-                            Weiter
-                        </a>
+                        <a asp-page="/Setup/InitialAdmin" class="save-button"> Weiter </a>
                     }
                 </div>
             }
@@ -346,12 +281,8 @@
 
                 <div class="setup-status-row">
                     <span class="setup-status-icon
-                        @(Model.LocalSqlServerAvailable
-                            ? "setup-status-success"
-                            : "setup-status-error")">
-                        @(Model.LocalSqlServerAvailable
-                            ? "✓"
-                            : "✕")
+                        @(Model.LocalSqlServerAvailable ? "setup-status-success" : "setup-status-error")">
+                        @(Model.LocalSqlServerAvailable ? "✓" : "✕")
                     </span>
 
                     <span>
@@ -361,12 +292,8 @@
                 <div class="setup-status-list">
                     <div class="setup-status-row">
                         <span class="setup-status-icon
-                            @(Model.RequiresRestart || Model.Status.ConfigurationFileExists
-                                ? "setup-status-success"
-                                : "setup-status-error")">
-                            @(Model.RequiresRestart || Model.Status.ConfigurationFileExists
-                                ? "✓"
-                                : "✕")
+                            @(Model.RequiresRestart || Model.Status.ConfigurationFileExists ? "setup-status-success" : "setup-status-error")">
+                            @(Model.RequiresRestart || Model.Status.ConfigurationFileExists ? "✓" : "✕")
                         </span>
 
                         <span>
@@ -390,9 +317,7 @@
                     {
                         <div class="setup-status-row">
                             <span class="setup-status-icon
-                                @(Model.Status.HasConnectionString
-                                    ? "setup-status-success"
-                                    : "setup-status-error")">
+                                @(Model.Status.HasConnectionString ? "setup-status-success" : "setup-status-error")">
                                 @(Model.Status.HasConnectionString ? "✓" : "✕")
                             </span>
 
@@ -402,9 +327,7 @@
                         </div>
                         <div class="setup-status-row">
                             <span class="setup-status-icon
-                                @(Model.Status.ConfigurationIsValid
-                                    ? "setup-status-success"
-                                    : "setup-status-error")">
+                                @(Model.Status.ConfigurationIsValid ? "setup-status-success" : "setup-status-error")">
                                 @(Model.Status.ConfigurationIsValid ? "✓" : "✕")
                             </span>
 
@@ -415,9 +338,7 @@
 
                         <div class="setup-status-row">
                             <span class="setup-status-icon
-                                @(Model.Status.IsDatabaseReachable
-                                    ? "setup-status-success"
-                                    : "setup-status-error")">
+                                @(Model.Status.IsDatabaseReachable ? "setup-status-success" : "setup-status-error")">
                                 @(Model.Status.IsDatabaseReachable ? "✓" : "✕")
                             </span>
 
@@ -429,30 +350,21 @@
                         <div class="setup-status-row">
                             @if (Model.Status.HasPendingMigrations)
                             {
-                                <span class="setup-status-icon setup-status-error">
-                                    ✕
-                                </span>
+                                <span class="setup-status-icon setup-status-error">✕</span>
 
-                                <span>
-                                    Migrationen stehen aus
-                                </span>
+                                <span>Migrationen stehen aus</span>
                             }
                             else
                             {
-                                <span class="setup-status-icon setup-status-success">
-                                    ✓
-                                </span>
+                                <span class="setup-status-icon setup-status-success">✓</span>
 
-                                <span>
-                                    Alle Migrationen angewendet
-                                </span>
+                                <span>Alle Migrationen angewendet</span>
                             }
                         </div>
                     }
                 </div>
 
-                @if (!Model.RequiresRestart &&
-    !string.IsNullOrWhiteSpace(Model.Status.StatusMessage))
+                @if (!Model.RequiresRestart && !string.IsNullOrWhiteSpace(Model.Status.StatusMessage))
                 {
                     <p class="setup-status-message">
                         @Model.Status.StatusMessage
@@ -464,55 +376,41 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const defaultOption =
-            document.getElementById("useDefaultConfiguration");
+    document.addEventListener("DOMContentLoaded", function() 
+    {
+        const defaultOption = document.getElementById("useDefaultConfiguration");
 
-        const advancedOption =
-            document.getElementById("useAdvancedConfiguration");
+        const advancedOption = document.getElementById("useAdvancedConfiguration");
 
-        const defaultConfiguration =
-            document.getElementById("defaultConfiguration");
+        const defaultConfiguration = document.getElementById("defaultConfiguration");
 
-        const advancedConfiguration =
-            document.getElementById("advancedConfiguration");
+        const advancedConfiguration = document.getElementById("advancedConfiguration");
 
-        const authenticationMode =
-            document.getElementById("authenticationMode");
+        const authenticationMode = document.getElementById("authenticationMode");
 
-        const sqlServerCredentials =
-            document.getElementById("sqlServerCredentials");
+        const sqlServerCredentials = document.getElementById("sqlServerCredentials");
 
-        function updateConfigurationMode() {
-            const useAdvanced =
-                advancedOption.checked;
+        function updateConfigurationMode() 
+        { 
+            const useAdvanced = advancedOption.checked;
 
-            defaultConfiguration.hidden =
-                useAdvanced;
+            defaultConfiguration.hidden = useAdvanced;
 
-            advancedConfiguration.hidden =
-                !useAdvanced;
+            advancedConfiguration.hidden = !useAdvanced;
         }
 
-        function updateAuthenticationMode() {
-            const useSqlServerAuthentication =
-                authenticationMode.value === "SqlServer";
+        function updateAuthenticationMode() 
+        { 
+            const useSqlServerAuthentication =authenticationMode.value === "SqlServer";
 
-            sqlServerCredentials.hidden =
-                !useSqlServerAuthentication;
+            sqlServerCredentials.hidden = !useSqlServerAuthentication;
         }
 
-        defaultOption.addEventListener(
-            "change",
-            updateConfigurationMode);
+        defaultOption.addEventListener("change",updateConfigurationMode);
 
-        advancedOption.addEventListener(
-            "change",
-            updateConfigurationMode);
+        advancedOption.addEventListener("change",updateConfigurationMode);
 
-        authenticationMode.addEventListener(
-            "change",
-            updateAuthenticationMode);
+        authenticationMode.addEventListener("change", updateAuthenticationMode);
 
         updateConfigurationMode();
         updateAuthenticationMode();
