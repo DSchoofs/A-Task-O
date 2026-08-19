@@ -20,6 +20,5 @@ namespace Schoofs_ATaskO.ViewModels
         [Display(Name = "Passwort")]
         public string? Password { get; set; }
 
-        public string DatabaseName { get; set; } = "ATaskO";
     }
 }

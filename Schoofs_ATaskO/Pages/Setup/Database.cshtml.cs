@@ -16,7 +16,6 @@ namespace Schoofs_ATaskO.Pages.Setup
         public string? Message { get; private set; }
         public bool? IsSuccess { get; private set; }
         public bool ConnectionTestSuccessful { get; private set; }
-        public bool ConfigurationSaved { get; private set; }
         public bool RequiresRestart { get; private set; }
         public bool LocalSqlServerAvailable { get; private set; }
         
@@ -76,7 +75,6 @@ namespace Schoofs_ATaskO.Pages.Setup
 
             IsSuccess = true;
             ConnectionTestSuccessful = true;
-            ConfigurationSaved = true;
             RequiresRestart = true;
 
             return Page();
@@ -152,7 +150,6 @@ namespace Schoofs_ATaskO.Pages.Setup
 
             Status = await _databaseSetupService.GetStatusAsync();
 
-            ConfigurationSaved = Status.ConfigurationFileExists;
         }
     }
 }
