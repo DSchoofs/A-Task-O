@@ -330,7 +330,7 @@ namespace Schoofs_ATaskO.Repositories
 
             return builder.ConnectionString;
         }
-        private string BuildDatabaseConnectionString(DatabaseConfigurationViewModel model)
+        public string BuildDatabaseConnectionString(DatabaseConfigurationViewModel model)
         {
             var builder = new SqlConnectionStringBuilder(BuildServerConnectionString(model))
             {

@@ -105,7 +105,7 @@ namespace Schoofs_ATaskO.Services
                 return false;
             }
 
-            var databaseConnectionString = BuildDatabaseConnectionString(model);
+            var databaseConnectionString = _databaseRepository.BuildDatabaseConnectionString(model);
 
             try
             {
@@ -135,52 +135,5 @@ namespace Schoofs_ATaskO.Services
             return result;
         }
 
-        private string BuildDatabaseConnectionString(DatabaseConfigurationViewModel model)
-        {
-            var serverConnectionString = BuildServerConnectionString(model);
-
-            var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(serverConnectionString);
-
-            builder.InitialCatalog = "ATaskO";
-
-            return builder.ConnectionString;
-        }
-
-        private string BuildServerConnectionString(DatabaseConfigurationViewModel model)
-        {
-            if (model.UseDefaultConfiguration)
-            {
-                return @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;TrustServerCertificate=True;";
-            }
-
-            if (string.IsNullOrWhiteSpace(model.ServerName))
-            {
-                throw new InvalidOperationException("Bitte einen Server oder eine Instanz angeben.");
-            }
-
-            var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder
-                {
-                    DataSource = model.ServerName,
-                    TrustServerCertificate = true
-                };
-
-            if (model.AuthenticationMode == "SqlServer")
-            {
-                if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
-                {
-                    throw new InvalidOperationException("Für die SQL-Server-Authentifizierung werden Benutzername und Passwort benötigt.");
-                }
-
-                builder.UserID = model.Username;
-                builder.Password = model.Password;
-                builder.IntegratedSecurity = false;
-            }
-            else
-            {
-                builder.IntegratedSecurity = true;
-            }
-
-            return builder.ConnectionString;
-        }
     }
 }
