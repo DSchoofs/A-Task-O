@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.Services;
 using Schoofs_ATaskO.Settings;
+using Schoofs_ATaskO.Middleware;
 
 namespace Schoofs_ATaskO
 {
@@ -69,96 +70,7 @@ namespace Schoofs_ATaskO
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.Use(async (context, next) =>
-            {
-                var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
-
-                var allowedPaths = new[]
-                {
-                    "/setup/pepper",
-                    "/setup/database",
-                    "/setup/initialadmin",
-                    "/css",
-                    "/js",
-                    "/lib",
-                    "/favicon.ico",
-                    "/account/accessdenied"
-                };
-
-                var isAllowedPath = allowedPaths.Any(allowedPath => path.StartsWith(allowedPath));
-
-                var setupService = context.RequestServices.GetRequiredService<ISetupService>();
-                var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
-                var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
-
-                // 1. Pepper prüfen
-                if (!setupService.HasPasswordPepper())
-                {
-                    if (!path.StartsWith("/setup/pepper"))
-                    {
-                        context.Response.Redirect("/Setup/Pepper");
-                        return;
-                    }
-
-                    await next();
-                    return;
-                }
-
-                // 2. Datenbank prüfen
-                var connectionString = configuration.GetConnectionString("ATaskO");
-                var isDatabaseReady = false;
-
-                if (!string.IsNullOrWhiteSpace(connectionString))
-                {
-                    try
-                    {
-                        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-                        optionsBuilder.UseSqlServer(connectionString);
-
-                        await using var checkContext = new ApplicationDbContext(optionsBuilder.Options);
-
-                        var canConnect = await checkContext.Database.CanConnectAsync();
-                        if (canConnect)
-                        {
-                            var pendingMigrations = await checkContext.Database.GetPendingMigrationsAsync();
-                            isDatabaseReady = !pendingMigrations.Any();
-                        }
-                    }
-                    catch
-                    {
-                        isDatabaseReady = false;
-                    }
-                }
-
-                if (!isDatabaseReady)
-                {
-                    if (!path.StartsWith("/setup/database"))
-                    {
-                        context.Response.Redirect("/Setup/Database");
-                        return;
-                    }
-
-                    await next();
-                    return;
-                }
-
-                // 3. Admin prüfen (nur wenn Datenbank bereit ist)
-                var adminExists = await dbContext.Users.AnyAsync(u => u.IsAdmin);
-
-                if (!adminExists)
-                {
-                    if (!path.StartsWith("/setup/initialadmin"))
-                    {
-                        context.Response.Redirect("/Setup/InitialAdmin");
-                        return;
-                    }
-
-                    await next();
-                    return;
-                }
-
-                await next();
-            });
+            app.UseMiddleware<SetupMiddleware>();
 
             // Razor Pages aktivieren
             app.MapRazorPages();
