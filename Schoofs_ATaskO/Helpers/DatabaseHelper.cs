@@ -8,25 +8,19 @@ namespace Schoofs_ATaskO.Helpers
     {
         private const string DatabaseName = "ATaskO";
 
-        public static string BuildServerConnectionString(
-            DatabaseConfigurationViewModel model)
+        public static string BuildServerConnectionString(DatabaseConfigurationViewModel model)
         {
             if (model.UseDefaultConfiguration)
             {
-                return
-                    @"Data Source=(localdb)\MSSQLLocalDB;" +
-                    "Integrated Security=True;" +
-                    "TrustServerCertificate=True;";
+                return @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;TrustServerCertificate=True;";
             }
 
             if (string.IsNullOrWhiteSpace(model.ServerName))
             {
-                throw new InvalidOperationException(
-                    "Bitte einen Server oder eine Instanz angeben.");
+                throw new InvalidOperationException("Bitte einen Server oder eine Instanz angeben.");
             }
 
-            var builder =
-                new SqlConnectionStringBuilder
+            var builder = new SqlConnectionStringBuilder
                 {
                     DataSource = model.ServerName,
                     TrustServerCertificate = true
@@ -37,12 +31,9 @@ namespace Schoofs_ATaskO.Helpers
             return builder.ConnectionString;
         }
 
-        public static string BuildDatabaseConnectionString(
-            DatabaseConfigurationViewModel model)
+        public static string BuildDatabaseConnectionString(DatabaseConfigurationViewModel model)
         {
-            var builder =
-                new SqlConnectionStringBuilder(
-                    BuildServerConnectionString(model))
+            var builder = new SqlConnectionStringBuilder(BuildServerConnectionString(model))
                 {
                     InitialCatalog = DatabaseName
                 };
@@ -50,12 +41,9 @@ namespace Schoofs_ATaskO.Helpers
             return builder.ConnectionString;
         }
 
-        public static string RemoveDatabaseName(
-            string connectionString)
+        public static string RemoveDatabaseName(string connectionString)
         {
-            var builder =
-                new SqlConnectionStringBuilder(
-                    connectionString);
+            var builder = new SqlConnectionStringBuilder(connectionString);
 
             builder.Remove("Initial Catalog");
             builder.Remove("Database");
@@ -63,57 +51,44 @@ namespace Schoofs_ATaskO.Helpers
             return builder.ConnectionString;
         }
 
-        public static async Task<bool> WaitForDatabaseConnectionAsync(
-            string connectionString)
+        public static async Task<bool> WaitForDatabaseConnectionAsync(string connectionString)
         {
             const int maxAttempts = 20;
             const int delayMilliseconds = 500;
 
-            for (var attempt = 1;
-                 attempt <= maxAttempts;
-                 attempt++)
+            for (var attempt = 1;attempt <= maxAttempts;attempt++)
             {
                 try
                 {
-                    await using var connection =
-                        new SqlConnection(connectionString);
+                    await using var connection = new SqlConnection(connectionString);
 
                     await connection.OpenAsync();
 
                     return true;
                 }
-                catch 
+                catch
                 {
-                    
                 }
 
                 if (attempt < maxAttempts)
                 {
-                    await Task.Delay(
-                        delayMilliseconds);
+                    await Task.Delay(delayMilliseconds);
                 }
             }
 
             return false;
         }
 
-        public static async Task<bool> WaitForMigrationsAsync(
-            string connectionString)
+        public static async Task<bool> WaitForMigrationsAsync(string connectionString)
         {
             const int maxAttempts = 20;
             const int delayMilliseconds = 500;
 
-            for (var attempt = 1;
-                 attempt <= maxAttempts;
-                 attempt++)
+            for (var attempt = 1;attempt <= maxAttempts;attempt++)
             {
                 try
                 {
-                    var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-
-                    optionsBuilder.UseSqlServer(connectionString);
-
-                    await using var dbContext = new ApplicationDbContext(optionsBuilder.Options);
+                    await using var dbContext = CreateDbContext(connectionString);
 
                     var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
 
@@ -122,9 +97,8 @@ namespace Schoofs_ATaskO.Helpers
                         return true;
                     }
                 }
-                catch 
+                catch
                 {
-                    
                 }
 
                 if (attempt < maxAttempts)
@@ -135,51 +109,51 @@ namespace Schoofs_ATaskO.Helpers
 
             return false;
         }
-        public static async Task<bool> ApplyMigrationsWithRetryAsync(
-    string connectionString)
-        {
-            const int maxAttempts = 10;
-            const int delayMilliseconds = 1000;
 
-            for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        public static async Task<bool> ApplyMigrationsWithRetryAsync(string connectionString)
+        {
+            const int maxAttempts = 20;
+            const int delayMilliseconds = 500;
+
+            for (var attempt = 1;attempt <= maxAttempts;attempt++)
             {
                 try
                 {
-                    var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-                    optionsBuilder.UseSqlServer(connectionString);
-
-                    await using var dbContext = new ApplicationDbContext(optionsBuilder.Options);
+                    await using var dbContext = CreateDbContext(connectionString);
 
                     await dbContext.Database.MigrateAsync();
 
                     return true;
                 }
-                catch (Exception ) when (attempt < maxAttempts)
+                catch (Exception) when (attempt < maxAttempts)
                 {
-                    // Bei Fehlern vor dem letzten Versuch: Warte kurz und versuche es erneut.
                     await Task.Delay(delayMilliseconds);
                 }
                 catch
                 {
-                    // Beim letzten Versuch: Exception weiterwerfen.
                     throw;
                 }
             }
 
             return false;
         }
-        private static void ConfigureAuthentication(
-            SqlConnectionStringBuilder builder,
-            DatabaseConfigurationViewModel model)
+
+        private static ApplicationDbContext CreateDbContext(string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+
+            optionsBuilder.UseSqlServer(connectionString);
+
+            return new ApplicationDbContext(optionsBuilder.Options);
+        }
+
+        private static void ConfigureAuthentication(SqlConnectionStringBuilder builder,DatabaseConfigurationViewModel model)
         {
             if (model.AuthenticationMode == "SqlServer")
             {
-                if (string.IsNullOrWhiteSpace(model.Username) ||
-                    string.IsNullOrWhiteSpace(model.Password))
+                if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
                 {
-                    throw new InvalidOperationException(
-                        "Für die SQL-Server-Authentifizierung werden " +
-                        "Benutzername und Passwort benötigt.");
+                    throw new InvalidOperationException("Für die SQL-Server-Authentifizierung werden Benutzername und Passwort benötigt.");
                 }
 
                 builder.UserID = model.Username;

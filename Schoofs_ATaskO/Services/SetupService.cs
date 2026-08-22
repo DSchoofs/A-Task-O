@@ -9,23 +9,38 @@ namespace Schoofs_ATaskO.Services
 {
     public class SetupService : ISetupService
     {
+        private readonly IDatabaseSetupService _databaseSetupService;
         private readonly IUserService _userService;
         private readonly SecuritySettings _securitySettings;
         private readonly string _securityFilePath;
 
         public string ErrorMessage { get; private set; } = string.Empty;
 
-        public SetupService(IUserService userService, IOptions<SecuritySettings> securityOptions, IHostEnvironment environment)
+        public SetupService(IDatabaseSetupService databaseSetupService, IUserService userService, IOptions<SecuritySettings> securityOptions, IHostEnvironment environment)
         {
+            _databaseSetupService = databaseSetupService;
             _userService = userService;
             _securitySettings = securityOptions.Value;
-
             _securityFilePath = Path.Combine(environment.ContentRootPath, "App_Data", "security.json");
         }
 
         public bool HasPasswordPepper()
         {
             return !string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper);
+        }
+
+        public async Task<bool> IsDatabaseReadyAsync()
+        {
+            ErrorMessage = string.Empty;
+
+            var status = await _databaseSetupService.GetStatusAsync();
+
+            if (!status.IsFullyReady)
+            {
+                ErrorMessage = _databaseSetupService.ErrorMessage;
+            }
+
+            return status.IsFullyReady;
         }
 
         public string GeneratePasswordPepper()
@@ -39,24 +54,21 @@ namespace Schoofs_ATaskO.Services
 
             if (HasPasswordPepper())
             {
-                ErrorMessage =
-                    "Es ist bereits ein PasswordPepper konfiguriert.";
+                ErrorMessage = "Es ist bereits ein PasswordPepper konfiguriert.";
 
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(pepper))
             {
-                ErrorMessage =
-                    "Der PasswordPepper darf nicht leer sein.";
+                ErrorMessage = "Der PasswordPepper darf nicht leer sein.";
 
                 return false;
             }
 
             if (pepper.Length < 12)
             {
-                ErrorMessage =
-                    "Der persönliche PasswordPepper muss mindestens 12 Zeichen lang sein.";
+                ErrorMessage = "Der persönliche PasswordPepper muss mindestens 12 Zeichen lang sein.";
 
                 return false;
             }
@@ -71,7 +83,7 @@ namespace Schoofs_ATaskO.Services
                     }
                 };
 
-                var json = JsonSerializer.Serialize(securityConfiguration, new JsonSerializerOptions{ WriteIndented = true });
+                var json = JsonSerializer.Serialize(securityConfiguration, new JsonSerializerOptions { WriteIndented = true });
 
                 var directory = Path.GetDirectoryName(_securityFilePath);
 
@@ -84,7 +96,7 @@ namespace Schoofs_ATaskO.Services
 
                 Directory.CreateDirectory(directory);
 
-                File.WriteAllText(_securityFilePath,json);
+                File.WriteAllText(_securityFilePath, json);
 
                 return true;
             }
@@ -139,6 +151,7 @@ namespace Schoofs_ATaskO.Services
             if (!result)
             {
                 ErrorMessage = _userService.ErrorMessage;
+
                 return false;
             }
 
