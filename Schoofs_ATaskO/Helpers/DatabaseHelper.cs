@@ -112,8 +112,8 @@ namespace Schoofs_ATaskO.Helpers
 
         public static async Task<bool> ApplyMigrationsWithRetryAsync(string connectionString)
         {
-            const int maxAttempts = 10;
-            const int delayMilliseconds = 1000;
+            const int maxAttempts = 20;
+            const int delayMilliseconds = 500;
 
             for (var attempt = 1;attempt <= maxAttempts;attempt++)
             {

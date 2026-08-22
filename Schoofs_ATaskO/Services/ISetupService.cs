@@ -6,9 +6,9 @@ namespace Schoofs_ATaskO.Services
     {
         bool HasPasswordPepper();
         Task<bool> IsDatabaseReadyAsync();
+        bool HasAdminUser();
         string GeneratePasswordPepper();
         bool CreatePasswordPepper(string pepper);
-        bool HasAdminUser();
         bool IsInitialSetupRequired();
         bool CreateInitialAdmin(InitialAdminViewModel model);
 

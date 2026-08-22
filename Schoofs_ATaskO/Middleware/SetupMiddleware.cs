@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Schoofs_ATaskO.Services;
+﻿using Schoofs_ATaskO.Services;
 
 namespace Schoofs_ATaskO.Middleware
 {
@@ -17,7 +16,6 @@ namespace Schoofs_ATaskO.Middleware
             var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
 
             var setupService = context.RequestServices.GetRequiredService<ISetupService>();
-            var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
 
             if (!setupService.HasPasswordPepper())
             {
@@ -45,9 +43,7 @@ namespace Schoofs_ATaskO.Middleware
                 return;
             }
 
-            var adminExists = await dbContext.Users.AnyAsync(u => u.IsAdmin);
-
-            if (!adminExists)
+            if (!setupService.HasAdminUser())
             {
                 if (!path.StartsWith("/setup/initialadmin"))
                 {
