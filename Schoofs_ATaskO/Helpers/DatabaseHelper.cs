@@ -154,7 +154,7 @@ namespace Schoofs_ATaskO.Helpers
 
                     return true;
                 }
-                catch (Exception ex) when (attempt < maxAttempts)
+                catch (Exception ) when (attempt < maxAttempts)
                 {
                     // Bei Fehlern vor dem letzten Versuch: Warte kurz und versuche es erneut.
                     await Task.Delay(delayMilliseconds);
