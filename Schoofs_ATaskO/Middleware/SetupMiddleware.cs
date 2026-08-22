@@ -18,7 +18,6 @@ namespace Schoofs_ATaskO.Middleware
 
             var setupService = context.RequestServices.GetRequiredService<ISetupService>();
             var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
-            var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
 
             if (!setupService.HasPasswordPepper())
             {
@@ -32,32 +31,7 @@ namespace Schoofs_ATaskO.Middleware
                 return;
             }
 
-            var connectionString = configuration.GetConnectionString("ATaskO");
-            var isDatabaseReady = false;
-
-            if (!string.IsNullOrWhiteSpace(connectionString))
-            {
-                try
-                {
-                    var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-                    optionsBuilder.UseSqlServer(connectionString);
-
-                    await using var checkContext = new ApplicationDbContext(optionsBuilder.Options);
-
-                    var canConnect = await checkContext.Database.CanConnectAsync();
-
-                    if (canConnect)
-                    {
-                        var pendingMigrations = await checkContext.Database.GetPendingMigrationsAsync();
-
-                        isDatabaseReady = !pendingMigrations.Any();
-                    }
-                }
-                catch
-                {
-                    isDatabaseReady = false;
-                }
-            }
+            var isDatabaseReady = await setupService.IsDatabaseReadyAsync();
 
             if (!isDatabaseReady)
             {

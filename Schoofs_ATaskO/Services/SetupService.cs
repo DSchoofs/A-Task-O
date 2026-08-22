@@ -4,22 +4,25 @@ using Schoofs_ATaskO.Settings;
 using Schoofs_ATaskO.ViewModels;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace Schoofs_ATaskO.Services
 {
     public class SetupService : ISetupService
     {
+        private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
         private readonly SecuritySettings _securitySettings;
         private readonly string _securityFilePath;
 
         public string ErrorMessage { get; private set; } = string.Empty;
 
-        public SetupService(IUserService userService, IOptions<SecuritySettings> securityOptions, IHostEnvironment environment)
+        public SetupService(IUserService userService, IOptions<SecuritySettings> securityOptions, IHostEnvironment environment,
+    IConfiguration configuration)
         {
             _userService = userService;
             _securitySettings = securityOptions.Value;
-
+            _configuration = configuration;
             _securityFilePath = Path.Combine(environment.ContentRootPath, "App_Data", "security.json");
         }
 
@@ -27,7 +30,39 @@ namespace Schoofs_ATaskO.Services
         {
             return !string.IsNullOrWhiteSpace(_securitySettings.PasswordPepper);
         }
+        public async Task<bool> IsDatabaseReadyAsync()
+        {
+            var connectionString = _configuration.GetConnectionString("ATaskO");
 
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                return false;
+            }
+
+            try
+            {
+                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+
+                optionsBuilder.UseSqlServer(connectionString);
+
+                await using var dbContext = new ApplicationDbContext(optionsBuilder.Options);
+
+                var canConnect = await dbContext.Database.CanConnectAsync();
+
+                if (!canConnect)
+                {
+                    return false;
+                }
+
+                var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+
+                return !pendingMigrations.Any();
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public string GeneratePasswordPepper()
         {
             return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
