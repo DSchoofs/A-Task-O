@@ -12,14 +12,21 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         [BindProperty]
         public DatabaseConfigurationViewModel Configuration { get; set; } = new();
+
         public DatabaseSetupStatus Status { get; private set; } = new();
+
         public string? Message { get; private set; }
+
         public bool? IsSuccess { get; private set; }
+
         public bool ConnectionTestSuccessful { get; private set; }
+
         public bool RequiresRestart { get; private set; }
+
         public bool LocalSqlServerAvailable { get; private set; }
-        
-        public DatabaseModel(IDatabaseSetupService databaseSetupService, ILogger<DatabaseModel> logger)
+
+        public DatabaseModel(
+            IDatabaseSetupService databaseSetupService)
         {
             _databaseSetupService = databaseSetupService;
         }
@@ -27,7 +34,12 @@ namespace Schoofs_ATaskO.Pages.Setup
         public async Task<IActionResult> OnGetAsync()
         {
             await LoadPageStateAsync();
-
+            
+            if (TempData["DatabaseSetupMessage"] is string message)
+            {
+                Message = message;
+                IsSuccess = TempData["DatabaseSetupIsSuccess"] as bool? ?? true;
+            }
             return Page();
         }
 
@@ -35,18 +47,24 @@ namespace Schoofs_ATaskO.Pages.Setup
         {
             await LoadPageStateAsync();
 
-            var testSuccessful = await _databaseSetupService.TestServerConnectionAsync(Configuration);
+            var testSuccessful =
+                await _databaseSetupService
+                    .TestServerConnectionAsync(
+                        Configuration);
 
             if (!testSuccessful)
             {
-                Message = _databaseSetupService.ErrorMessage;
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
                 IsSuccess = false;
 
                 return Page();
             }
 
-            Message ="Die ausgewählte SQL-Server-Instanz ist erreichbar. " +
-                     "Sie können die Konfiguration jetzt speichern.";
+            Message =
+                "Die ausgewählte SQL-Server-Instanz ist erreichbar. " +
+                "Sie können die Konfiguration jetzt speichern.";
 
             IsSuccess = true;
             ConnectionTestSuccessful = true;
@@ -58,26 +76,60 @@ namespace Schoofs_ATaskO.Pages.Setup
         {
             await LoadPageStateAsync();
 
-            var configurationSaved = await _databaseSetupService.SaveConfigurationAsync(Configuration);
+            var configurationSaved =
+                await _databaseSetupService
+                    .SaveConfigurationAsync(
+                        Configuration);
 
             if (!configurationSaved)
             {
-                Message = _databaseSetupService.ErrorMessage;
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
                 IsSuccess = false;
 
                 return Page();
             }
 
-
-            Message = "Die Datenbankkonfiguration wurde erfolgreich gespeichert. " +
-                      "Bitte beenden und starten Sie die Anwendung neu, damit die " +
-                      "gespeicherte Verbindung verwendet werden kann.";
+            Message =
+                "Die Datenbankkonfiguration wurde erfolgreich gespeichert. " +
+                "Bitte beenden und starten Sie die Anwendung neu, damit die " +
+                "gespeicherte Verbindung verwendet werden kann.";
 
             IsSuccess = true;
             ConnectionTestSuccessful = true;
             RequiresRestart = true;
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostCreateDatabaseAsync()
+        {
+            await LoadPageStateAsync();
+
+            var databaseCreated =
+                await _databaseSetupService
+                    .CreateDatabaseAsync(
+                        Configuration);
+
+            if (!databaseCreated)
+            {
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            TempData["DatabaseSetupMessage"] =
+                "Die Datenbank ATaskO wurde erfolgreich erstellt. " +
+                "Sie können jetzt die Migrationen anwenden.";
+
+            TempData["DatabaseSetupIsSuccess"] =
+                true;
+            
+            return RedirectToPage();
         }
 
         public async Task<IActionResult> OnPostMigrateAsync()
@@ -98,8 +150,8 @@ namespace Schoofs_ATaskO.Pages.Setup
             if (!Status.IsDatabaseReachable)
             {
                 Message =
-                    "Die Datenbank ist nicht erreichbar. " +
-                    "Bitte testen Sie zuerst die Verbindung.";
+                    "Die Datenbank ATaskO ist nicht erreichbar. " +
+                    "Bitte erstellen Sie die Datenbank zuerst.";
 
                 IsSuccess = false;
 
@@ -108,48 +160,50 @@ namespace Schoofs_ATaskO.Pages.Setup
 
             if (!Status.HasPendingMigrations)
             {
-                Message ="Es sind keine ausstehenden Migrationen vorhanden.";
+                Message =
+                    "Es sind keine ausstehenden Migrationen vorhanden.";
 
                 IsSuccess = true;
 
                 return Page();
             }
 
-            try
+            var migrationSuccessful =
+                await _databaseSetupService
+                    .ApplyMigrationsAsync(
+                        Configuration);
+
+            if (!migrationSuccessful)
             {
-                var migrationSuccessful = await _databaseSetupService.ApplyMigrationsAsync(Configuration);
-
-                if (!migrationSuccessful)
-                {
-                    Message = _databaseSetupService.ErrorMessage;
-                    IsSuccess = false;
-
-                    return Page();
-                }
-
-
-                Message ="Die Datenbank wurde erfolgreich eingerichtet.";
-
-                IsSuccess = true;
-            }
-            catch (Exception ex)
-            {
-                Message = $"Fehler beim Einrichten der Datenbank: {ex.Message}";
+                Message =
+                    _databaseSetupService.ErrorMessage;
 
                 IsSuccess = false;
+
+                return Page();
             }
 
-            Status = await _databaseSetupService.GetStatusAsync();
+            Status =
+                await _databaseSetupService
+                    .GetStatusAsync();
+
+            Message =
+                "Die Datenbankmigrationen wurden erfolgreich angewendet.";
+
+            IsSuccess = true;
 
             return Page();
         }
 
         private async Task LoadPageStateAsync()
         {
-            LocalSqlServerAvailable = await _databaseSetupService.TestLocalSqlServerAsync();
+            LocalSqlServerAvailable =
+                await _databaseSetupService
+                    .TestLocalSqlServerAsync();
 
-            Status = await _databaseSetupService.GetStatusAsync();
-
+            Status =
+                await _databaseSetupService
+                    .GetStatusAsync();
         }
     }
 }

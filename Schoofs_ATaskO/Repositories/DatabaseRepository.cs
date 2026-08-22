@@ -4,19 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using Schoofs_ATaskO.Models;
 using Schoofs_ATaskO.ViewModels;
 using System.Text.Json;
+using Schoofs_ATaskO.Helpers;
 
 namespace Schoofs_ATaskO.Repositories
 {
     public class DatabaseRepository : IDatabaseRepository
     {
-        private const string DatabaseName = "ATaskO";
-        private readonly ApplicationDbContext _dbContext;
         private readonly IWebHostEnvironment _environment;
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public DatabaseRepository(ApplicationDbContext dbContext, IWebHostEnvironment environment)
+        public DatabaseRepository(IWebHostEnvironment environment)
         {
-            _dbContext = dbContext;
             _environment = environment;
         }
         public async Task<bool> TestServerConnectionAsync(DatabaseConfigurationViewModel model)
@@ -25,7 +23,7 @@ namespace Schoofs_ATaskO.Repositories
 
             try
             {
-                var connectionString = BuildServerConnectionString(model);
+                var connectionString = DatabaseHelper.BuildServerConnectionString(model);
 
                 await using var connection = new SqlConnection(connectionString);
 
@@ -46,64 +44,68 @@ namespace Schoofs_ATaskO.Repositories
 
             try
             {
-                var serverConnectionString = BuildServerConnectionString(model);
+                var serverConnectionString = DatabaseHelper.BuildServerConnectionString(model);
 
                 await using var connection = new SqlConnection(serverConnectionString);
 
                 await connection.OpenAsync();
 
-                var databaseExists = await DoesDatabaseExistAsync(connection, DatabaseName);
+                const string databaseName = "ATaskO";
+
+                var databaseExists = await DoesDatabaseExistAsync(connection, databaseName);
 
                 if (!databaseExists)
                 {
-                    await CreateDatabaseAsync(connection, DatabaseName);
+                    await CreateDatabaseAsync(connection,databaseName);
+                }
+
+                var databaseConnectionString = DatabaseHelper.BuildDatabaseConnectionString(
+                            model);
+
+                var databaseReachable = await DatabaseHelper.WaitForDatabaseConnectionAsync(databaseConnectionString);
+
+                if (!databaseReachable)
+                {
+                    ErrorMessage = $"Die Datenbank {databaseName} wurde erstellt, konnte danach aber nicht erreicht werden.";
+
+                    return false;
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Die Datenbank {DatabaseName} konnte nicht erstellt werden: {ex.Message}";
+                ErrorMessage = $"Die Datenbank ATaskO konnte nicht erstellt werden: {ex.Message}";
 
                 return false;
             }
         }
-        public async Task<bool> TestDatabaseConnectionAsync(DatabaseConfigurationViewModel model)
-        {
-            ErrorMessage = string.Empty;
 
-            try
-            {
-                var connectionString = BuildDatabaseConnectionString(model);
-
-                await using var connection = new SqlConnection(connectionString);
-
-                await connection.OpenAsync();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Die Datenbank {DatabaseName} konnte nicht erreicht werden: {ex.Message}";
-
-                return false;
-            }
-        }
         public async Task<bool> ApplyMigrationsAsync(DatabaseConfigurationViewModel model)
         {
             ErrorMessage = string.Empty;
 
             try
             {
-                var connectionString = BuildDatabaseConnectionString(model);
+                var connectionString = DatabaseHelper.BuildDatabaseConnectionString(model);
 
-                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+                var migrationsStarted = await DatabaseHelper.ApplyMigrationsWithRetryAsync(connectionString);
 
-                optionsBuilder.UseSqlServer(connectionString);
+                if (!migrationsStarted)
+                {
+                    ErrorMessage = "Die Migrationen konnten nicht gestartet werden.";
 
-                await using var dbContext = new ApplicationDbContext(optionsBuilder.Options);
+                    return false;
+                }
 
-                await dbContext.Database.MigrateAsync();
+                var migrationsApplied = await DatabaseHelper.WaitForMigrationsAsync(connectionString);
+
+                if (!migrationsApplied)
+                {
+                    ErrorMessage = "Die Migrationen wurden gestartet, konnten danach aber nicht als abgeschlossen bestätigt werden.";
+
+                    return false;
+                }
 
                 return true;
             }
@@ -186,9 +188,9 @@ namespace Schoofs_ATaskO.Repositories
 
             var databaseName = connectionStringBuilder.InitialCatalog;
 
-            var serverConnectionString = RemoveDatabaseName(connectionString);
+            var serverConnectionString = DatabaseHelper.RemoveDatabaseName(connectionString);
 
-            var isServerReachable = await TestServerConnectionAsync(serverConnectionString);
+            var isServerReachable = await TestConnectionStringAsync(serverConnectionString);
 
             if (!isServerReachable)
             {
@@ -218,7 +220,7 @@ namespace Schoofs_ATaskO.Repositories
                 };
             }
 
-            var isDatabaseReachable = await TestStoredDatabaseConnectionAsync(connectionString);
+            var isDatabaseReachable = await TestConnectionStringAsync(connectionString);
 
             if (!isDatabaseReachable)
             {
@@ -238,7 +240,13 @@ namespace Schoofs_ATaskO.Repositories
 
             try
             {
-                var pendingMigrations = await _dbContext.Database.GetPendingMigrationsAsync();
+                var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+
+                optionsBuilder.UseSqlServer(connectionString);
+
+                await using var dbContext = new ApplicationDbContext(optionsBuilder.Options);
+
+                var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
 
                 hasPendingMigrations = pendingMigrations.Any();
             }
@@ -283,81 +291,18 @@ namespace Schoofs_ATaskO.Repositories
 
             var sql = $"CREATE DATABASE [{escapedDatabaseName}]";
 
-            await connection.ExecuteAsync(sql);
-        }
-        private async Task<bool> TestStoredDatabaseConnectionAsync(string connectionString)
-        {
             try
             {
-                await using var connection = new SqlConnection(connectionString);
-
-                await connection.OpenAsync();
-
-                return true;
+                await connection.ExecuteAsync(sql);
             }
-            catch (SqlException ex)
+            catch (SqlException ex) when (ex.Number == 1801)
             {
-                ErrorMessage = $"Die Datenbankverbindung konnte nicht geöffnet werden: {ex.Message}";
-
-                return false;
-            }
-            catch (InvalidOperationException ex)
-            {
-                ErrorMessage = $"Der Datenbank-Connection-String ist ungültig: {ex.Message}";
-
-                return false;
+                // Fehler 1801: "Database already exists."
+                // Das ist kein Fehler, sondern bedeutet, dass die Datenbank bereits existiert.
+                // Wir ignorieren diese Ausnahme einfach.
             }
         }
-        private string BuildServerConnectionString(DatabaseConfigurationViewModel model)
-        {
-            if (model.UseDefaultConfiguration)
-            {
-                return @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;TrustServerCertificate=True;";
-            }
-
-            if (string.IsNullOrWhiteSpace(model.ServerName))
-            {
-                throw new InvalidOperationException("Bitte einen Server oder eine Instanz angeben.");
-            }
-
-            var builder = new SqlConnectionStringBuilder
-            {
-                DataSource = model.ServerName,
-                TrustServerCertificate = true
-            };
-
-            ConfigureAuthentication(builder, model);
-
-            return builder.ConnectionString;
-        }
-        public string BuildDatabaseConnectionString(DatabaseConfigurationViewModel model)
-        {
-            var builder = new SqlConnectionStringBuilder(BuildServerConnectionString(model))
-            {
-                InitialCatalog = DatabaseName
-            };
-
-            return builder.ConnectionString;
-        }
-        private void ConfigureAuthentication(SqlConnectionStringBuilder builder, DatabaseConfigurationViewModel model)
-        {
-            if (model.AuthenticationMode == "SqlServer")
-            {
-                if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
-                {
-                    throw new InvalidOperationException("Für die SQL-Server-Authentifizierung werden Benutzername und Passwort benötigt.");
-                }
-
-                builder.UserID = model.Username;
-                builder.Password = model.Password;
-                builder.IntegratedSecurity = false;
-            }
-            else
-            {
-                builder.IntegratedSecurity = true;
-            }
-        }
-        private async Task<bool> TestServerConnectionAsync(string connectionString)
+        private async Task<bool> TestConnectionStringAsync(string connectionString)
         {
             try
             {
@@ -371,15 +316,6 @@ namespace Schoofs_ATaskO.Repositories
             {
                 return false;
             }
-        }
-        private string RemoveDatabaseName(string connectionString)
-        {
-            var builder = new SqlConnectionStringBuilder(connectionString);
-
-            builder.Remove("Initial Catalog");
-            builder.Remove("Database");
-
-            return builder.ConnectionString;
         }
         private static DatabaseRepositoryStatus CreateInvalidConfigurationStatus(string message)
         {

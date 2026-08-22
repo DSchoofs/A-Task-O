@@ -112,10 +112,15 @@ namespace Schoofs_ATaskO
                 {
                     try
                     {
-                        var canConnect = await dbContext.Database.CanConnectAsync();
+                        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+                        optionsBuilder.UseSqlServer(connectionString);
+
+                        await using var checkContext = new ApplicationDbContext(optionsBuilder.Options);
+
+                        var canConnect = await checkContext.Database.CanConnectAsync();
                         if (canConnect)
                         {
-                            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+                            var pendingMigrations = await checkContext.Database.GetPendingMigrationsAsync();
                             isDatabaseReady = !pendingMigrations.Any();
                         }
                     }

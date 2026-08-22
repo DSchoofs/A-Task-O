@@ -5,8 +5,7 @@
     Layout = "_SetupLayout";
     ViewData["Title"] = "Datenbank einrichten";
     var showConfigurationForm = !Model.Status.ConfigurationFileExists || !Model.Status.ConfigurationIsValid ||
-                                !Model.Status.HasConnectionString || !Model.Status.IsServerReachable || 
-                                !Model.Status.IsDatabaseReachable;
+                                !Model.Status.HasConnectionString || !Model.Status.IsServerReachable;
 }
 
 <div class="page-container">
@@ -162,7 +161,7 @@
                                         <label asp-for="Configuration.Username" class="form-label-cell"> Benutzername </label>
 
                                         <div class="form-input-cell">
-                                            <input asp-for="Configuration.Username"class="form-control" />
+                                            <input asp-for="Configuration.Username" class="form-control" />
                                             <span asp-validation-for="Configuration.Username" class="validation-message"></span>
                                         </div>
                                     </div>
@@ -225,21 +224,44 @@
                     </div>
                 }
 
-                @if (Model.Status.HasConnectionString && Model.Status.IsServerReachable &&
-                     Model.Status.IsDatabaseReachable && Model.Status.HasPendingMigrations && 
-                    !Model.RequiresRestart)
+                @if (!showConfigurationForm &&
+     !Model.RequiresRestart &&
+     !Model.Status.IsFullyReady)
                 {
                     <div class="setup-action-container">
-                        <h2>Datenbankmigration</h2>
-                        <p>
-                            Die Verbindung wurde erfolgreich hergestellt.
-                            Es stehen noch Migrationen aus.
-                        </p>
-                        <form method="post">
-                            <button type="submit" asp-page-handler="Migrate" class="save-button">
-                                Migrationen anwenden
-                            </button>
-                        </form>
+                        <h2>Datenbank einrichten</h2>
+
+                        @if (!Model.Status.IsDatabaseReachable)
+                        {
+                            <p>
+                                Die Konfiguration ist gültig und der SQL-Server ist erreichbar.
+                                Die Datenbank ATaskO wurde bisher noch nicht erstellt oder ist
+                                aktuell nicht erreichbar.
+                            </p>
+
+                            <form method="post">
+                                <button type="submit"
+                                        asp-page-handler="CreateDatabase"
+                                        class="save-button">
+                                    Datenbank ATaskO erstellen
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <p>
+                                Die Datenbank ATaskO ist erreichbar.
+                                Es stehen noch Migrationen aus.
+                            </p>
+
+                            <form method="post">
+                                <button type="submit"
+                                        asp-page-handler="Migrate"
+                                        class="save-button">
+                                    Migrationen anwenden
+                                </button>
+                            </form>
+                        }
                     </div>
                 }
 
@@ -252,7 +274,7 @@
                 }
 
                 <div class="form-actions">
-                    <a asp-page="/Setup/Pepper" class="cancel-button"> Zurück </a>
+                    
 
                     @if (Model.Status.IsFullyReady && !Model.RequiresRestart)
                     {
@@ -363,8 +385,7 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() 
-    {
+    document.addEventListener("DOMContentLoaded", function() {
         const defaultOption = document.getElementById("useDefaultConfiguration");
 
         const advancedOption = document.getElementById("useAdvancedConfiguration");
@@ -377,8 +398,7 @@
 
         const sqlServerCredentials = document.getElementById("sqlServerCredentials");
 
-        function updateConfigurationMode() 
-        { 
+        function updateConfigurationMode() {
             const useAdvanced = advancedOption.checked;
 
             defaultConfiguration.hidden = useAdvanced;
@@ -386,16 +406,15 @@
             advancedConfiguration.hidden = !useAdvanced;
         }
 
-        function updateAuthenticationMode() 
-        { 
-            const useSqlServerAuthentication =authenticationMode.value === "SqlServer";
+        function updateAuthenticationMode() {
+            const useSqlServerAuthentication = authenticationMode.value === "SqlServer";
 
             sqlServerCredentials.hidden = !useSqlServerAuthentication;
         }
 
-        defaultOption.addEventListener("change",updateConfigurationMode);
+        defaultOption.addEventListener("change", updateConfigurationMode);
 
-        advancedOption.addEventListener("change",updateConfigurationMode);
+        advancedOption.addEventListener("change", updateConfigurationMode);
 
         authenticationMode.addEventListener("change", updateAuthenticationMode);
 

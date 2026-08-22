@@ -9,11 +9,17 @@ namespace Schoofs_ATaskO.Services
 
         Task<bool> TestLocalSqlServerAsync();
 
-        Task<bool> TestServerConnectionAsync(DatabaseConfigurationViewModel model);
+        Task<bool> TestServerConnectionAsync(
+            DatabaseConfigurationViewModel model);
 
-        Task<bool> SaveConfigurationAsync(DatabaseConfigurationViewModel model);
+        Task<bool> SaveConfigurationAsync(
+            DatabaseConfigurationViewModel model);
 
-        Task<bool> ApplyMigrationsAsync(DatabaseConfigurationViewModel model);
+        Task<bool> CreateDatabaseAsync(
+            DatabaseConfigurationViewModel model);
+
+        Task<bool> ApplyMigrationsAsync(
+            DatabaseConfigurationViewModel model);
 
         string ErrorMessage { get; }
     }
