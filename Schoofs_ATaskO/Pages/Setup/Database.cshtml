@@ -197,9 +197,13 @@
 
                             @if (Model.ConnectionTestSuccessful)
                             {
-                                <button type="submit" asp-page-handler="SaveConfiguration" class="save-button">
-                                    Konfiguration speichern
-                                </button>
+                                <button type="submit"
+                                        asp-page-handler="SaveConfiguration"
+                                        class="save-button"
+                                        onclick="showSetupLoading(
+                                            'Konfiguration wird gespeichert',
+                                            'Die Datenbankkonfiguration wird gespeichert. Bitte warten.');">
+                                Konfiguration speichern </button>
                             }
                         </div>
                     </form>
@@ -224,9 +228,7 @@
                     </div>
                 }
 
-                @if (!showConfigurationForm &&
-     !Model.RequiresRestart &&
-     !Model.Status.IsFullyReady)
+                @if (!showConfigurationForm && !Model.RequiresRestart && !Model.Status.IsFullyReady)
                 {
                     <div class="setup-action-container">
                         <h2>Datenbank einrichten</h2>
@@ -240,11 +242,11 @@
                             </p>
 
                             <form method="post">
-                                <button type="submit"
-                                        asp-page-handler="CreateDatabase"
-                                        class="save-button">
-                                    Datenbank ATaskO erstellen
-                                </button>
+                                <button type="submit" 
+                                        asp-page-handler="CreateDatabase" class="save-button" 
+                                        onclick="showSetupLoading('Datenbank wird erstellt',
+                                        'ATaskO wird vorbereitet. Dies kann einen Moment dauern.');">
+                                Datenbank ATaskO erstellen</button>
                             </form>
                         }
                         else
@@ -257,9 +259,11 @@
                             <form method="post">
                                 <button type="submit"
                                         asp-page-handler="Migrate"
-                                        class="save-button">
-                                    Migrationen anwenden
-                                </button>
+                                        class="save-button"
+                                        onclick="showSetupLoading(
+                                            'Migrationen werden angewendet',
+                                            'Die Datenbankstruktur wird eingerichtet. Dies kann einen Moment dauern.');">
+                            Migrationen anwenden</button>
                             </form>
                         }
                     </div>
@@ -341,7 +345,7 @@
                             </span>
 
                             <span>
-                                Gespeicherte Konfiguration verwendbar
+                                Konfiguration verwendbar
                             </span>
                         </div>
 
@@ -383,26 +387,60 @@
         </aside>
     </div>
 </div>
+<div id="setupLoadingOverlay"
+     class="setup-loading-overlay"
+     role="status"
+     aria-live="polite"
+     aria-hidden="true">
+    <div class="setup-loading-dialog">
+        <div class="setup-loading-spinner"></div>
 
+        <h2 id="setupLoadingTitle">
+            Bitte warten
+        </h2>
+
+        <p id="setupLoadingMessage">
+            Die gewählte Setup-Aktion wird ausgeführt.
+        </p>
+    </div>
+</div>
 <script>
+    let setupActionStarted = false;
+
+    function showSetupLoading(title, message) {
+        if (setupActionStarted) {
+            return false;
+        }
+
+        setupActionStarted = true;
+
+        const loadingOverlay = document.getElementById("setupLoadingOverlay");
+        const loadingTitle = document.getElementById("setupLoadingTitle");
+        const loadingMessage = document.getElementById("setupLoadingMessage");
+
+        loadingTitle.textContent = title;
+        loadingMessage.textContent = message;
+
+        loadingOverlay.classList.add("is-visible");
+        loadingOverlay.setAttribute("aria-hidden", "false");
+
+        document.body.classList.add("setup-loading-active");
+
+        return true;
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
         const defaultOption = document.getElementById("useDefaultConfiguration");
-
         const advancedOption = document.getElementById("useAdvancedConfiguration");
-
         const defaultConfiguration = document.getElementById("defaultConfiguration");
-
         const advancedConfiguration = document.getElementById("advancedConfiguration");
-
         const authenticationMode = document.getElementById("authenticationMode");
-
         const sqlServerCredentials = document.getElementById("sqlServerCredentials");
 
         function updateConfigurationMode() {
             const useAdvanced = advancedOption.checked;
 
             defaultConfiguration.hidden = useAdvanced;
-
             advancedConfiguration.hidden = !useAdvanced;
         }
 
@@ -413,9 +451,7 @@
         }
 
         defaultOption.addEventListener("change", updateConfigurationMode);
-
         advancedOption.addEventListener("change", updateConfigurationMode);
-
         authenticationMode.addEventListener("change", updateAuthenticationMode);
 
         updateConfigurationMode();
