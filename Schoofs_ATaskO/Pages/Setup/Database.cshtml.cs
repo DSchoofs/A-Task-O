@@ -183,12 +183,9 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            Status =
-                await _databaseSetupService
-                    .GetStatusAsync();
+            await LoadPageStateAsync();
 
-            Message =
-                "Die Datenbankmigrationen wurden erfolgreich angewendet.";
+            Message = "Die Datenbankmigrationen wurden erfolgreich angewendet.";
 
             IsSuccess = true;
 
