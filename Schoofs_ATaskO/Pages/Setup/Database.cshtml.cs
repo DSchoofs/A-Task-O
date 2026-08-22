@@ -1,0 +1,209 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Schoofs_ATaskO.Models;
+using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.ViewModels;
+
+namespace Schoofs_ATaskO.Pages.Setup
+{
+    public class DatabaseModel : PageModel
+    {
+        private readonly IDatabaseSetupService _databaseSetupService;
+
+        [BindProperty]
+        public DatabaseConfigurationViewModel Configuration { get; set; } = new();
+
+        public DatabaseSetupStatus Status { get; private set; } = new();
+
+        public string? Message { get; private set; }
+
+        public bool? IsSuccess { get; private set; }
+
+        public bool ConnectionTestSuccessful { get; private set; }
+
+        public bool RequiresRestart { get; private set; }
+
+        public bool LocalSqlServerAvailable { get; private set; }
+
+        public DatabaseModel(
+            IDatabaseSetupService databaseSetupService)
+        {
+            _databaseSetupService = databaseSetupService;
+        }
+
+        public async Task<IActionResult> OnGetAsync()
+        {
+            await LoadPageStateAsync();
+            
+            if (TempData["DatabaseSetupMessage"] is string message)
+            {
+                Message = message;
+                IsSuccess = TempData["DatabaseSetupIsSuccess"] as bool? ?? true;
+            }
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostTestConnectionAsync()
+        {
+            await LoadPageStateAsync();
+
+            var testSuccessful =
+                await _databaseSetupService
+                    .TestServerConnectionAsync(
+                        Configuration);
+
+            if (!testSuccessful)
+            {
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            Message =
+                "Die ausgewählte SQL-Server-Instanz ist erreichbar. " +
+                "Sie können die Konfiguration jetzt speichern.";
+
+            IsSuccess = true;
+            ConnectionTestSuccessful = true;
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostSaveConfigurationAsync()
+        {
+            await LoadPageStateAsync();
+
+            var configurationSaved =
+                await _databaseSetupService
+                    .SaveConfigurationAsync(
+                        Configuration);
+
+            if (!configurationSaved)
+            {
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            Message =
+                "Die Datenbankkonfiguration wurde erfolgreich gespeichert. " +
+                "Bitte beenden und starten Sie die Anwendung neu, damit die " +
+                "gespeicherte Verbindung verwendet werden kann.";
+
+            IsSuccess = true;
+            ConnectionTestSuccessful = true;
+            RequiresRestart = true;
+
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostCreateDatabaseAsync()
+        {
+            await LoadPageStateAsync();
+
+            var databaseCreated =
+                await _databaseSetupService
+                    .CreateDatabaseAsync(
+                        Configuration);
+
+            if (!databaseCreated)
+            {
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            TempData["DatabaseSetupMessage"] =
+                "Die Datenbank ATaskO wurde erfolgreich erstellt. " +
+                "Sie können jetzt die Migrationen anwenden.";
+
+            TempData["DatabaseSetupIsSuccess"] =
+                true;
+            
+            return RedirectToPage();
+        }
+
+        public async Task<IActionResult> OnPostMigrateAsync()
+        {
+            await LoadPageStateAsync();
+
+            if (!Status.HasConnectionString)
+            {
+                Message =
+                    "Es ist keine Datenbankkonfiguration vorhanden. " +
+                    "Bitte konfigurieren Sie zuerst die Datenbank.";
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            if (!Status.IsDatabaseReachable)
+            {
+                Message =
+                    "Die Datenbank ATaskO ist nicht erreichbar. " +
+                    "Bitte erstellen Sie die Datenbank zuerst.";
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            if (!Status.HasPendingMigrations)
+            {
+                Message =
+                    "Es sind keine ausstehenden Migrationen vorhanden.";
+
+                IsSuccess = true;
+
+                return Page();
+            }
+
+            var migrationSuccessful =
+                await _databaseSetupService
+                    .ApplyMigrationsAsync(
+                        Configuration);
+
+            if (!migrationSuccessful)
+            {
+                Message =
+                    _databaseSetupService.ErrorMessage;
+
+                IsSuccess = false;
+
+                return Page();
+            }
+
+            Status =
+                await _databaseSetupService
+                    .GetStatusAsync();
+
+            Message =
+                "Die Datenbankmigrationen wurden erfolgreich angewendet.";
+
+            IsSuccess = true;
+
+            return Page();
+        }
+
+        private async Task LoadPageStateAsync()
+        {
+            LocalSqlServerAvailable =
+                await _databaseSetupService
+                    .TestLocalSqlServerAsync();
+
+            Status =
+                await _databaseSetupService
+                    .GetStatusAsync();
+        }
+    }
+}

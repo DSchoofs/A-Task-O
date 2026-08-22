@@ -10,63 +10,73 @@ namespace Schoofs_ATaskO
     {
         public static void Main(string[] args)
         {
-            try
+
+            var builder = WebApplication.CreateBuilder(args);
+
+            var databaseFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","database.json");
+
+            builder.Configuration.AddJsonFile(databaseFilePath, optional: true, reloadOnChange: false);
+            
+            builder.Services.AddRazorPages();
+
+            var configuredConnectionString = builder.Configuration.GetConnectionString("ATaskO");
+
+            var bootstrapConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Integrated Security=True;TrustServerCertificate=True;";
+
+            var applicationConnectionString = string.IsNullOrWhiteSpace(configuredConnectionString) ? bootstrapConnectionString : configuredConnectionString;
+
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(applicationConnectionString));
+
+            var securityFilePath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "security.json");
+
+            builder.Configuration.AddJsonFile(securityFilePath, optional: true, reloadOnChange: false);
+
+            builder.Services.AddOptions<SecuritySettings>().Bind(builder.Configuration.GetSection(SecuritySettings.SectionName));
+
+            // Basis für die Authentifizierung und Autorisierung registrieren, damit man sich einloggen kann
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
             {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
 
-                var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddAuthorization();
+            builder.Services.AddHttpContextAccessor();
+            // Repos registrieren, damit sie in den Razor Pages verwendet werden können
+            builder.Services.AddScoped<ISetupService, SetupService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+            builder.Services.AddScoped<IPasswordService, PasswordService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ITaskService, TaskService>();
+            builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped<ITaskBlockRepository, TaskBlockRepository>();
+            builder.Services.AddScoped<ITaskBlockService, TaskBlockService>();
+            builder.Services.AddScoped<IDatabaseSetupService, DatabaseSetupService>();
+            builder.Services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            builder.Services.AddScoped<IDatabaseConfigurationStorage, DatabaseConfigurationStorage>();
 
-                //Razor Pages registrieren (macht es erst zu einem Razor Projekt)
-                builder.Services.AddRazorPages();
+            var app = builder.Build();
 
-                builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ATaskO") ?? throw new InvalidOperationException("Connection string 'ATaskO' not found.")));
+            app.UseRouting();
 
-                var securityFilePath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "security.json");
+            // nutzt den Ordner wwwroot in dem z.B. das css liegt oder images etc
+            app.UseStaticFiles();
 
-                builder.Configuration.AddJsonFile(securityFilePath, optional: true, reloadOnChange: false);
+            // Authentifizierung und Autorisierung aktivieren
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-                builder.Services.AddOptions<SecuritySettings>().Bind(builder.Configuration.GetSection(SecuritySettings.SectionName));
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
 
-                // Basis für die Authentifizierung und Autorisierung registrieren, damit man sich einloggen kann
-                builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+                var allowedPaths = new[]
                 {
-                    options.LoginPath = "/Account/Login";
-                    options.LogoutPath = "/Account/Logout";
-                    options.AccessDeniedPath = "/Account/AccessDenied";
-                });
-
-                builder.Services.AddAuthorization();
-                builder.Services.AddHttpContextAccessor();
-                // Repos registrieren, damit sie in den Razor Pages verwendet werden können
-                builder.Services.AddScoped<ISetupService, SetupService>();
-                builder.Services.AddScoped<IUserRepository, UserRepository>();
-                builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-                builder.Services.AddScoped<IEntryRepository, EntryRepository>();
-                builder.Services.AddScoped<IPasswordService, PasswordService>();
-                builder.Services.AddScoped<IUserService, UserService>();
-                builder.Services.AddScoped<ITaskService, TaskService>();
-                builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-                builder.Services.AddScoped<ITaskBlockRepository, TaskBlockRepository>();
-                builder.Services.AddScoped<ITaskBlockService, TaskBlockService>();
-
-                var app = builder.Build();
-
-                app.UseRouting();
-
-                // nutzt den Ordner wwwroot in dem z.B. das css liegt oder images etc
-                app.UseStaticFiles();
-
-                // Authentifizierung und Autorisierung aktivieren
-                app.UseAuthentication();
-                app.UseAuthorization();
-
-                app.Use(async (context, next) =>
-                {
-                    var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
-
-                    var allowedPaths = new[]
-                    {
                     "/setup/pepper",
+                    "/setup/database",
                     "/setup/initialadmin",
                     "/css",
                     "/js",
@@ -75,42 +85,86 @@ namespace Schoofs_ATaskO
                     "/account/accessdenied"
                 };
 
-                    var isAllowedPath = allowedPaths.Any(allowedPath => path.StartsWith(allowedPath));
+                var isAllowedPath = allowedPaths.Any(allowedPath => path.StartsWith(allowedPath));
 
-                    var setupService = context.RequestServices.GetRequiredService<ISetupService>();
+                var setupService = context.RequestServices.GetRequiredService<ISetupService>();
+                var dbContext = context.RequestServices.GetRequiredService<ApplicationDbContext>();
+                var configuration = context.RequestServices.GetRequiredService<IConfiguration>();
 
-                    if (!setupService.HasPasswordPepper())
+                // 1. Pepper prüfen
+                if (!setupService.HasPasswordPepper())
+                {
+                    if (!path.StartsWith("/setup/pepper"))
                     {
-                        if (!path.StartsWith("/setup/pepper"))
-                        {
-                            context.Response.Redirect("/Setup/Pepper");
-                            return;
-                        }
-
-                        await next();
+                        context.Response.Redirect("/Setup/Pepper");
                         return;
                     }
 
-                    if (!isAllowedPath && setupService.IsInitialSetupRequired())
+                    await next();
+                    return;
+                }
+
+                // 2. Datenbank prüfen
+                var connectionString = configuration.GetConnectionString("ATaskO");
+                var isDatabaseReady = false;
+
+                if (!string.IsNullOrWhiteSpace(connectionString))
+                {
+                    try
+                    {
+                        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+                        optionsBuilder.UseSqlServer(connectionString);
+
+                        await using var checkContext = new ApplicationDbContext(optionsBuilder.Options);
+
+                        var canConnect = await checkContext.Database.CanConnectAsync();
+                        if (canConnect)
+                        {
+                            var pendingMigrations = await checkContext.Database.GetPendingMigrationsAsync();
+                            isDatabaseReady = !pendingMigrations.Any();
+                        }
+                    }
+                    catch
+                    {
+                        isDatabaseReady = false;
+                    }
+                }
+
+                if (!isDatabaseReady)
+                {
+                    if (!path.StartsWith("/setup/database"))
+                    {
+                        context.Response.Redirect("/Setup/Database");
+                        return;
+                    }
+
+                    await next();
+                    return;
+                }
+
+                // 3. Admin prüfen (nur wenn Datenbank bereit ist)
+                var adminExists = await dbContext.Users.AnyAsync(u => u.IsAdmin);
+
+                if (!adminExists)
+                {
+                    if (!path.StartsWith("/setup/initialadmin"))
                     {
                         context.Response.Redirect("/Setup/InitialAdmin");
                         return;
                     }
 
                     await next();
-                });
+                    return;
+                }
 
-                // Razor Pages aktivieren
-                app.MapRazorPages();
+                await next();
+            });
 
-                app.Run();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"FATAL ERROR: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw;
-            }
+            // Razor Pages aktivieren
+            app.MapRazorPages();
+
+            app.Run();
+
         }
     }
 }

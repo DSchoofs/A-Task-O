@@ -7,7 +7,7 @@ namespace Schoofs_ATaskO.Pages.Setup
 {
     public class InitialAdminModel : PageModel
     {
-        private readonly ISetupService _setupService;
+        private readonly ISetupService _databaseSetupService;
 
         [BindProperty]
         public InitialAdminViewModel Input { get; set; } = new();
@@ -16,17 +16,17 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         public InitialAdminModel(ISetupService setupService)
         {
-            _setupService = setupService;
+            _databaseSetupService = setupService;
         }
 
         public IActionResult OnGet()
         {
-            if (!_setupService.HasPasswordPepper())
+            if (!_databaseSetupService.HasPasswordPepper())
             {
                 return RedirectToPage("/Setup/Pepper");
             }
 
-            if (!_setupService.IsInitialSetupRequired())
+            if (!_databaseSetupService.IsInitialSetupRequired())
             {
                 return RedirectToPage("/Account/Login");
             }
@@ -36,12 +36,12 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         public IActionResult OnPost()
         {
-            if (!_setupService.HasPasswordPepper())
+            if (!_databaseSetupService.HasPasswordPepper())
             {
                 return RedirectToPage("/Setup/Pepper");
             }
 
-            if (!_setupService.IsInitialSetupRequired())
+            if (!_databaseSetupService.IsInitialSetupRequired())
             {
                 return RedirectToPage("/Account/Login");
             }
@@ -51,11 +51,11 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            var result = _setupService.CreateInitialAdmin(Input);
+            var result = _databaseSetupService.CreateInitialAdmin(Input);
 
             if (!result)
             {
-                ErrorMessage = _setupService.ErrorMessage;
+                ErrorMessage = _databaseSetupService.ErrorMessage;
                 return Page();
             }
 

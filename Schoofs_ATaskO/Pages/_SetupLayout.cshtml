@@ -1,0 +1,43 @@
+﻿<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - A-Task-O</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-left">
+            <img src="~/image/ATaskOLogo.jpg" alt="A-Task-O Logo" class="logo" />
+        </div>
+
+        <div class="topbar-center">
+            <div class="app-title">A-Task-O</div>
+            <div class="app-subtitle">All Tasks Organized</div>
+        </div>
+
+        <div class="topbar-right">
+            
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                
+            </nav>
+        </aside>
+
+        <main class="content">
+            @RenderBody()
+        </main>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2026 A-Task-O</p>
+    </footer>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/js/description-overlay.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

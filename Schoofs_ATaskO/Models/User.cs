@@ -15,12 +15,16 @@ namespace Schoofs_ATaskO.Models
 
         [Required(ErrorMessage = "Die E-Mail ist ein Pflichtfeld.")]
         [EmailAddress(ErrorMessage = "Bitte eine gültige E-Mail-Adresse eingeben.")]
-        [StringLength(256, ErrorMessage = "Die E-Mail darf maximal 256 Zeichen lang sein.")]
+        [StringLength(255, ErrorMessage = "Die E-Mail darf maximal 255 Zeichen lang sein.")]
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
         public string PasswordSalt { get; set; } = "";
         public bool IsAdmin { get; set; }
         public DateTime? LastLogin { get; set; }
         public int? CompletedTasks { get; set; }
+        public ICollection<TaskItem> CreatedTaskItems { get; set; } = new List<TaskItem>();
+        public ICollection<TaskItem> ModifiedTaskItems { get; set; } = new List<TaskItem>();
+        public ICollection<TaskBlock> AssignedTaskBlocks { get; set; } = new List<TaskBlock>();
+        public ICollection<TaskBlock> CompletedTaskBlocks { get; set; } = new List<TaskBlock>();
     }
 }
