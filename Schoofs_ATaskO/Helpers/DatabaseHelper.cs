@@ -7,6 +7,8 @@ namespace Schoofs_ATaskO.Helpers
     public static class DatabaseHelper
     {
         private const string DatabaseName = "ATaskO";
+        private const int MaxRetryAttempts = 60;
+        private const int RetryDelayMilliseconds = 1000;
 
         public static string BuildServerConnectionString(DatabaseConfigurationViewModel model)
         {
@@ -21,10 +23,10 @@ namespace Schoofs_ATaskO.Helpers
             }
 
             var builder = new SqlConnectionStringBuilder
-                {
-                    DataSource = model.ServerName,
-                    TrustServerCertificate = true
-                };
+            {
+                DataSource = model.ServerName,
+                TrustServerCertificate = true
+            };
 
             ConfigureAuthentication(builder, model);
 
@@ -34,9 +36,9 @@ namespace Schoofs_ATaskO.Helpers
         public static string BuildDatabaseConnectionString(DatabaseConfigurationViewModel model)
         {
             var builder = new SqlConnectionStringBuilder(BuildServerConnectionString(model))
-                {
-                    InitialCatalog = DatabaseName
-                };
+            {
+                InitialCatalog = DatabaseName
+            };
 
             return builder.ConnectionString;
         }
@@ -53,10 +55,7 @@ namespace Schoofs_ATaskO.Helpers
 
         public static async Task<bool> WaitForDatabaseConnectionAsync(string connectionString)
         {
-            const int maxAttempts = 20;
-            const int delayMilliseconds = 500;
-
-            for (var attempt = 1;attempt <= maxAttempts;attempt++)
+            for (var attempt = 1; attempt <= MaxRetryAttempts; attempt++)
             {
                 try
                 {
@@ -64,27 +63,32 @@ namespace Schoofs_ATaskO.Helpers
 
                     await connection.OpenAsync();
 
+                    Console.WriteLine("Die Datenbank ist erreichbar.");
+
                     return true;
                 }
                 catch
                 {
+                    if (attempt == 1 || attempt % 5 == 0)
+                    {
+                        Console.WriteLine($"Die Datenbank wird vorbereitet. Verbindungsversuch {attempt} von {MaxRetryAttempts} ...");
+                    }
                 }
 
-                if (attempt < maxAttempts)
+                if (attempt < MaxRetryAttempts)
                 {
-                    await Task.Delay(delayMilliseconds);
+                    await Task.Delay(RetryDelayMilliseconds);
                 }
             }
+
+            Console.WriteLine("Die Datenbank konnte innerhalb der Wartezeit nicht erreicht werden.");
 
             return false;
         }
 
         public static async Task<bool> WaitForMigrationsAsync(string connectionString)
         {
-            const int maxAttempts = 20;
-            const int delayMilliseconds = 500;
-
-            for (var attempt = 1;attempt <= maxAttempts;attempt++)
+            for (var attempt = 1; attempt <= MaxRetryAttempts; attempt++)
             {
                 try
                 {
@@ -94,40 +98,57 @@ namespace Schoofs_ATaskO.Helpers
 
                     if (!pendingMigrations.Any())
                     {
+                        Console.WriteLine("Die Datenbankmigrationen sind abgeschlossen.");
+
                         return true;
                     }
                 }
                 catch
                 {
+                    if (attempt == 1 || attempt % 5 == 0)
+                    {
+                        Console.WriteLine( $"Der Migrationsstatus wird geprüft. Versuch {attempt} von {MaxRetryAttempts} ...");
+                    }
                 }
 
-                if (attempt < maxAttempts)
+                if (attempt < MaxRetryAttempts)
                 {
-                    await Task.Delay(delayMilliseconds);
+                    await Task.Delay(RetryDelayMilliseconds);
                 }
             }
+
+            Console.WriteLine( "Die Migrationen konnten innerhalb der Wartezeit nicht bestätigt werden.");
 
             return false;
         }
 
         public static async Task<bool> ApplyMigrationsWithRetryAsync(string connectionString)
         {
-            const int maxAttempts = 20;
-            const int delayMilliseconds = 500;
-
-            for (var attempt = 1;attempt <= maxAttempts;attempt++)
+            for (var attempt = 1; attempt <= MaxRetryAttempts; attempt++)
             {
                 try
                 {
+                    if (attempt == 1)
+                    {
+                        Console.WriteLine("Datenbankmigrationen werden angewendet ...");
+                    }
+
                     await using var dbContext = CreateDbContext(connectionString);
 
                     await dbContext.Database.MigrateAsync();
 
+                    Console.WriteLine("Datenbankmigrationen wurden angewendet.");
+
                     return true;
                 }
-                catch (Exception) when (attempt < maxAttempts)
+                catch (Exception) when (attempt < MaxRetryAttempts)
                 {
-                    await Task.Delay(delayMilliseconds);
+                    if (attempt == 1 || attempt % 5 == 0)
+                    {
+                        Console.WriteLine( $"Die Migrationen warten auf die Datenbank. Versuch {attempt} von {MaxRetryAttempts} ...");
+                    }
+
+                    await Task.Delay(RetryDelayMilliseconds);
                 }
                 catch
                 {

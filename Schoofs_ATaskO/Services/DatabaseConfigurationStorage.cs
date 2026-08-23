@@ -11,19 +11,18 @@ namespace Schoofs_ATaskO.Services
             _environment = environment;
         }
 
-        public async Task SaveConnectionStringAsync(
-            string connectionString)
+        public async Task SaveConnectionStringAsync(string connectionString)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
                 throw new ArgumentException("Der Connection String darf nicht leer sein.",nameof(connectionString));
             }
 
-            var appDataPath = Path.Combine(_environment.ContentRootPath,"App_Data");
+            var appDataPath = Path.Combine(_environment.ContentRootPath, "App_Data");
 
             Directory.CreateDirectory(appDataPath);
 
-            var databaseFilePath = Path.Combine(appDataPath,"database.json");
+            var databaseFilePath = Path.Combine(appDataPath, "database.json");
 
             var databaseConfiguration = new
             {
@@ -33,9 +32,13 @@ namespace Schoofs_ATaskO.Services
                 }
             };
 
-            var json = JsonSerializer.Serialize(databaseConfiguration, new JsonSerializerOptions{WriteIndented = true});
+            var json = JsonSerializer.Serialize(databaseConfiguration, new JsonSerializerOptions { WriteIndented = true });
 
-            await File.WriteAllTextAsync(databaseFilePath,json);
+            await File.WriteAllTextAsync(databaseFilePath, json);
+
+            Console.WriteLine("Die Datenbankkonfiguration wurde gespeichert.");
+            Console.WriteLine("Bitte schließen Sie die Anwendung mit Strg + C und starten Sie sie erneut.");
+            Console.WriteLine();
         }
     }
 }

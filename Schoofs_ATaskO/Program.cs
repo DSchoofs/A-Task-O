@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.EntityFrameworkCore;
 using Schoofs_ATaskO.Demo;
 using Schoofs_ATaskO.Middleware;
@@ -12,13 +14,14 @@ namespace Schoofs_ATaskO
     {
         public static async Task Main(string[] args)
         {
+            Console.WriteLine("A-Task-O wird gestartet. Das kann einen kurzen Moment dauern ...");
 
             var builder = WebApplication.CreateBuilder(args);
 
             var databaseFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","database.json");
 
-            builder.Configuration.AddJsonFile(databaseFilePath, optional: true, reloadOnChange: false);
-            
+            builder.Configuration.AddJsonFile(databaseFilePath,optional: true,reloadOnChange: false);
+
             builder.Services.AddRazorPages();
 
             var configuredConnectionString = builder.Configuration.GetConnectionString("ATaskO");
@@ -27,26 +30,25 @@ namespace Schoofs_ATaskO
 
             var applicationConnectionString = string.IsNullOrWhiteSpace(configuredConnectionString) ? bootstrapConnectionString : configuredConnectionString;
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(applicationConnectionString));
+            builder.Services.AddDbContext<ApplicationDbContext>( options => options.UseSqlServer(applicationConnectionString));
 
-            var securityFilePath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "security.json");
+            var securityFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","security.json");
 
-            builder.Configuration.AddJsonFile(securityFilePath, optional: true, reloadOnChange: false);
+            builder.Configuration.AddJsonFile( securityFilePath, optional: true, reloadOnChange: false);
 
             builder.Services.AddOptions<SecuritySettings>().Bind(builder.Configuration.GetSection(SecuritySettings.SectionName));
 
-            // Basis für die Authentifizierung und Autorisierung registrieren, damit man sich einloggen kann
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/Account/Login";
-                options.LogoutPath = "/Account/Logout";
-                options.AccessDeniedPath = "/Account/AccessDenied";
-            });
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                    options.AccessDeniedPath = "/Account/AccessDenied";
+                });
 
             builder.Services.AddAuthorization();
             builder.Services.AddHttpContextAccessor();
-            // Repos registrieren, damit sie in den Razor Pages verwendet werden können
+
             builder.Services.AddScoped<ISetupService, SetupService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ITaskRepository, TaskRepository>();
@@ -64,25 +66,60 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IDashboardService, DashboardService>();
 
             var app = builder.Build();
+
             var setupStatus = app.Services.GetRequiredService<ISetupStatusService>();
+
             setupStatus.Initialize();
 
             app.UseRouting();
 
-            // nutzt den Ordner wwwroot in dem z.B. das css liegt oder images etc
             app.UseStaticFiles();
 
-            // Authentifizierung und Autorisierung aktivieren
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<SetupMiddleware>();
 
-            // Razor Pages aktivieren
             app.MapRazorPages();
 
-            await app.RunAsync();
+            app.Lifetime.ApplicationStarted.Register(() =>
+            {
+                var server = app.Services.GetRequiredService<IServer>();
 
+                var addressesFeature = server.Features.Get<IServerAddressesFeature>();
+
+                var addresses = addressesFeature?.Addresses.OrderBy(address => address).ToList() ?? new List<string>();
+
+                Console.WriteLine();
+                Console.WriteLine("A-Task-O ist bereit.");
+
+                if (addresses.Count > 0)
+                {
+                    Console.WriteLine("Bitte öffnen Sie im Browser:");
+
+                    foreach (var address in addresses)
+                    {
+                        Console.WriteLine(address);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Bitte öffnen Sie die konfigurierte Anwendungsadresse im Browser.");
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Zum Beenden der Anwendung drücken Sie im Konsolenfenster Strg + C.");
+                Console.WriteLine();
+            });
+
+            app.Lifetime.ApplicationStopping.Register(() =>
+            {
+                Console.WriteLine();
+                Console.WriteLine("A-Task-O wird beendet.");
+                Console.WriteLine("Sie können dieses Fenster jetzt schließen.");
+            });
+
+            await app.RunAsync();
         }
     }
 }
