@@ -5,35 +5,154 @@
 }
 
 <div class="page-container">
-    <div class="form-container wide-container">
+    <div class="form-container wide-container dashboard-container">
         <div class="page-header">
-            <h1>Dashboard</h1>
-        </div>
+            <div>
+                <h1>Dashboard</h1>
 
+                @if (!string.IsNullOrWhiteSpace(Model.Dashboard.UserName))
+                {
+                    <p class="dashboard-welcome">
+                        Guten Tag, @Model.Dashboard.UserName.
+                        Heute ist @Model.Dashboard.Today.ToString("dddd, dd.MM.yyyy").
+                    </p>
+                }
+            </div>
 
-        @if (User.IsInRole("Admin"))
-        {
-            <a asp-page="/Admin/Tasks/Create" class="save-button">Aufgabe anlegen</a>
-
-            @if (Model.CanCreateDemoData)
+            @if (User.IsInRole("Admin"))
             {
-                <button type="button" class="save-button" id="createDemoDataButton">Demo-Daten anlegen</button>
+                <div class="dashboard-admin-actions">
+                    <a asp-page="/Admin/Tasks/Create" class="save-button">Aufgabe anlegen</a>
+
+                    @if (Model.CanCreateDemoData)
+                    {
+                        <button type="button" class="save-button" id="createDemoDataButton">Demo-Daten anlegen</button>
+                    }
+                </div>
             }
-        }
+        </div>
 
         @if (!string.IsNullOrEmpty(Model.SuccessMessage))
         {
-            <div class="alert alert-success" role="alert">
+            <div class="success-message" role="alert">
                 @Model.SuccessMessage
             </div>
         }
 
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
         {
-            <div class="alert alert-danger" role="alert">
+            <div class="error-message" role="alert">
                 @Model.ErrorMessage
             </div>
         }
+
+        <div class="dashboard-sections">
+            <section class="dashboard-section dashboard-overdue-section">
+                <div class="dashboard-section-header">
+                    <h2>Überfällig</h2>
+                    <span class="dashboard-count">@Model.Dashboard.OverdueBlocks.Count</span>
+                </div>
+
+                @if (Model.Dashboard.OverdueBlocks.Count == 0)
+                {
+                    <p class="empty-block-message">Keine überfälligen Aufgaben vorhanden.</p>
+                }
+                else
+                {
+                    <div class="dashboard-block-list">
+                        @foreach (var block in Model.Dashboard.OverdueBlocks)
+                        {
+                            <a asp-page="/Tasks/TaskView"
+                               asp-route-id="@block.TaskId"
+                               asp-route-focusDate="@block.Start.ToString("yyyy-MM-dd")"
+                               asp-route-selectedBlockId="@block.BlockId"
+                               class="dashboard-block @block.CssClass">
+                                <span class="dashboard-block-task-name">@block.TaskName</span>
+
+                                <span class="dashboard-block-meta">
+                                    <span>@block.DisplayTime</span>
+                                    <span class="dashboard-block-status">@block.StatusText</span>
+                                </span>
+                            </a>
+                        }
+                    </div>
+
+                    
+                }
+            </section>
+
+            <section class="dashboard-section">
+                <div class="dashboard-section-header">
+                    <h2>Heute</h2>
+                    <span class="dashboard-count">@Model.Dashboard.TodayBlocks.Count</span>
+                </div>
+
+                @if (Model.Dashboard.TodayBlocks.Count == 0)
+                {
+                    <p class="empty-block-message">Für heute sind keine offenen Aufgaben vorhanden.</p>
+                }
+                else
+                {
+                    <div class="dashboard-block-list">
+                        @foreach (var block in Model.Dashboard.TodayBlocks)
+                        {
+                            <a asp-page="/Tasks/TaskView"
+                               asp-route-id="@block.TaskId"
+                               asp-route-focusDate="@block.Start.ToString("yyyy-MM-dd")"
+                               asp-route-selectedBlockId="@block.BlockId"
+                               class="dashboard-block @block.CssClass">
+                                <span class="dashboard-block-task-name">@block.TaskName</span>
+
+                                <span class="dashboard-block-meta">
+                                    <span>@block.DisplayTime</span>
+                                    <span class="dashboard-block-status">@block.StatusText</span>
+                                </span>
+                            </a>
+                        }
+                    </div>
+
+                    
+                }
+            </section>
+
+            <section class="dashboard-section">
+                <div class="dashboard-section-header">
+                    <h2>Demnächst</h2>
+                    <span class="dashboard-count">@Model.Dashboard.UpcomingBlocks.Count</span>
+                </div>
+
+                @if (Model.Dashboard.UpcomingBlocks.Count == 0)
+                {
+                    <p class="empty-block-message">Für die nächsten sieben Tage sind keine offenen Aufgaben vorhanden.</p>
+                }
+                else
+                {
+                    <div class="dashboard-block-list">
+                        @foreach (var block in Model.Dashboard.UpcomingBlocks)
+                        {
+                            <a asp-page="/Tasks/TaskView"
+                               asp-route-id="@block.TaskId"
+                               asp-route-focusDate="@block.Start.ToString("yyyy-MM-dd")"
+                               asp-route-selectedBlockId="@block.BlockId"
+                               class="dashboard-block @block.CssClass">
+                                <span class="dashboard-block-task-name">@block.TaskName</span>
+
+                                <span class="dashboard-block-meta">
+                                    <span>@block.DisplayTime</span>
+                                    <span class="dashboard-block-status">@block.StatusText</span>
+                                </span>
+                            </a>
+                        }
+                    </div>
+
+                    
+                }
+            </section>
+        </div>
+
+        <form method="post" id="demoDataAntiForgeryForm">
+            @Html.AntiForgeryToken()
+        </form>
 
         <div id="demoDataLoading" class="loading-overlay" style="display: none;">
             <div class="loading-spinner"></div>
@@ -44,7 +163,7 @@
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             var createDemoDataButton = document.getElementById('createDemoDataButton');
 
             if (!createDemoDataButton) {
@@ -53,44 +172,40 @@
 
             var loadingOverlay = document.getElementById('demoDataLoading');
 
-            createDemoDataButton.addEventListener('click', function() {
+            createDemoDataButton.addEventListener('click', function () {
                 if (!confirm('Sollen wirklich Demo-Benutzer, Aufgaben und Blöcke angelegt werden? Diese Aktion kann nicht rückgängig gemacht werden.')) {
                     return;
                 }
 
-                loadingOverlay.style.display = 'block';
-
+                loadingOverlay.style.display = 'flex';
                 createDemoDataButton.disabled = true;
 
                 var formData = new FormData();
+                var requestVerificationToken = document.querySelector('input[name="__RequestVerificationToken"]');
 
-                formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+                if (requestVerificationToken) {
+                    formData.append('__RequestVerificationToken', requestVerificationToken.value);
+                }
 
                 fetch('@Url.Page("/Index")', {
                     method: 'POST',
-                    headers: {
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
                     body: formData
                 })
-                    .then(function(response) {
-                        if (response.ok) {
-                            window.location.reload();
-                        } else {
-                            alert('Beim Anlegen der Demo-Daten ist ein Fehler aufgetreten.');
+                .then(function (response) {
+                    if (response.ok) {
+                        window.location.reload();
+                        return;
+                    }
 
-                            loadingOverlay.style.display = 'none';
-
-                            createDemoDataButton.disabled = false;
-                        }
-                    })
-                    .catch(function() {
-                        alert('Beim Anlegen der Demo-Daten ist ein Fehler aufgetreten.');
-
-                        loadingOverlay.style.display = 'none';
-
-                        createDemoDataButton.disabled = false;
-                    });
+                    alert('Beim Anlegen der Demo-Daten ist ein Fehler aufgetreten.');
+                    loadingOverlay.style.display = 'none';
+                    createDemoDataButton.disabled = false;
+                })
+                .catch(function () {
+                    alert('Beim Anlegen der Demo-Daten ist ein Fehler aufgetreten.');
+                    loadingOverlay.style.display = 'none';
+                    createDemoDataButton.disabled = false;
+                });
             });
         });
     </script>

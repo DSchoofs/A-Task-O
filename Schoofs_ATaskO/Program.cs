@@ -61,6 +61,7 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IDatabaseConfigurationStorage, DatabaseConfigurationStorage>();
             builder.Services.AddScoped<IDemoDataService, DemoDataService>();
             builder.Services.AddSingleton<ISetupStatusService, SetupStatusService>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
 
             var app = builder.Build();
             var setupStatus = app.Services.GetRequiredService<ISetupStatusService>();

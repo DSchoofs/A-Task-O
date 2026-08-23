@@ -690,7 +690,11 @@
                 details.scrollIntoView({behavior: "smooth",block: "nearest"});
             });
         });
+        const preselectedBlock = document.querySelector(".task-block-selected");
 
+        if (preselectedBlock) {
+            preselectedBlock.click();
+        }
         const descriptionOverlay = document.getElementById("descriptionOverlay");
         const descriptionText = document.getElementById("descriptionText");
         const descriptionTitle = document.getElementById("descriptionDialogTitle");
