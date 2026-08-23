@@ -39,7 +39,7 @@
                     </span>
                 </div>
 
-                @if (Model.TaskView.Interval == TaskInterval.Weekly)
+                @if (Model.TaskView.Interval == TaskInterval.Daily || Model.TaskView.Interval == TaskInterval.Weekly)
                 {
                     <div class="task-detail-row">
                         <span class="task-detail-label">
