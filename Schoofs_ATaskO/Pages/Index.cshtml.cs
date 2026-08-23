@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Schoofs_ATaskO.Demo;
+using Schoofs_ATaskO.Services;
+using Schoofs_ATaskO.ViewModels;
 
 namespace Schoofs_ATaskO.Pages
 {
@@ -8,6 +10,9 @@ namespace Schoofs_ATaskO.Pages
     public class IndexModel : PageModel
     {
         private readonly IDemoDataService _demoDataService;
+        private readonly IDashboardService _dashboardService;
+
+        public DashboardViewModel Dashboard { get; private set; } = new DashboardViewModel();
 
         public bool CanCreateDemoData { get; set; }
 
@@ -15,24 +20,40 @@ namespace Schoofs_ATaskO.Pages
 
         public string ErrorMessage { get; set; } = string.Empty;
 
-        public IndexModel(IDemoDataService demoDataService)
+        public IndexModel(
+            IDemoDataService demoDataService,
+            IDashboardService dashboardService)
         {
             _demoDataService = demoDataService;
+            _dashboardService = dashboardService;
         }
 
         public void OnGet()
         {
-            CanCreateDemoData = User.IsInRole("Admin") && _demoDataService.CanCreateDemoData();
+            LoadDashboard();
+
+            CanCreateDemoData = User.IsInRole("Admin") &&
+                                _demoDataService.CanCreateDemoData();
         }
 
-        
         public void OnPost()
         {
+            if (!User.IsInRole("Admin"))
+            {
+                ErrorMessage = "Nur Administratoren dürfen Demo-Daten anlegen.";
+
+                LoadDashboard();
+
+                return;
+            }
+
             CanCreateDemoData = _demoDataService.CanCreateDemoData();
 
             if (!CanCreateDemoData)
             {
                 ErrorMessage = _demoDataService.ErrorMessage;
+
+                LoadDashboard();
 
                 return;
             }
@@ -49,6 +70,13 @@ namespace Schoofs_ATaskO.Pages
             {
                 ErrorMessage = _demoDataService.ErrorMessage;
             }
+
+            LoadDashboard();
+        }
+
+        private void LoadDashboard()
+        {
+            Dashboard = _dashboardService.GetDashboard();
         }
     }
 }
