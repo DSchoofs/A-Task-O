@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Schoofs_ATaskO.Demo;
+using Schoofs_ATaskO.Middleware;
 using Schoofs_ATaskO.Repositories;
 using Schoofs_ATaskO.Services;
 using Schoofs_ATaskO.Settings;
-using Schoofs_ATaskO.Middleware;
 
 namespace Schoofs_ATaskO
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
 
             var builder = WebApplication.CreateBuilder(args);
@@ -58,8 +59,12 @@ namespace Schoofs_ATaskO
             builder.Services.AddScoped<IDatabaseSetupService, DatabaseSetupService>();
             builder.Services.AddScoped<IDatabaseRepository, DatabaseRepository>();
             builder.Services.AddScoped<IDatabaseConfigurationStorage, DatabaseConfigurationStorage>();
+            builder.Services.AddScoped<IDemoDataService, DemoDataService>();
+            builder.Services.AddSingleton<ISetupStatusService, SetupStatusService>();
 
             var app = builder.Build();
+            var setupStatus = app.Services.GetRequiredService<ISetupStatusService>();
+            setupStatus.Initialize();
 
             app.UseRouting();
 
@@ -75,7 +80,7 @@ namespace Schoofs_ATaskO
             // Razor Pages aktivieren
             app.MapRazorPages();
 
-            app.Run();
+            await app.RunAsync();
 
         }
     }

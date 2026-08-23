@@ -13,46 +13,51 @@ namespace Schoofs_ATaskO.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+            var setupStatus = context.RequestServices.GetRequiredService<ISetupStatusService>();
 
-            var setupService = context.RequestServices.GetRequiredService<ISetupService>();
-
-            if (!setupService.HasPasswordPepper())
+            if (!setupStatus.IsSetupComplete)
             {
-                if (!path.StartsWith("/setup/pepper"))
+                var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+
+                var setupService = context.RequestServices.GetRequiredService<ISetupService>();
+
+                if (!setupService.HasPasswordPepper())
                 {
-                    context.Response.Redirect("/Setup/Pepper");
+                    if (!path.StartsWith("/setup/pepper"))
+                    {
+                        context.Response.Redirect("/Setup/Pepper");
+                        return;
+                    }
+
+                    await _next(context);
                     return;
                 }
 
-                await _next(context);
-                return;
-            }
+                var isDatabaseReady = await setupService.IsDatabaseReadyAsync();
 
-            var isDatabaseReady = await setupService.IsDatabaseReadyAsync();
-
-            if (!isDatabaseReady)
-            {
-                if (!path.StartsWith("/setup/database"))
+                if (!isDatabaseReady)
                 {
-                    context.Response.Redirect("/Setup/Database");
+                    if (!path.StartsWith("/setup/database"))
+                    {
+                        context.Response.Redirect("/Setup/Database");
+                        return;
+                    }
+
+                    await _next(context);
                     return;
                 }
 
-                await _next(context);
-                return;
-            }
-
-            if (!setupService.HasAdminUser())
-            {
-                if (!path.StartsWith("/setup/initialadmin"))
+                if (!setupService.HasAdminUser())
                 {
-                    context.Response.Redirect("/Setup/InitialAdmin");
+                    if (!path.StartsWith("/setup/initialadmin"))
+                    {
+                        context.Response.Redirect("/Setup/InitialAdmin");
+                        return;
+                    }
+
+                    await _next(context);
                     return;
                 }
-
-                await _next(context);
-                return;
             }
 
             await _next(context);

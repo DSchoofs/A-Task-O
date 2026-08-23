@@ -9,9 +9,89 @@
         <div class="page-header">
             <h1>Dashboard</h1>
         </div>
+
+
         @if (User.IsInRole("Admin"))
         {
             <a asp-page="/Admin/Tasks/Create" class="save-button">Aufgabe anlegen</a>
+
+            @if (Model.CanCreateDemoData)
+            {
+                <button type="button" class="save-button" id="createDemoDataButton">Demo-Daten anlegen</button>
+            }
         }
+
+        @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+        {
+            <div class="alert alert-success" role="alert">
+                @Model.SuccessMessage
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger" role="alert">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <div id="demoDataLoading" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Demo-Daten werden erstellt...</div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var createDemoDataButton = document.getElementById('createDemoDataButton');
+
+            if (!createDemoDataButton) {
+                return;
+            }
+
+            var loadingOverlay = document.getElementById('demoDataLoading');
+
+            createDemoDataButton.addEventListener('click', function() {
+                if (!confirm('Sollen wirklich Demo-Benutzer, Aufgaben und Blöcke angelegt werden? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+                    return;
+                }
+
+                loadingOverlay.style.display = 'block';
+
+                createDemoDataButton.disabled = true;
+
+                var formData = new FormData();
+
+                formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+
+                fetch('@Url.Page("/Index")', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: formData
+                })
+                    .then(function(response) {
+                        if (response.ok) {
+                            window.location.reload();
+                        } else {
+                            alert('Beim Anlegen der Demo-Daten ist ein Fehler aufgetreten.');
+
+                            loadingOverlay.style.display = 'none';
+
+                            createDemoDataButton.disabled = false;
+                        }
+                    })
+                    .catch(function() {
+                        alert('Beim Anlegen der Demo-Daten ist ein Fehler aufgetreten.');
+
+                        loadingOverlay.style.display = 'none';
+
+                        createDemoDataButton.disabled = false;
+                    });
+            });
+        });
+    </script>
+}
