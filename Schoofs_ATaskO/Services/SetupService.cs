@@ -98,9 +98,10 @@ namespace Schoofs_ATaskO.Services
 
                 File.WriteAllText(_securityFilePath, json);
 
+                Console.WriteLine("--------------------------------------------------------------------------");
                 Console.WriteLine("Die Sicherheitskonfiguration wurde gespeichert.");
                 Console.WriteLine("Bitte schließen Sie die Anwendung mit Strg + C und starten Sie sie erneut.");
-                Console.WriteLine();
+                Console.WriteLine("--------------------------------------------------------------------------");
 
                 return true;
             }

@@ -36,9 +36,10 @@ namespace Schoofs_ATaskO.Services
 
             await File.WriteAllTextAsync(databaseFilePath, json);
 
+            Console.WriteLine("--------------------------------------------------------------------------");
             Console.WriteLine("Die Datenbankkonfiguration wurde gespeichert.");
             Console.WriteLine("Bitte schließen Sie die Anwendung mit Strg + C und starten Sie sie erneut.");
-            Console.WriteLine();
+            Console.WriteLine("--------------------------------------------------------------------------");
         }
     }
 }
