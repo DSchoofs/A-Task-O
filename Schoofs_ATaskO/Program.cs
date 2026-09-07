@@ -18,11 +18,21 @@ namespace Schoofs_ATaskO
 
             var builder = WebApplication.CreateBuilder(args);
 
-            var databaseFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","database.json");
+            var databaseFilePath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "database.json");
 
-            builder.Configuration.AddJsonFile(databaseFilePath,optional: true,reloadOnChange: false);
+            builder.Configuration.AddJsonFile(databaseFilePath, optional: true, reloadOnChange: false);
 
             builder.Services.AddRazorPages();
+
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = ".ATaskO.Setup";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+            });
 
             var configuredConnectionString = builder.Configuration.GetConnectionString("ATaskO");
 
@@ -30,11 +40,11 @@ namespace Schoofs_ATaskO
 
             var applicationConnectionString = string.IsNullOrWhiteSpace(configuredConnectionString) ? bootstrapConnectionString : configuredConnectionString;
 
-            builder.Services.AddDbContext<ApplicationDbContext>( options => options.UseSqlServer(applicationConnectionString));
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(applicationConnectionString));
 
-            var securityFilePath = Path.Combine(builder.Environment.ContentRootPath,"App_Data","security.json");
+            var securityFilePath = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "security.json");
 
-            builder.Configuration.AddJsonFile( securityFilePath, optional: true, reloadOnChange: false);
+            builder.Configuration.AddJsonFile(securityFilePath, optional: true, reloadOnChange: false);
 
             builder.Services.AddOptions<SecuritySettings>().Bind(builder.Configuration.GetSection(SecuritySettings.SectionName));
 
@@ -74,6 +84,8 @@ namespace Schoofs_ATaskO
             app.UseRouting();
 
             app.UseStaticFiles();
+
+            app.UseSession();
 
             app.UseAuthentication();
             app.UseAuthorization();

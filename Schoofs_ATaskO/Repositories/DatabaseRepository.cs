@@ -46,32 +46,34 @@ namespace Schoofs_ATaskO.Repositories
             {
                 var serverConnectionString = DatabaseHelper.BuildServerConnectionString(model);
 
-                await using var connection = new SqlConnection(serverConnectionString);
-
-                await connection.OpenAsync();
-
-                const string databaseName = "ATaskO";
-
-                var databaseExists = await DoesDatabaseExistAsync(connection, databaseName);
-
-                if (!databaseExists)
+                await using (var connection = new SqlConnection(serverConnectionString))
                 {
-                    await CreateDatabaseAsync(connection,databaseName);
+
+                    await connection.OpenAsync();
+
+                    const string databaseName = "ATaskO";
+
+                    var databaseExists = await DoesDatabaseExistAsync(connection, databaseName);
+
+                    if (!databaseExists)
+                    {
+                        await CreateDatabaseAsync(connection, databaseName);
+                    }
+
+                    var databaseConnectionString = DatabaseHelper.BuildDatabaseConnectionString(
+                                model);
+
+                    var databaseReachable = await DatabaseHelper.WaitForDatabaseConnectionAsync(databaseConnectionString);
+
+                    if (!databaseReachable)
+                    {
+                        ErrorMessage = $"Die Datenbank {databaseName} wurde erstellt, konnte danach aber nicht erreicht werden.";
+
+                        return false;
+                    }
+
+                    return true;
                 }
-
-                var databaseConnectionString = DatabaseHelper.BuildDatabaseConnectionString(
-                            model);
-
-                var databaseReachable = await DatabaseHelper.WaitForDatabaseConnectionAsync(databaseConnectionString);
-
-                if (!databaseReachable)
-                {
-                    ErrorMessage = $"Die Datenbank {databaseName} wurde erstellt, konnte danach aber nicht erreicht werden.";
-
-                    return false;
-                }
-
-                return true;
             }
             catch (Exception ex)
             {
@@ -120,7 +122,7 @@ namespace Schoofs_ATaskO.Repositories
         {
             ErrorMessage = string.Empty;
 
-            var configurationFilePath =Path.Combine(_environment.ContentRootPath,"App_Data","database.json");
+            var configurationFilePath = Path.Combine(_environment.ContentRootPath, "App_Data", "database.json");
 
             if (!File.Exists(configurationFilePath))
             {
@@ -150,12 +152,12 @@ namespace Schoofs_ATaskO.Repositories
                     return CreateInvalidConfigurationStatus("Die database.json enthält keinen gültigen Connection-Strings-Abschnitt.");
                 }
 
-                if (!connectionStringsElement.TryGetProperty("ATaskO", out var connectionStringElement) || connectionStringElement.ValueKind !=JsonValueKind.String)
+                if (!connectionStringsElement.TryGetProperty("ATaskO", out var connectionStringElement) || connectionStringElement.ValueKind != JsonValueKind.String)
                 {
                     return CreateInvalidConfigurationStatus("Die database.json enthält keinen gültigen Connection String für ATaskO.");
                 }
 
-                connectionString =connectionStringElement.GetString();
+                connectionString = connectionStringElement.GetString();
 
                 if (string.IsNullOrWhiteSpace(connectionString))
                 {
@@ -299,7 +301,7 @@ namespace Schoofs_ATaskO.Repositories
             {
                 // Fehler 1801: "Database already exists."
                 // Das ist kein Fehler, sondern bedeutet, dass die Datenbank bereits existiert.
-                // Wir ignorieren diese Ausnahme einfach.
+                // Ausnahme einfach ignoriert.
             }
         }
         private async Task<bool> TestConnectionStringAsync(string connectionString)

@@ -100,7 +100,7 @@ namespace Schoofs_ATaskO.Services
 
                 Console.WriteLine("--------------------------------------------------------------------------");
                 Console.WriteLine("Die Sicherheitskonfiguration wurde gespeichert.");
-                Console.WriteLine("Bitte schließen Sie die Anwendung mit Strg + C und starten Sie sie erneut.");
+                Console.WriteLine("Es wird mit der Datenbankeinrichtung fortgesetzt.");
                 Console.WriteLine("--------------------------------------------------------------------------");
 
                 return true;

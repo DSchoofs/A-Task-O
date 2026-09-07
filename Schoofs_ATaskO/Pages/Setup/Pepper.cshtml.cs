@@ -6,6 +6,9 @@ namespace Schoofs_ATaskO.Pages.Setup
 {
     public class PepperModel : PageModel
     {
+        private const string PepperWasStoredInSessionKey =
+            "PepperWasStoredInSession";
+
         [BindProperty]
         public string Pepper { get; set; } = string.Empty;
         public string ErrorMessage { get; set; } = string.Empty;
@@ -39,8 +42,7 @@ namespace Schoofs_ATaskO.Pages.Setup
 
             if (string.IsNullOrWhiteSpace(Pepper))
             {
-
-                ErrorMessage ="Bitte geben Sie einen PasswordPepper ein.";
+                ErrorMessage = "Bitte geben Sie einen PasswordPepper ein.";
 
                 return Page();
             }
@@ -53,11 +55,9 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            SuccessMessage = "Der PasswordPepper wurde erfolgreich gespeichert. " +
-                             "Beenden Sie die Anwendung jetzt und starten Sie sie einmal neu. " +
-                             "Danach wird die Einrichtung automatisch fortgesetzt.";
+            HttpContext.Session.SetString(PepperWasStoredInSessionKey, "true");
 
-            return Page();
+            return RedirectToPage("/Setup/Database");
         }
     }
 }

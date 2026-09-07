@@ -4,6 +4,9 @@ namespace Schoofs_ATaskO.Middleware
 {
     public class SetupMiddleware
     {
+        private const string PepperWasStoredInSessionKey =
+            "PepperWasStoredInSession";
+
         private readonly RequestDelegate _next;
 
         public SetupMiddleware(RequestDelegate next)
@@ -21,11 +24,42 @@ namespace Schoofs_ATaskO.Middleware
 
                 var setupService = context.RequestServices.GetRequiredService<ISetupService>();
 
-                if (!setupService.HasPasswordPepper())
+                var pepperWasStoredInSession =
+                    context.Session.GetString(PepperWasStoredInSessionKey) == "true";
+
+                if (!setupService.HasPasswordPepper() &&
+                    !pepperWasStoredInSession)
                 {
                     if (!path.StartsWith("/setup/pepper"))
                     {
                         context.Response.Redirect("/Setup/Pepper");
+                        return;
+                    }
+
+                    await _next(context);
+                    return;
+                }
+
+                if (!setupService.HasPasswordPepper() &&
+                    pepperWasStoredInSession)
+                {
+                    var allowedPaths = new[]
+                    {
+                        "/setup/pepper",
+                        "/setup/database",
+                        "/css",
+                        "/js",
+                        "/lib",
+                        "/favicon.ico",
+                        "/account/accessdenied"
+                    };
+
+                    var isAllowedPath =
+                        allowedPaths.Any(allowedPath => path.StartsWith(allowedPath));
+
+                    if (!isAllowedPath)
+                    {
+                        context.Response.Redirect("/Setup/Database");
                         return;
                     }
 
