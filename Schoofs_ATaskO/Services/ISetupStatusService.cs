@@ -4,5 +4,6 @@
     {
         bool IsSetupComplete { get; }
         void Initialize();
+        void Refresh();
     }
 }

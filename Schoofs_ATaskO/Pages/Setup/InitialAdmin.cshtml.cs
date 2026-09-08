@@ -7,7 +7,7 @@ namespace Schoofs_ATaskO.Pages.Setup
 {
     public class InitialAdminModel : PageModel
     {
-        private readonly ISetupService _databaseSetupService;
+        private readonly ISetupService _setupService;
 
         [BindProperty]
         public InitialAdminViewModel Input { get; set; } = new();
@@ -16,17 +16,22 @@ namespace Schoofs_ATaskO.Pages.Setup
 
         public InitialAdminModel(ISetupService setupService)
         {
-            _databaseSetupService = setupService;
+            _setupService = setupService;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (!_databaseSetupService.HasPasswordPepper())
+            if (!_setupService.HasPasswordPepper())
             {
                 return RedirectToPage("/Setup/Pepper");
             }
 
-            if (!_databaseSetupService.IsInitialSetupRequired())
+            if (!await _setupService.IsDatabaseReadyAsync())
+            {
+                return RedirectToPage("/Setup/Database");
+            }
+
+            if (!_setupService.IsInitialSetupRequired())
             {
                 return RedirectToPage("/Account/Login");
             }
@@ -34,14 +39,19 @@ namespace Schoofs_ATaskO.Pages.Setup
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (!_databaseSetupService.HasPasswordPepper())
+            if (!_setupService.HasPasswordPepper())
             {
                 return RedirectToPage("/Setup/Pepper");
             }
 
-            if (!_databaseSetupService.IsInitialSetupRequired())
+            if (!await _setupService.IsDatabaseReadyAsync())
+            {
+                return RedirectToPage("/Setup/Database");
+            }
+
+            if (!_setupService.IsInitialSetupRequired())
             {
                 return RedirectToPage("/Account/Login");
             }
@@ -51,13 +61,17 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            var result = _databaseSetupService.CreateInitialAdmin(Input);
+            var result = _setupService.CreateInitialAdmin(Input);
 
             if (!result)
             {
-                ErrorMessage = _databaseSetupService.ErrorMessage;
+                ErrorMessage = _setupService.ErrorMessage;
                 return Page();
             }
+
+            var setupStatus = HttpContext.RequestServices.GetRequiredService<ISetupStatusService>();
+
+            setupStatus.Refresh();
 
             return RedirectToPage("/Account/Login");
         }

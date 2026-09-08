@@ -15,15 +15,25 @@
         {
             using var scope = _services.CreateScope();
 
-            var setupService = scope.ServiceProvider.GetRequiredService<ISetupService>();
+            var setupService =
+                scope.ServiceProvider
+                    .GetRequiredService<ISetupService>();
 
             var hasPepper = setupService.HasPasswordPepper();
 
-            var isDbReady = setupService.IsDatabaseReadyAsync().GetAwaiter().GetResult();
+            var isDbReady =
+                setupService.IsDatabaseReadyAsync()
+                    .GetAwaiter()
+                    .GetResult();
 
             var hasAdmin = setupService.HasAdminUser();
 
-            IsSetupComplete = hasPepper && isDbReady && hasAdmin;
+            IsSetupComplete =
+                hasPepper && isDbReady && hasAdmin;
+        }
+        public void Refresh()
+        {
+            Initialize();
         }
     }
 }

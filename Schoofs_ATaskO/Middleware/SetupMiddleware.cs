@@ -17,10 +17,17 @@ namespace Schoofs_ATaskO.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             var setupStatus = context.RequestServices.GetRequiredService<ISetupStatusService>();
+            var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
+
+            if (setupStatus.IsSetupComplete && path.StartsWith("/setup"))
+            {
+                context.Response.Redirect("/Account/Login");
+
+                return;
+            }
 
             if (!setupStatus.IsSetupComplete)
             {
-                var path = context.Request.Path.Value?.ToLowerInvariant() ?? string.Empty;
 
                 var setupService = context.RequestServices.GetRequiredService<ISetupService>();
 

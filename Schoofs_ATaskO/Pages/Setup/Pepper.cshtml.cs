@@ -14,30 +14,30 @@ namespace Schoofs_ATaskO.Pages.Setup
         public string ErrorMessage { get; set; } = string.Empty;
         public string SuccessMessage { get; set; } = string.Empty;
 
-        private readonly ISetupService _databaseSetupService;
+        private readonly ISetupService _setupService;
 
         public PepperModel(ISetupService setupService)
         {
-            _databaseSetupService = setupService;
+            _setupService = setupService;
         }
 
         public IActionResult OnGet()
         {
-            if (_databaseSetupService.HasPasswordPepper())
+            if (_setupService.HasPasswordPepper())
             {
-                return RedirectToPage("/Index");
+                return RedirectToPage("/Setup/Database");
             }
 
-            Pepper = _databaseSetupService.GeneratePasswordPepper();
+            Pepper = _setupService.GeneratePasswordPepper();
 
             return Page();
         }
 
         public IActionResult OnPost()
         {
-            if (_databaseSetupService.HasPasswordPepper())
+            if (_setupService.HasPasswordPepper())
             {
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Setup/Database");
             }
 
             if (string.IsNullOrWhiteSpace(Pepper))
@@ -47,11 +47,11 @@ namespace Schoofs_ATaskO.Pages.Setup
                 return Page();
             }
 
-            var result = _databaseSetupService.CreatePasswordPepper(Pepper);
+            var result = _setupService.CreatePasswordPepper(Pepper);
 
             if (!result)
             {
-                ErrorMessage = _databaseSetupService.ErrorMessage;
+                ErrorMessage = _setupService.ErrorMessage;
                 return Page();
             }
 
