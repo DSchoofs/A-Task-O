@@ -41,12 +41,10 @@ public class DeleteModel : PageModel
             IsActive = taskItem.IsActive,
             CreatedAt = taskItem.CreatedAt,
             CreatedByUserId = taskItem.CreatedByUserId,
-            CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId),
+            CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId, "Benutzer gelöscht / nicht bekannt"),
             ModifiedAt = taskItem.ModifiedAt,
             ModifiedByUserId = taskItem.ModifiedByUserId,
-            ModifiedByUserName = taskItem.ModifiedAt.HasValue
-        ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId)
-        : "Noch nicht geändert"
+            ModifiedByUserName = taskItem.ModifiedAt.HasValue ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId, "Benutzer gelöscht / nicht bekannt") : "Noch nicht geändert"
         };
 
         return Page();
@@ -73,8 +71,10 @@ public class DeleteModel : PageModel
                     IsActive = taskItem.IsActive,
                     CreatedAt = taskItem.CreatedAt,
                     CreatedByUserId = taskItem.CreatedByUserId,
+                    CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId, "Benutzer gelöscht / nicht bekannt"),
                     ModifiedAt = taskItem.ModifiedAt,
-                    ModifiedByUserId = taskItem.ModifiedByUserId
+                    ModifiedByUserId = taskItem.ModifiedByUserId,
+                    ModifiedByUserName = taskItem.ModifiedAt.HasValue ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId, "Benutzer gelöscht / nicht bekannt") : "Noch nicht geändert"
                 };
             }
 

@@ -119,14 +119,58 @@ namespace Schoofs_ATaskO.Repositories
 
         public bool DeleteUserById(int id)
         {
+            ErrorMessage = string.Empty;
+
             try
             {
-                sqlcmd = "DELETE FROM Users WHERE UserId = @Id";
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    var rowsAffected = conn.Execute(sqlcmd, new { Id = id });
-                    return rowsAffected > 0;
+
+                    using (var transaction = conn.BeginTransaction())
+                    {
+                        sqlcmd = "UPDATE TaskBlocks SET Status = @FreeStatus, AssignedByUserId = NULL, AssignedAt = NULL, CompletedByUserId = NULL, CompletedAt = NULL WHERE AssignedByUserId = @Id AND Status <> @CompletedStatus";
+
+                        conn.Execute(sqlcmd, new
+                        {
+                            Id = id,
+                            FreeStatus = (int)TaskBlockStatus.Free,
+                            CompletedStatus = (int)TaskBlockStatus.Completed
+                        }, transaction);
+
+                        sqlcmd = "UPDATE TaskBlocks SET AssignedByUserId = NULL WHERE AssignedByUserId = @Id";
+
+                        conn.Execute(sqlcmd, new { Id = id }, transaction);
+
+                        sqlcmd = "UPDATE TaskBlocks SET CompletedByUserId = NULL WHERE CompletedByUserId = @Id";
+
+                        conn.Execute(sqlcmd, new { Id = id }, transaction);
+
+                        sqlcmd = "UPDATE TaskItems SET CreatedByUserId = NULL WHERE CreatedByUserId = @Id";
+
+                        conn.Execute(sqlcmd, new { Id = id }, transaction);
+
+                        sqlcmd = "UPDATE TaskItems SET ModifiedByUserId = NULL WHERE ModifiedByUserId = @Id";
+
+                        conn.Execute(sqlcmd, new { Id = id }, transaction);
+
+                        sqlcmd = "DELETE FROM Users WHERE UserId = @Id";
+
+                        var rowsAffected = conn.Execute(sqlcmd, new { Id = id }, transaction);
+
+                        if (rowsAffected == 0)
+                        {
+                            transaction.Rollback();
+
+                            ErrorMessage = "Der Benutzer wurde nicht gefunden.";
+
+                            return false;
+                        }
+
+                        transaction.Commit();
+
+                        return true;
+                    }
                 }
             }
             catch (SqlException sqlex)
@@ -137,9 +181,9 @@ namespace Schoofs_ATaskO.Repositories
             {
                 ErrorMessage = $"Unexpected Error: {ex.Message}";
             }
+
             return false;
         }
-
         public User? GetUserByEmail(string email)
         {
             try

@@ -211,11 +211,11 @@ namespace Schoofs_ATaskO.Services
 
             return result;
         }
-        public string GetUserDisplayName(int? userId)
+        public string GetUserDisplayName(int? userId, string missingUserText = "Nicht bekannt")
         {
             if (!userId.HasValue)
             {
-                return "Nicht bekannt";
+                return missingUserText;
             }
 
             var user = GetUserById(userId.Value);

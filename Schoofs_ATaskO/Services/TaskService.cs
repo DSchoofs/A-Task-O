@@ -84,9 +84,9 @@ namespace Schoofs_ATaskO.Services
                     WeekMode = taskItem.WeekMode,
                     IsActive = taskItem.IsActive,
                     CreatedAt = taskItem.CreatedAt,
-                    CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId),
+                    CreatedByUserName = _userService.GetUserDisplayName(taskItem.CreatedByUserId, "Benutzer gelöscht / nicht bekannt"),
                     ModifiedAt = taskItem.ModifiedAt,
-                    ModifiedByUserName = taskItem.ModifiedAt.HasValue ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId) : "Noch nicht geändert"
+                    ModifiedByUserName = taskItem.ModifiedAt.HasValue ? _userService.GetUserDisplayName(taskItem.ModifiedByUserId, "Benutzer gelöscht / nicht bekannt") : "Noch nicht geändert"
                 });
             }
 
